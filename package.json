@@ -5,11 +5,11 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-      "complie": "tsc"
+        "complie": "tsc"
     },
     "repository": {
-      "type": "git",
-      "url": "git+https://github.com/ghcms/mongo-graphql-layer.git"
+        "type": "git",
+        "url": "git+https://github.com/ghcms/mongo-graphql-layer.git"
     },
     "keywords": [
         "fastify",
@@ -25,27 +25,28 @@
     ],
     "author": "Grzegorz Maniak",
     "contributors": [
-      {
-        "name": "Grzegorz Maniak",
-        "url": "https://git.grzegorz.ie/"
-      }
+        {
+            "name": "Grzegorz Maniak",
+            "url": "https://git.grzegorz.ie/"
+        }
     ],
     "license": "MIT",
     "homepage": "https://github.com/ghcms/mongo-graphql-layer#readme",
     "bugs": {
-      "url": "https://github.com/ghcms/mongo-graphql-layer/issues"
+        "url": "https://github.com/ghcms/mongo-graphql-layer/issues"
     },
     "dependencies": {
-      "lodash": "^4.17.21"
+        "lodash": "^4.17.21"
     },
     "devDependencies": {
-      "@types/jest": "^27.4.1",
-      "@types/lodash": "^4.14.180",
-      "@types/node": "^17.0.0",
-      "jest": "^27.5.1",
-      "nodemon": "^2.0.15",
-      "ts-node": "^10.6.0",
-      "ts-node-dev": "^1.1.8",
-      "typescript": "^4.5.0"
+        "@types/jest": "^27.4.1",
+        "@types/lodash": "^4.14.180",
+        "@types/node": "^17.0.0",
+        "apollo-server-core": "^3.6.7",
+        "jest": "^27.5.1",
+        "nodemon": "^2.0.15",
+        "ts-node": "^10.6.0",
+        "ts-node-dev": "^1.1.8",
+        "typescript": "^4.5.0"
     }
-  }
+}
