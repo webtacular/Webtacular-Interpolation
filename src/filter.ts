@@ -52,17 +52,25 @@ export default (context:any): {
                     if(next === null) {
                         let returnable: {[x: string]: any} = {};
 
+                        // For each argument in the current selection
+                        // Add the argument to the returnable object
                         for(const argument of current.arguments) {
+                            // If the argument contains more than one value
                             if(argument.value?.fields) for (const field of argument.value.fields) {
                                 returnable[field.name.value] = field.value.value;
                             }
 
+                            // If the argument contains only one value
                             else returnable[argument.name.value] = argument.value.value;
                         }
 
-                        if(Object.keys(returnable).length > 0) 
+                        // Check if the current selection has arguments
+                        if(Object.keys(returnable).length > 0) {
                             return { [current.name.value]: returnable };
+                        }
 
+                        // If the current selection has no arguments,
+                        // Return an empty object
                         else return {};
                     }
 

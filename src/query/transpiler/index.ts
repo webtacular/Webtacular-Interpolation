@@ -1,4 +1,4 @@
-import { Output } from "../parse";
+import { Output } from '../parse';
 import { TypeMap } from "../value/src/types";
 import { InputClass } from "./src/object2gql";
 
@@ -69,7 +69,9 @@ export default (input: Output): {
     }
 
     // Construct the final schema
-    const query = object2gql(queryObject, `${input.origin.options.key}Query`, 'type')
+    const query = object2gql(queryObject, `${input.origin.options.key}Query`, 'type');
+
+    console.log(input);
 
     // Return the final schema
     return {

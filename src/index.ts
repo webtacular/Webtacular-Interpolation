@@ -1,7 +1,7 @@
-import parse from './parse';
-import SchemaObject from "./object";
-import SchemaValue from "./value";
-import transpiler from './transpiler';
+import parse from './query/parse';
+import SchemaObject from "./query/object";
+import SchemaValue from "./query/value";
+import transpiler from './query/transpiler';
 
 export namespace Construct {
     export interface Schema {
@@ -18,7 +18,7 @@ export namespace Construct {
 
                     const schmea = transpiler(parsed);
 
-                    console.log(schmea.schema);
+                    //console.log(parsed, schmea);
                 }
             }
         }

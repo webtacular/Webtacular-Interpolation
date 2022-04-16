@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { arrayToObject } from '../general';
+import { arrayToObject } from '../../general';
 
 import SchemaObject from "../object";
 import SchemaValue from "../value";

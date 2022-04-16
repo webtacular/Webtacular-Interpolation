@@ -1,5 +1,5 @@
-import Object from "./src/object";
-import Value from "./src/value";
+import Object from "./src/query/object";
+import Value from "./src/query/value";
 import { Construct } from "./src/";
 
 const test: Construct.Schema = {
