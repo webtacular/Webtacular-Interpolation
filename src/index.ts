@@ -16,7 +16,9 @@ export namespace Construct {
                 if(value instanceof SchemaObject.init) {
                     const parsed = parse(value);
 
-                    transpiler(parsed);
+                    const schmea = transpiler(parsed);
+
+                    console.log(schmea.schema);
                 }
             }
         }

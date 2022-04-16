@@ -1,5 +1,6 @@
 namespace SchemaValue { 
     export type type = 'string' | 'number' | 'float' | 'boolean' | 'id';
+    export type GqlType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | '[String]' | '[Int]' | '[Float]' | '[Boolean]' | '[ID]';
 
     export interface ValueConstructor {
         key?: string;
