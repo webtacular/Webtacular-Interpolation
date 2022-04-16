@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 export interface FilterInterface {
-    [key: string]: number | FilterInterface
+    [key: string]: any
 }
 
 export interface ArgumentsInterface {

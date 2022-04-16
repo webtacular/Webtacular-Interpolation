@@ -3,10 +3,12 @@ import { TypeMap } from "../value/src/types";
 import { InputClass } from "./src/object2gql";
 
 import object2gql from "./src/object2gql";
+import SchemaObject from '../object';
 
 export default (input: Output): {
     schema: string;
     type: string;
+    orgin: SchemaObject.init;
 } => {
     // Check if searchable is enabled
     const opts: { [key: string]: boolean } = {
@@ -71,11 +73,10 @@ export default (input: Output): {
     // Construct the final schema
     const query = object2gql(queryObject, `${input.origin.options.key}Query`, 'type');
 
-    console.log(input);
-
     // Return the final schema
     return {
         schema: `${root}\n${filter}\n${collection}${query}`,
         type: `${input.origin.options.key}Query`,
+        orgin: input.origin
     }
 } 

@@ -6,11 +6,13 @@ import SchemaValue from "../value";
 
 import { TypeMap } from "../value/src/types";
 
+export type Filter = Array<{ func: (input: any, data: any) => boolean; input: SchemaValue.GqlType; data: SchemaValue.type; name: string }>;
+
 export interface Output {
     unique: Array<SchemaValue.init>;
     origin: SchemaObject.init;
-    root: { [key: string]: string | boolean | number | {}; }
-    filter: Array<{ func: (input: any, data: any) => boolean; input: SchemaValue.GqlType; data: SchemaValue.type; name: string }>
+    root: { [key: string]: string | boolean | number | {}; };
+    filter: Filter;
 }
 
 export class Group {

@@ -3,6 +3,8 @@ import SchemaObject from "./query/object";
 import SchemaValue from "./query/value";
 import transpiler from './query/transpiler';
 
+import resolve from './resolve';
+
 export namespace Construct {
     export interface Schema {
         [key: string]: SchemaObject.init;
@@ -17,6 +19,8 @@ export namespace Construct {
                     const parsed = parse(value);
 
                     const schmea = transpiler(parsed);
+
+                    const resolver = resolve(schmea.orgin, parsed.filter, schmea.schema);
 
                     //console.log(parsed, schmea);
                 }
