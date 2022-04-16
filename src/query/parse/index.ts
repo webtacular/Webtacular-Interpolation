@@ -65,18 +65,32 @@ const func = (Obj: SchemaObject.init): Output => {
                 // Set the name of the value
                 value.setKey(key);
 
-                // Set the maskArray
-                value.setObjectMaskArray([Obj.options.key, ...parentNames, key]);
-
-                // Set the maskObject
-                value.setObjectMaskObject(arrayToObject(value.maskArray));
-
                 // Check if value options contain a mask
-                if(value.options.mask) 
+                if(value.options.mask) {
                     value.setMask(value.options.mask);
 
+                    // We need to grab the furthest child in the object
+                    const maskRecurse = (obj: {[x: string]: number | {}}, maskArray: Array<string> = []) => {
+                        for (const key in obj) {
+                            const value = obj[key];
+                            maskArray.push(key);
+                            if (value instanceof Object) maskRecurse(value, maskArray);
+                        }
+
+                        return maskArray;
+                    }
+
+                    // Set the mask array
+                    value.setObjectMaskArray(maskRecurse(value.options.mask));
+                }
+
                 // If not, generate a mask based on the SchemaObject
-                else value.setMask(arrayToObject([...parentNames, key]));
+                else {
+                    value.setMask(arrayToObject([...parentNames, key]));
+
+                    // Set the maskArray
+                    value.setObjectMaskArray([...parentNames, key]);
+                }
   
                 // ----[ Root ]---- //
                 // Merge the object

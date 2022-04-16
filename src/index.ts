@@ -2,7 +2,7 @@ import parse from './query/parse';
 import SchemaObject from "./query/object";
 import SchemaValue from "./query/value";
 import transpiler from './query/transpiler';
-
+import MongoService from './resolve/src/database';
 import resolve from './resolve';
 
 export namespace Construct {
@@ -10,19 +10,33 @@ export namespace Construct {
         [key: string]: SchemaObject.init;
     }
 
-    const loop = (schema: Schema) => {
+    export interface Options {
+        connectionString: string;
+    }
+
+    const main = async(schema: Schema, client: MongoService) => {
+        // Wait for the database to be ready
+        await client.init();
+
         const recurse = (obj: Schema) => {
             for (const key in obj) {
                 const value = obj[key];
                 
                 if(value instanceof SchemaObject.init) {
+                    // Parse the SchemaObject
                     const parsed = parse(value);
 
+                    // Create the schema
                     const schmea = transpiler(parsed);
 
-                    const resolver = resolve(schmea.orgin, parsed.filter, schmea.schema);
-
-                    //console.log(parsed, schmea);
+                    // Create the resovler for the SchemaObject
+                    const resolver = resolve(
+                        schmea.orgin, 
+                        parsed.filter, 
+                        schmea.schema, 
+                        parsed.unique,
+                        client
+                    );
                 }
             }
         }
@@ -32,11 +46,14 @@ export namespace Construct {
 
     export class load {
         schema: Schema;
+        client: MongoService;
 
-        constructor(schema: Schema) {
+        constructor(opts: Options, schema: Schema) {
             this.schema = schema;
 
-            loop(schema);
+            this.client = new MongoService(opts.connectionString);
+
+            main(schema, this.client);
         }
     }
 }

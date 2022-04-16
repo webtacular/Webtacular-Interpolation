@@ -2,15 +2,27 @@ import SchemaObject from "../query/object";
 
 import hotQL from 'fastify-hotql';
 import fastify from "fastify";
-import filterDetails from "./filter";
+import filterDetails from "./src/filter";
 
 import { buildSchema } from 'graphql';
 import { Filter } from "../query/parse";
+import SchemaValue from "../query/value";
 
-export default (input: SchemaObject.init, filter: Filter, schema: string) => {
+import rootResolve from "./src/root";
+import MongoService from "./src/database";
+import _ from "lodash";
+
+export default (
+    input: SchemaObject.init, 
+    filter: Filter, 
+    schema: string, 
+    uniqueValues: SchemaValue.init[], 
+    client: MongoService
+) => {
     let resolver = {
         [input.options.key]: (root:any, args:any, context:any, info:any) => {
-            let argsFilter = filterDetails(context);
+            let argsFilter = filterDetails(context),
+                returnObject = {};
 
             argsFilter.arguments = argsFilter.arguments[input.options.key];
             argsFilter.filter = argsFilter.filter[input.options.key];
@@ -34,18 +46,23 @@ export default (input: SchemaObject.init, filter: Filter, schema: string) => {
 
                 // Check if a collection is requested
                 if(SchemaDetails.collectionName === key) {
-                    console.log(argsData);
-                    // Filter function for the data
-                    Object.keys(argsData).forEach((filterKey) => {
-                        const filterData = filter.find((filter) => filter.name === filterKey);
-                    });
+                    // console.log(argsData);
+                    // // Filter function for the data
+                    // Object.keys(argsData).forEach((filterKey) => {
+                    //     const filterData = filter.find((filter) => filter.name === filterKey);
+                    // });
                 }
 
                 // Check if a root value is requested
                 if(SchemaDetails.rootName === key) {
-   
+                    _.merge(returnObject, {
+                        [key]: rootResolve(uniqueValues, input, argsFilter.filter, argsFilter.arguments, client)
+                    });
                 }
             });
+
+            // Finaly, return the data to the user
+            return returnObject;
         }
     };
 

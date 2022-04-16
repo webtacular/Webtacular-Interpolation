@@ -5,12 +5,12 @@ import { Construct } from "./src/";
 const test: Construct.Schema = {
     user: new Object.init({
         collectionName: 'users',
+        databaseName: 'test',
         collectionize: true,
         key: 'user',
     }, {
-        name: new Value.init({
+        user_name: new Value.init({
             type: 'string',
-            array: true,
             description: 'The name of the user',
         }),
 
@@ -25,4 +25,6 @@ const test: Construct.Schema = {
     })
 }
 
-const schema = new Construct.load(test); 
+const schema = new Construct.load({
+    connectionString: ''
+}, test); 

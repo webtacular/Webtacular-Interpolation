@@ -36,7 +36,8 @@
         "url": "https://github.com/ghcms/mongo-graphql-layer/issues"
     },
     "dependencies": {
-        "lodash": "^4.17.21"
+        "lodash": "^4.17.21",
+        "mongodb": "^4.5.0"
     },
     "devDependencies": {
         "@types/jest": "^27.4.1",

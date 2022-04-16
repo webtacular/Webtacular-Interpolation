@@ -8,6 +8,7 @@ namespace SchemaObject {
     export interface Constructor {
         key: string;
         collectionName: string;
+        databaseName: string;
         collectionize?: boolean;
         description?: string;
         searchable?: boolean;
@@ -17,6 +18,10 @@ namespace SchemaObject {
         options: Constructor;
         obj: ValueInterface;
         key: string;
+        
+        maskArray: string[] = [];
+        mask: { [key: string]: number | {} } = {};
+
 
         constructor(options: Constructor, obj: ValueInterface) {
             this.options = options;
