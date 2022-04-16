@@ -9,8 +9,9 @@ export default (input: Output): {
     type: string;
 } => {
     // Check if searchable is enabled
-    const opts = {
-        collectionize: input.origin.options.searchable
+    const opts: { [key: string]: boolean } = {
+        collectionize: input.origin.options.collectionize ?? false,
+        hasUnique:  input.unique.length > 0,
     }
 
     // Store the unique values
@@ -29,7 +30,7 @@ export default (input: Output): {
     let filterObject: { [key: string]: string } = {}
 
     // Loop through the filter
-    input.filter.forEach((filterCur, val) => 
+    input.filter.forEach((filterCur) => 
         filterObject[filterCur.name] = filterCur.input);
 
     // Convert the filter Object into gql
@@ -44,22 +45,35 @@ export default (input: Output): {
     };
 
     // Create the Collection with the filter
-    const collection = object2gql(collectionObject, 
-        input.origin.options.key + 'Collection', 'type');
+    let collection: string = '';
 
     // Create a query object
-    const queryObject: { [key: string]: string | InputClass } = {
-        [input.origin.options.key]: new InputClass(unique, input.origin.options.key),
+    let queryObject: { [key: string]: string | InputClass } = {}
 
-        [input.origin.options.key + 'Collection']: new InputClass({
-            filter: `${input.origin.options.key}Filter`,
-        }, `${input.origin.options.key + 'Collection'}`,),
+    // If the collectionize option is enabled
+    if(opts.collectionize === true) {
+        Object.assign(queryObject, { 
+            [input.origin.options.key + 'Collection']: new InputClass({
+                filter: `${input.origin.options.key}Filter`,
+            }, `${input.origin.options.key + 'Collection'}`,)
+        });
+
+        collection = object2gql(collectionObject, input.origin.options.key + 'Collection', 'type') + '\n';
     }
 
+    // If a unique value is present
+    if(opts.hasUnique === true) {
+        Object.assign(queryObject, {
+            [input.origin.options.key]: new InputClass(unique, input.origin.options.key)
+        })
+    }
+
+    // Construct the final schema
     const query = object2gql(queryObject, `${input.origin.options.key}Query`, 'type')
 
+    // Return the final schema
     return {
-        schema: `${root}\n${filter}\n${collection}\n${query}`,
+        schema: `${root}\n${filter}\n${collection}${query}`,
         type: `${input.origin.options.key}Query`,
     }
 } 

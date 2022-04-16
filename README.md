@@ -1,5 +1,8 @@
 # mongo-graphql-layer
+
 Automagicaly converts your MongoDB to a GraphQL endpoint!
+
+The aim of this project is to recreate the functionality of [Contentful](https://www.contentful.com/developers/docs/references/content-delivery-api/), In their API, Contentful is able to deliver content to your application in a simple and efficient way, by defining a schema for the content, and then constructing a graphql schema from that.
 
 #### Example (Very very early version)
 

@@ -7,7 +7,8 @@ namespace SchemaObject {
     
     export interface Constructor {
         key: string;
-        collection: string;
+        collectionName: string;
+        collectionize?: boolean;
         description?: string;
         searchable?: boolean;
     }

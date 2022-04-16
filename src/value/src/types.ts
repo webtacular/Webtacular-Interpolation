@@ -206,7 +206,7 @@ export const TypeMap = {
                     return input == data;
                 },
 
-                input: 'string',
+                input: 'id',
                 data: 'string',
             },
 
@@ -216,7 +216,7 @@ export const TypeMap = {
                     return input != data;
                 },
 
-                input: 'string',
+                input: 'id',
                 data: 'string',
             },
 

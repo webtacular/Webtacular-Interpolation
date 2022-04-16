@@ -4,8 +4,8 @@ import { Construct } from "./src/";
 
 const test: Construct.Schema = {
     user: new Object.init({
-        collection: 'users',
-        searchable: true,
+        collectionName: 'users',
+        collectionize: true,
         key: 'user',
     }, {
         name: new Value.init({

@@ -25,9 +25,9 @@ export class Group {
 
 const func = (Obj: SchemaObject.init): Output => {
     let opts = {
-        uniqueValue: true,
+        uniqueValue: false,
         uniqueValues: [] as Array<SchemaValue.init>,
-        searchable: Obj.options?.searchable ?? false,
+        collectionize: Obj.options?.collectionize ?? false,
     }
 
     let graphQL: Output = {
@@ -131,10 +131,10 @@ const func = (Obj: SchemaObject.init): Output => {
     recurse(Obj.obj);
 
     // Check if this SchemaObject is a searchable collection
-    if(opts.searchable === true) 
-        // And check if we have the required unique values
+    if(opts.collectionize === false) 
+        // Check if we have the required unique values
         if(opts.uniqueValue === false)
-            throw new Error('Searchable SchemaObjects must have a unique value');
+            throw new Error('SchemaObjects must have a unique value, or be a collection');
 
     // Loop through all the unique values
     opts.uniqueValues.forEach(value => {
