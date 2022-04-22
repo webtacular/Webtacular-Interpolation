@@ -1,6 +1,5 @@
 import parse from './query/parse';
 import SchemaObject from "./query/object";
-import SchemaValue from "./query/value";
 import transpiler from './query/transpiler';
 import MongoService from './resolve/src/database';
 import resolve from './resolve';
@@ -37,8 +36,6 @@ export namespace Construct {
                         parsed.unique,
                         client
                     );
-
-                    console.log(schmea.schema);
                 }
             }
         }

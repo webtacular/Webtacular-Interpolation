@@ -2,7 +2,7 @@ import SchemaObject from "../query/object";
 
 import hotQL from 'fastify-hotql';
 import fastify from "fastify";
-import filterDetails from "./src/filter";
+import filterDetails from "./src/database/filter";
 
 import { buildSchema } from 'graphql';
 import { Filter } from "../query/parse";
@@ -19,6 +19,12 @@ export default (
     uniqueValues: SchemaValue.init[], 
     client: MongoService
 ) => {
+    //     
+    // 
+    // We need a better way to do this, but for now this will do.
+    // Once we start cleaning up the code, we can change this.
+    // 
+    //     
     let resolver = {
         [input.options.key]: (root:any, args:any, context:any, info:any) => {
             let argsFilter = filterDetails(context),
@@ -27,6 +33,7 @@ export default (
             argsFilter.arguments = argsFilter.arguments[input.options.key];
             argsFilter.filter = argsFilter.filter[input.options.key];
 
+            // This object contains basic information about the SchemaObject
             const SchemaDetails = {
                 collectionName: input.options.key + 'Collection',
                 rootName: input.options.key,
@@ -37,26 +44,15 @@ export default (
             const rootKeys: string[] = Object.keys(argsFilter.filter);
 
             rootKeys.forEach((key) => {
-
-                // What values are being requested?
-                const value = argsFilter.filter[key];
-
-                // Get Argumemt data
-                const argsData = argsFilter.arguments[key];
-
-                // Check if a collection is requested
-                if(SchemaDetails.collectionName === key) {
-                    // console.log(argsData);
-                    // // Filter function for the data
-                    // Object.keys(argsData).forEach((filterKey) => {
-                    //     const filterData = filter.find((filter) => filter.name === filterKey);
-                    // });
-                }
-
                 // Check if a root value is requested
                 if(SchemaDetails.rootName === key) {
                     _.merge(returnObject, {
-                        [key]: rootResolve(uniqueValues, input, argsFilter.filter, argsFilter.arguments, client)
+                        [key]: rootResolve(uniqueValues,
+                            input, 
+                            argsFilter.filter, 
+                            argsFilter.arguments, 
+                            client
+                        )
                     });
                 }
             });

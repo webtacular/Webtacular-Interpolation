@@ -1,10 +1,10 @@
 import _ from 'lodash';
-import { arrayToObject } from '../../general';
+import { arrayToObject } from '../general';
 
-import SchemaObject from "../object";
-import SchemaValue from "../value";
+import SchemaObject from "./object";
+import SchemaValue from "./value";
 
-import { TypeMap } from "../value/src/types";
+import { TypeMap } from "./value/src/types";
 
 export type Filter = Array<{ func: (input: any, data: any) => boolean; input: SchemaValue.GqlType; data: SchemaValue.type; name: string }>;
 
