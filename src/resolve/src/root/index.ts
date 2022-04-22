@@ -2,12 +2,14 @@
 // Returning the correct data.
 
 import _ from "lodash";
-import { ObjectId } from "mongodb";
-import { arrayToObject } from "../../../general";
+
 import SchemaObject from "../../../query/object";
 import SchemaValue from "../../../query/value";
-
 import MongoService from '../database'
+
+import mapResponse from './mapResponse';
+import constructFilter from './constructFilter';
+import { MongoResponseObject } from "../database/interface";
 
 const resolve = async (
     uniqueValues: SchemaValue.init[],
@@ -36,30 +38,8 @@ const resolve = async (
         _.merge(projection, value.mask);
     }
 
-    // Start building the filter
-    let filter = {};
-
-    // Map the requested resouces
-    for(const paramater in queryArguments[input.options.key]){
-        // Get the value
-        let schemaParamater = input.obj[paramater],
-            inputValue = queryArguments[input.options.key][paramater];
-
-        switch(paramater) {
-
-            // Check if the paramater is of type 'id
-            case 'id': {
-                // Check if its a valid ObjectId
-                if(ObjectId.isValid(inputValue))
-                    // If so, convert it to an ObjectId
-                    inputValue = new ObjectId(inputValue);
-
-                break;
-            }
-        }
-
-        _.merge(filter, arrayToObject(schemaParamater.maskArray, new ObjectId(queryArguments[input.options.key][paramater])));
-    }
+    // Construct the filter
+    const filter: MongoResponseObject = constructFilter(queryArguments, input);
 
     // Use the filter to get the data
     const data = await collection.aggregate([
@@ -70,7 +50,7 @@ const resolve = async (
     if(data.length === 0) return undefined;
 
     // Map the requested resouces back to the schema
-    return data[0]
+    return mapResponse(input, data[0]);
 }
 
 export default resolve;

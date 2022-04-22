@@ -37,6 +37,8 @@ export namespace Construct {
                         parsed.unique,
                         client
                     );
+
+                    console.log(schmea.schema);
                 }
             }
         }
