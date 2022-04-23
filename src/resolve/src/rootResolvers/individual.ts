@@ -1,16 +1,20 @@
+//
+//
 // This here module is responsible for parsing the request and
 // Returning the correct data.
+//
+//
 
 import _ from "lodash";
 
-import SchemaObject from "../../../query/object";
-import MongoService from '../database'
+import SchemaObject from '../../../query/object';            // [Namespace] //
+import MongoService from '../database';                      // [Interface] //
 
-import mapResponse from '../database/mapResponse';
-import mapQuery from '../database/mapQuery';
+import mapResponse from '../database/mapResponse';           // [Func] //
+import mapQuery from '../database/mapQuery';                 // [Func] //
 
-import { MongoResponseObject } from "../database/interface";
-import { RequestDetails } from "../..";
+import { MongoResponseObject } from '../database/interface'; // [Interface] //
+import { RequestDetails } from '../..';                      // [Interface] //
 
 const resolve = async(
     input:  SchemaObject.init,

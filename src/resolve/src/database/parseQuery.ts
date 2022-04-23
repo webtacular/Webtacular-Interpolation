@@ -1,5 +1,14 @@
+//
+//
+// This here file maps the context from Appolo-GraphQL-Server to something that we can work with.
+// It outputs a projection object that can be used to query the database (after its remapped), and
+// an arguments object that contains the arguments that the user has passed in.
+//
+//
+
 import _ from 'lodash';
 
+// --- These two interfaces need to strongly typed --- //
 export interface ProjectionInterface {
     [key: string]: any
 }
@@ -7,6 +16,7 @@ export interface ProjectionInterface {
 export interface ArgumentsInterface {
     [key: string]: any
 }
+// -------------------------------------------------- //
 
 export default (context:any): {
     projection: ProjectionInterface,

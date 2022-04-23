@@ -1,3 +1,12 @@
+//
+//
+// This here file is used to map the Schema to the database.
+// As the schema might contain a value 'id' but the value 
+// being stored in the database is '_id', we need to map
+// the Schema so that 'id' is mapped to '_id'. etc.
+//
+//
+
 import { MongoResponseObject } from "./interface";
 import { ObjectId } from "mongodb";
 
@@ -7,8 +16,8 @@ import SchemaObject from "../../../query/object";
 import { ProjectionInterface } from "./parseQuery";
 
 export default (queryArguments: any, input: SchemaObject.init): MongoResponseObject => {
-    // Start building the projection
-    let projection: ProjectionInterface = {};
+    // Start building the query
+    let query: ProjectionInterface = {};
 
     // Map the requested resouces
     for(const paramater in queryArguments[input.options.key]){
@@ -31,15 +40,15 @@ export default (queryArguments: any, input: SchemaObject.init): MongoResponseObj
             }
         }  
  
-        // Construct the projection
+        // Construct the query
         const object = arrayToObject(
             schemaParamater.maskArray, 
             inputValue
         );
 
-        // Merge the projection
-        _.merge(projection, object);
+        // Merge the query
+        _.merge(query, object);
     }
 
-    return projection;
+    return query;
 }

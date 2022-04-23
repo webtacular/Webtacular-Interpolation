@@ -1,5 +1,15 @@
+//
+//
+// This here file is the opposite of mapQuery.ts, it is used to map the database to the Schema.
+// As the database might contain a value '_id', but the value in the Schema is 'id', we need to map
+// '_id' to 'id'. etc.
+//
+//
+
 import SchemaObject from "../../../query/object";
+
 import _ from "lodash";
+
 import { MongoResponseObject } from "./interface";
 import { arrayToObject } from "../../../general";
 
