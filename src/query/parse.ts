@@ -4,15 +4,13 @@ import { arrayToObject } from '../general';
 import SchemaObject from "./object";
 import SchemaValue from "./value";
 
-import { TypeMap } from "./value/src/types";
-
-export type Filter = Array<{ func: (input: any, data: any) => boolean; input: SchemaValue.GqlType; data: SchemaValue.type; name: string }>;
+import { FilterObject, TypeMap } from "./value/src/types";
 
 export interface Output {
     unique: Array<SchemaValue.init>;
     origin: SchemaObject.init;
     root: { [key: string]: string | boolean | number | {}; };
-    filter: Filter;
+    filter: {[x: string]: FilterObject};
 }
 
 export class Group {
@@ -34,7 +32,7 @@ const func = (Obj: SchemaObject.init): Output => {
 
     let graphQL: Output = {
         root: {},
-        filter: [],
+        filter: {},
         unique: [] as Array<SchemaValue.init>,
         origin: Obj
     };
@@ -72,8 +70,11 @@ const func = (Obj: SchemaObject.init): Output => {
                     // We need to grab the furthest child in the object
                     const maskRecurse = (obj: {[x: string]: number | {}}, maskArray: Array<string> = []) => {
                         for (const key in obj) {
+
                             const value = obj[key];
+
                             maskArray.push(key);
+
                             if (value instanceof Object) maskRecurse(value, maskArray);
                         }
 
@@ -92,6 +93,7 @@ const func = (Obj: SchemaObject.init): Output => {
                     value.setObjectMaskArray([...parentNames, key]);
                 }
   
+
                 // ----[ Root ]---- //
                 // Merge the object
                 _.merge(graphQL.root, [...parentNames, null].reduceRight((obj: {}, next : string | null):  { [x: string]: {} }  => {
@@ -116,23 +118,11 @@ const func = (Obj: SchemaObject.init): Output => {
                 }, {})); 
             
                 // ----[ Collection ]---- //
-
-                Object.keys(gqlType.filter).forEach(keyFilter => {
-                    const func = gqlType.filter[keyFilter];
-
-                    const returnable: {
-                            func: (input: any, data: any) => boolean;
-                            input: SchemaValue.GqlType;
-                            data: SchemaValue.type;
-                            name: string
-                    } = {
-                        func: func.func,
-                        input: `[${TypeMap[func.input].gql}]` as SchemaValue.GqlType,
-                        data: value.options.type,
-                        name: key + keyFilter
-                    };
-
-                    graphQL.filter.push(returnable);
+                Object.keys(gqlType.filter).forEach(filterName => 
+                    graphQL.filter[key + filterName] = { 
+                        actualKey: value.maskArray[value.maskArray.length - 1], 
+                        schemaKey: key,
+                        ...gqlType.filter[filterName] 
                 });
 
             }

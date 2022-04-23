@@ -22,6 +22,8 @@ const resolve = async(
     requestDetails: RequestDetails,
     client: MongoService
 ): Promise<MongoResponseObject> => {
+
+    // ---------------[ Process the rawProjection ]---------------- //
     // Since this is the collection, the requested data is stored in 'items'
     const rawProjection: ProjectionInterface = requestDetails.projection[requestDetails.collectionName]?.items ?? {};
 
@@ -40,6 +42,19 @@ const resolve = async(
         // Merge the projections
         _.merge(projection, value.mask);
     }
+    // ------------------------------------------------------------ //
+
+    
+    // ---------------[ Process the rawFilter ]---------------- //
+    // Get the filter for the request
+    const rawFilter = requestDetails.arguments[requestDetails.collectionName]?.filter ?? {};
+    
+    // Object to store the filter
+    let filter: MongoResponseObject = {};
+
+    console.log(requestDetails.filter);
+    // -------------------------------------------------------- //
+    
 
     // Construct the projection
     const query: MongoResponseObject = mapQuery(

@@ -71,3 +71,8 @@ type Query {
     userQuery: userQuery
 }
 ```
+
+#### Notes
+
+- We need a way to prevent some basic attacks, like supplying a huge Regex to a search.
+  A way to limit the ammount of times a recursive function can recurse, so it doesn't go into an infinite loop.

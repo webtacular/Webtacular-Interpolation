@@ -5,7 +5,7 @@ import fastify from "fastify";
 import parseQuery, { ArgumentsInterface, ProjectionInterface } from "./src/database/parseQuery";
 
 import { buildSchema } from 'graphql';
-import { Filter } from "../query/parse";
+import { FilterObject } from "../query/value/src/types";
 
 import SchemaValue from "../query/value";
 
@@ -21,11 +21,13 @@ export interface RequestDetails {
 
     projection: ProjectionInterface;
     arguments: ArgumentsInterface
+
+    filter: { [x: string]: FilterObject };
 }
 
 export default (
     input: SchemaObject.init, 
-    filter: Filter, 
+    filter: { [x: string]: FilterObject }, 
     schema: string, 
     uniqueValues: SchemaValue.init[], 
     client: MongoService
@@ -56,7 +58,9 @@ export default (
                 individualName: input.options.key,
 
                 projection: parsedQuery.projection,
-                arguments: parsedQuery.arguments
+                arguments: parsedQuery.arguments,
+
+                filter: filter
             }
 
             const rootKeys: string[] = Object.keys(parsedQuery.projection);

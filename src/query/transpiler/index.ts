@@ -32,8 +32,8 @@ export default (input: Output): {
     let filterObject: { [key: string]: string } = {}
 
     // Loop through the filter
-    input.filter.forEach((filterCur) => 
-        filterObject[filterCur.name] = filterCur.input);
+    Object.keys(input.filter).forEach((filterName) => 
+        filterObject[filterName] = input.filter[filterName].input);
 
     // Convert the filter Object into gql
     const filter = object2gql(filterObject, 

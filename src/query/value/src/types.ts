@@ -13,7 +13,36 @@ const isNumber = (x: any, y: any): { x: number, y: number } | false => {
     return { x: xNum, y: yNum };
 }
 
-export const TypeMap = {
+export type FilterType = 'function' | 'query';
+
+export interface FuncFilterObject { 
+    func: (input: any, data: any) => boolean, 
+    input: SchemaValue.GqlType, 
+    data: SchemaValue.type,
+    type: 'function',
+    actualKey?: string,
+    schemaKey?: string
+};
+
+export interface QueryFilterObject {
+    func: (input: any, data: any) => boolean, 
+    input: SchemaValue.GqlType, 
+    data: SchemaValue.type,
+    type: 'query',
+    actualKey?: string,
+    schemaKey?: string
+}
+
+export type FilterObject = FuncFilterObject | QueryFilterObject;
+
+export const TypeMap: {
+    [x: string]: { 
+        gql: string;
+        filter: { 
+            [key: string]: FilterObject
+        }
+    }
+} = {
     'string': { 
         gql: 'String',
         filter: {
@@ -33,8 +62,9 @@ export const TypeMap = {
                     return regex.test(data);
                 },
 
-                input: 'string',
+                input: 'String',
                 data: 'string',
+                type: 'function'
             },
 
             Is: {
@@ -43,8 +73,9 @@ export const TypeMap = {
                     return data === input;
                 },
 
-                input: 'string',
+                input: '[String]',
                 data: 'string',
+                type: 'query'
             },
 
             IsNot: {
@@ -53,8 +84,9 @@ export const TypeMap = {
                     return data !== input;
                 },
 
-                input: 'string',
+                input: '[String]',
                 data: 'string',
+                type: 'query'
             },
             
             Exists: {
@@ -67,10 +99,11 @@ export const TypeMap = {
                     return input === true ? exists : !exists;
                 },
 
-                input: 'boolean',
+                input: 'Boolean',
                 data: 'boolean',
+                type: 'query'
             }
-        } as { [key: string]: { func: (input: any, data: any) => boolean, input: SchemaValue.type, data: SchemaValue.type } },
+        },
     },
 
     'number': { 
@@ -82,8 +115,9 @@ export const TypeMap = {
                     return data === input;
                 },
 
-                input: 'number',
+                input: '[Int]',
                 data: 'number',
+                type: 'query'
             },
 
             IsNot: {
@@ -92,8 +126,9 @@ export const TypeMap = {
                     return data !== input;
                 },
 
-                input: 'number',
+                input: '[Int]',
                 data: 'number',
+                type: 'query'
             },
 
             IsGreaterThan: {
@@ -106,8 +141,9 @@ export const TypeMap = {
                     return nums.x < nums.y;
                 },
 
-                input: 'number',
+                input: 'Int',
                 data: 'number',
+                type: 'query'
             },
 
             IsGreaterThanOrEqualTo: {
@@ -120,8 +156,9 @@ export const TypeMap = {
                     return nums.x <= nums.y;
                 },
 
-                input: 'number',
+                input: 'Int',
                 data: 'number',
+                type: 'query'
             },
 
             IsLessThan: {
@@ -134,8 +171,9 @@ export const TypeMap = {
                     return nums.x > nums.y;
                 },
 
-                input: 'number',
+                input: 'Int',
                 data: 'number',
+                type: 'query'
             },
 
             IsLessThanOrEqualTo: {
@@ -148,8 +186,9 @@ export const TypeMap = {
                     return nums.x >= nums.y;
                 },
 
-                input: 'number',
+                input: 'Int',
                 data: 'number',
+                type: 'query'
             },
 
             Exists: {
@@ -162,10 +201,11 @@ export const TypeMap = {
                     return input === true ? exists : !exists;
                 },
 
-                input: 'boolean',
+                input: 'Boolean',
                 data: 'boolean',
+                type: 'query'
             }
-        } as { [key: string]: { func: (input: any, data: any) => boolean, input: SchemaValue.type, data: SchemaValue.type } },
+        },
     },
 
     'boolean': { 
@@ -177,8 +217,9 @@ export const TypeMap = {
                     return input == data;
                 },
                 
-                input: 'boolean',
+                input: '[Boolean]',
                 data: 'boolean',
+                type: 'query'
             },
 
             Exists: {
@@ -191,10 +232,11 @@ export const TypeMap = {
                     return input === true ? exists : !exists;
                 },
 
-                input: 'boolean',
+                input: 'Boolean',
                 data: 'boolean',
+                type: 'query'
             }
-        } as { [key: string]: { func: (input: any, data: any) => boolean, input: SchemaValue.type, data: SchemaValue.type } },
+        },
     },
 
     'id': { 
@@ -206,8 +248,9 @@ export const TypeMap = {
                     return input == data;
                 },
 
-                input: 'id',
+                input: '[ID]',
                 data: 'string',
+                type: 'query'
             },
 
             IsNot: {
@@ -216,8 +259,9 @@ export const TypeMap = {
                     return input != data;
                 },
 
-                input: 'id',
+                input: '[ID]',
                 data: 'string',
+                type: 'query'
             },
 
             Exists: {
@@ -230,15 +274,16 @@ export const TypeMap = {
                     return input === true ? exists : !exists;
                 },
 
-                input: 'boolean',
+                input: 'Boolean',
                 data: 'boolean',
+                type: 'query'
             },
 
-        } as { [key: string]: { func: (input: any, data: any) => boolean, input: SchemaValue.type, data: SchemaValue.type } },
+        },
     },
 
     'float': { 
         gql: 'Float' ,
-        filter: {} as { [key: string]: { func: (input: any, data: any) => boolean, input: SchemaValue.type, data: SchemaValue.type } },
+        filter: {},
     },
 };
