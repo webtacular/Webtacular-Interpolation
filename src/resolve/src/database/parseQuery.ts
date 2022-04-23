@@ -7,6 +7,7 @@
 //
 
 import _ from 'lodash';
+import parseArgs from './parseArgs';
 
 // --- These two interfaces need to strongly typed --- //
 export interface ProjectionInterface {
@@ -33,6 +34,7 @@ export default (context:any): {
 
             // If the current selection is a field
             if(current?.kind === 'Field') {
+                // -----------------[ Value ]----------------- //
                 // If the current selection name is not null
                 if(current.name === null) continue;
 
@@ -50,42 +52,20 @@ export default (context:any): {
                     
                 // If the parent name is null,
                 // then merge the projection with the current selection
-                else {
-                    _.merge(projection, {[current.name.value]: 1});
+                else _.merge(projection, {[current.name.value]: 1});
+                // -----------------[ Value ]----------------- //
 
-                    // if(current?.arguments) { 
-                    //     _.merge(args, {[current.name.value]: 1});
-                    // }
-                }
 
+                // -----------------[ Args ]----------------- //
                 _.merge(args, [...parentName, null].reduceRight((obj: {}, next : string | null):  { [x: string]: {}}  => {
-                    if(next === null) {
-                        let returnable: {[x: string]: any} = {};
-
-                        // For each argument in the current selection
-                        // Add the argument to the returnable object
-                        for(const argument of current.arguments) {
-                            // If the argument contains more than one value
-                            if(argument.value?.fields) for (const field of argument.value.fields) {
-                                returnable[field.name.value] = field.value.value;
-                            }
-
-                            // If the argument contains only one value
-                            else returnable[argument.name.value] = argument.value.value;
-                        }
-
-                        // Check if the current selection has arguments
-                        if(Object.keys(returnable).length > 0) {
-                            return { [current.name.value]: returnable };
-                        }
-
+                    if(next === null) 
                         // If the current selection has no arguments,
                         // Return an empty object
-                        else return {};
-                    }
+                        return { [current.name.value]: parseArgs(current) };
 
                     return ({[next]: obj});
                 }, {}));
+                // -----------------[ Args ]----------------- //
             }
 
             // If the current selection is an array, we need to recurse

@@ -12,19 +12,20 @@ import { ObjectId } from "mongodb";
 
 import _ from "lodash";
 import { arrayToObject } from "../../../general";
-import SchemaObject from "../../../query/object";
 import { ProjectionInterface } from "./parseQuery";
+
+import SchemaObject from "../../../query/object";
 
 export default (queryArguments: any, input: SchemaObject.init): MongoResponseObject => {
     // Start building the query
     let query: ProjectionInterface = {};
 
     // Map the requested resouces
-    for(const paramater in queryArguments[input.options.key]){
+    for(const paramater in queryArguments){
         // Get the value
         let schemaParamater = input.obj[paramater],
             // Input value from the user
-            inputValue = queryArguments[input.options.key][paramater];
+            inputValue = queryArguments[paramater];
 
         // Custom cases if we need to do something special, like ID,
         // You must supply mongoDB with a ObjectId object for it to work
@@ -42,7 +43,7 @@ export default (queryArguments: any, input: SchemaObject.init): MongoResponseObj
  
         // Construct the query
         const object = arrayToObject(
-            schemaParamater.maskArray, 
+            schemaParamater?.maskArray ?? [] as string[], 
             inputValue
         );
 

@@ -38,6 +38,7 @@ export default (
     //     
     let resolver = {
         [input.options.key]: (root:any, args:any, context:any, info:any) => {
+
             // Parse the query
             let parsedQuery = parseQuery(context),
                 // This object will be used to store the response objects
