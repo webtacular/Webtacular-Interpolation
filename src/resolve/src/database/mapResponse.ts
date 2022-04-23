@@ -1,6 +1,6 @@
 import SchemaObject from "../../../query/object";
 import _ from "lodash";
-import { MongoResponseObject } from "../database/interface";
+import { MongoResponseObject } from "./interface";
 import { arrayToObject } from "../../../general";
 
 export default (input: SchemaObject.init, data: MongoResponseObject): MongoResponseObject => {

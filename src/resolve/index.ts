@@ -2,15 +2,25 @@ import SchemaObject from "../query/object";
 
 import hotQL from 'fastify-hotql';
 import fastify from "fastify";
-import filterDetails from "./src/database/filter";
+import parseQuery, { ArgumentsInterface, FilterInterface } from "./src/database/parseQuery";
 
 import { buildSchema } from 'graphql';
 import { Filter } from "../query/parse";
 import SchemaValue from "../query/value";
 
-import rootResolve from "./src/root";
+import individualResolve from "./src/rootResolvers/individual";
+import collectionResolve from "./src/rootResolvers/collection";
+
 import MongoService from "./src/database";
 import _ from "lodash";
+
+export interface RequestDetails {
+    collectionName: string;
+    individualName: string;
+    filterName: string;
+    filter: FilterInterface;
+    arguments: ArgumentsInterface
+}
 
 export default (
     input: SchemaObject.init, 
@@ -27,30 +37,50 @@ export default (
     //     
     let resolver = {
         [input.options.key]: (root:any, args:any, context:any, info:any) => {
-            let argsFilter = filterDetails(context),
+            // Parse the query
+            let parsedQuery = parseQuery(context),
+                // This object will be used to store the response objects
                 returnObject = {};
 
-            argsFilter.arguments = argsFilter.arguments[input.options.key];
-            argsFilter.filter = argsFilter.filter[input.options.key];
+            // These are the arguments that the user has passed in
+            parsedQuery.arguments = parsedQuery.arguments[input.options.key];
+
+            // These are the arguments that the user has passed in
+            parsedQuery.filter = parsedQuery.filter[input.options.key];
 
             // This object contains basic information about the SchemaObject
-            const SchemaDetails = {
-                collectionName: input.options.key + 'Collection',
-                rootName: input.options.key,
-                filterName: input.options.key + 'Filter',
-                filter: argsFilter.filter,
+            const requestDetails: RequestDetails = {
+                collectionName: (input.options.key + 'Collection'),
+                individualName: input.options.key,
+
+                filterName: (input.options.key + 'Filter'),
+                filter: parsedQuery.filter,
+
+                arguments: parsedQuery.arguments
             }
 
-            const rootKeys: string[] = Object.keys(argsFilter.filter);
+            const rootKeys: string[] = Object.keys(parsedQuery.filter);
 
-            rootKeys.forEach((key) => {
+            // For each requested root key
+            rootKeys.forEach((key: string) => {
+
                 // Check if a root value is requested
-                if(SchemaDetails.rootName === key) {
+                if(key === requestDetails.individualName) {
                     _.merge(returnObject, {
-                        [key]: rootResolve(uniqueValues,
+                        [key]: individualResolve(
                             input, 
-                            argsFilter.filter, 
-                            argsFilter.arguments, 
+                            requestDetails,
+                            client
+                        )
+                    });
+                }
+
+                // Check if the requested value is a collection
+                if(key === requestDetails.collectionName) {
+                    _.merge(returnObject, {
+                        [key]: collectionResolve(
+                            input, 
+                            requestDetails,
                             client
                         )
                     });
@@ -62,6 +92,11 @@ export default (
         }
     };
 
+
+
+
+
+    
     // --------------------[ALL OF THIS IS TEMPORARY]-------------------- //
     // This is just a temporary solution to test the schema and resolver  //
     const app = fastify();
