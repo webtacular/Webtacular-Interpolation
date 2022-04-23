@@ -1,13 +1,14 @@
-import { MongoResponseObject } from "../database/interface";
+import { MongoResponseObject } from "./interface";
 import { ObjectId } from "mongodb";
 
 import _ from "lodash";
 import { arrayToObject } from "../../../general";
 import SchemaObject from "../../../query/object";
+import { ProjectionInterface } from "./parseQuery";
 
 export default (queryArguments: any, input: SchemaObject.init): MongoResponseObject => {
-    // Start building the filter
-    let filter = {};
+    // Start building the projection
+    let projection: ProjectionInterface = {};
 
     // Map the requested resouces
     for(const paramater in queryArguments[input.options.key]){
@@ -30,15 +31,15 @@ export default (queryArguments: any, input: SchemaObject.init): MongoResponseObj
             }
         }  
  
-        // Construct the filter
+        // Construct the projection
         const object = arrayToObject(
             schemaParamater.maskArray, 
             inputValue
         );
 
-        // Merge the filter
-        _.merge(filter, object);
+        // Merge the projection
+        _.merge(projection, object);
     }
 
-    return filter;
+    return projection;
 }

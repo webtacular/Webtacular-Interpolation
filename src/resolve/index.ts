@@ -2,10 +2,11 @@ import SchemaObject from "../query/object";
 
 import hotQL from 'fastify-hotql';
 import fastify from "fastify";
-import parseQuery, { ArgumentsInterface, FilterInterface } from "./src/database/parseQuery";
+import parseQuery, { ArgumentsInterface, ProjectionInterface } from "./src/database/parseQuery";
 
 import { buildSchema } from 'graphql';
 import { Filter } from "../query/parse";
+
 import SchemaValue from "../query/value";
 
 import individualResolve from "./src/rootResolvers/individual";
@@ -17,8 +18,8 @@ import _ from "lodash";
 export interface RequestDetails {
     collectionName: string;
     individualName: string;
-    filterName: string;
-    filter: FilterInterface;
+
+    projection: ProjectionInterface;
     arguments: ArgumentsInterface
 }
 
@@ -46,20 +47,18 @@ export default (
             parsedQuery.arguments = parsedQuery.arguments[input.options.key];
 
             // These are the arguments that the user has passed in
-            parsedQuery.filter = parsedQuery.filter[input.options.key];
+            parsedQuery.projection = parsedQuery.projection[input.options.key];
 
             // This object contains basic information about the SchemaObject
             const requestDetails: RequestDetails = {
                 collectionName: (input.options.key + 'Collection'),
                 individualName: input.options.key,
 
-                filterName: (input.options.key + 'Filter'),
-                filter: parsedQuery.filter,
-
+                projection: parsedQuery.projection,
                 arguments: parsedQuery.arguments
             }
 
-            const rootKeys: string[] = Object.keys(parsedQuery.filter);
+            const rootKeys: string[] = Object.keys(parsedQuery.projection);
 
             // For each requested root key
             rootKeys.forEach((key: string) => {

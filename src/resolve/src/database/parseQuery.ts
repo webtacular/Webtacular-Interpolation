@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export interface FilterInterface {
+export interface ProjectionInterface {
     [key: string]: any
 }
 
@@ -9,10 +9,10 @@ export interface ArgumentsInterface {
 }
 
 export default (context:any): {
-    filter: FilterInterface,
+    projection: ProjectionInterface,
     arguments: ArgumentsInterface
 } => {
-    let filter: FilterInterface = {};
+    let projection: ProjectionInterface = {};
     let args: ArgumentsInterface = {};
 
     const recurse = (selection:any, parentName:string[] = []): void => {
@@ -31,7 +31,7 @@ export default (context:any): {
                     // turn tje parentName array into an object
                     // eg [ 'hello', 'other' ], name => { hello: other: { name: 1 } }
 
-                    _.merge(filter, [...parentName, null].reduceRight((obj: {}, next : string | null):  { [x: string]: {}}  => {
+                    _.merge(projection, [...parentName, null].reduceRight((obj: {}, next : string | null):  { [x: string]: {}}  => {
                         if(next === null) return ({[current.name.value]: 1});
 
                         return ({[next]: obj});
@@ -39,9 +39,9 @@ export default (context:any): {
                 }
                     
                 // If the parent name is null,
-                // then merge the filter with the current selection
+                // then merge the projection with the current selection
                 else {
-                    _.merge(filter, {[current.name.value]: 1});
+                    _.merge(projection, {[current.name.value]: 1});
 
                     // if(current?.arguments) { 
                     //     _.merge(args, {[current.name.value]: 1});
@@ -87,9 +87,9 @@ export default (context:any): {
     // Start the recursive function
     recurse(context.operation.selectionSet.selections);
 
-    // Finally return the filter
+    // Finally return the projection
     return {
-        filter,
+        projection,
         arguments: args
     };
 }
