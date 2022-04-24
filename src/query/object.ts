@@ -22,7 +22,6 @@ namespace SchemaObject {
         maskArray: string[] = [];
         mask: { [key: string]: number | {} } = {};
 
-
         constructor(options: Constructor, obj: ValueInterface) {
             this.options = options;
             this.obj = obj;

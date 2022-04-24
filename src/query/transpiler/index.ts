@@ -4,6 +4,7 @@ import { InputClass } from "./src/object2gql";
 
 import object2gql from "./src/object2gql";
 import SchemaObject from '../object';
+import { internalConfiguration } from '../../general';
 
 export default (input: Output): {
     schema: string;
@@ -43,7 +44,7 @@ export default (input: Output): {
     let collectionObject: { [key: string]: string } = {
         total: 'Int',
         max: 'Int',
-        items: `[${input.origin.options.key}]`,
+        [internalConfiguration.defaultValueName]: `[${input.origin.options.key}]`,
     };
 
     // Create the Collection with the filter

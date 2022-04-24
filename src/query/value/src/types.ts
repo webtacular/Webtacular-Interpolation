@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import SchemaValue from "..";
 
 // This is a function that validates that x, y are both valid numbers.
@@ -25,12 +26,15 @@ export interface FuncFilterObject {
 };
 
 export interface QueryFilterObject {
-    func: (input: any, data: any) => boolean, 
+    func: (input: any, data: any) => QueryFilterOutput, 
     input: SchemaValue.GqlType, 
-    data: SchemaValue.type,
     type: 'query',
     actualKey?: string,
     schemaKey?: string
+}
+
+export interface QueryFilterOutput {
+    [key: string]: string | number | boolean | ObjectId | Array<string | number | boolean | ObjectId> | {} | QueryFilterOutput;
 }
 
 export type FilterObject = FuncFilterObject | QueryFilterObject;
@@ -68,39 +72,41 @@ export const TypeMap: {
             },
 
             Is: {
-                func: (input: any, data: any): boolean => {
-                    // We want to check if the data is equal to the input (input, user provided)
-                    return data === input;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: input
+                        }
+                    }
                 },
 
                 input: '[String]',
-                data: 'string',
                 type: 'query'
             },
 
             IsNot: {
-                func: (input: any, data: any): boolean => {
-                    // We want to check if the data is not equal to the input (input, user provided)
-                    return data !== input;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: { $ne: input }
+                        }
+                    }
                 },
 
                 input: '[String]',
-                data: 'string',
                 type: 'query'
             },
             
             Exists: {
-                func: (input: any, data: any): boolean => {
-                    // Check if the data exists
-                    const exists: boolean = data !== undefined && data !== null;
-    
-                    // If input is true, only return true if the data exists
-                    // If input is false, only return true if the data does not exist
-                    return input === true ? exists : !exists;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: { $exists: input }
+                        }
+                    }
                 },
 
                 input: 'Boolean',
-                data: 'boolean',
                 type: 'query'
             }
         },
@@ -110,99 +116,93 @@ export const TypeMap: {
         gql: 'Int',
         filter: {
             Is: {
-                func: (input: any, data: any): boolean => {
-                    // We want to check if the data is equal to the input (input, user provided)
-                    return data === input;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: input
+                        }
+                    }
                 },
 
                 input: '[Int]',
-                data: 'number',
                 type: 'query'
             },
 
             IsNot: {
-                func: (input: any, data: any): boolean => {
-                    // We want to check if the data is not equal to the input (input, user provided)
-                    return data !== input;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: { $ne: input }
+                        }
+                    }
                 },
 
                 input: '[Int]',
-                data: 'number',
                 type: 'query'
             },
 
             IsGreaterThan: {
-                func: (input: any, data: any): boolean => {
-                    const nums: { x: number, y: number } | false = isNumber(input, data);
-    
-                    if (nums === false) return false;
-    
-                    // Check if the data is greater than the input
-                    return nums.x < nums.y;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: { $gt: input }
+                        }
+                    }
                 },
 
                 input: 'Int',
-                data: 'number',
                 type: 'query'
             },
 
             IsGreaterThanOrEqualTo: {
-                func: (input: any, data: any): boolean => {
-                    const nums: { x: number, y: number } | false = isNumber(input, data);
-    
-                    if (nums === false) return false;
-    
-                    // Check if the data is greater than or equal to the input
-                    return nums.x <= nums.y;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: { $gte: input }
+                        }
+                    }
                 },
 
                 input: 'Int',
-                data: 'number',
                 type: 'query'
             },
 
             IsLessThan: {
-                func: (input: any, data: any): boolean => {
-                    const nums: { x: number, y: number } | false = isNumber(input, data);
-    
-                    if (nums === false) return false;
-    
-                    // Check if the data is less than the input
-                    return nums.x > nums.y;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: { $lt: input }
+                        }
+                    }
                 },
 
                 input: 'Int',
-                data: 'number',
                 type: 'query'
             },
 
             IsLessThanOrEqualTo: {
-                func: (input: any, data: any): boolean => {
-                    const nums: { x: number, y: number } | false = isNumber(input, data);
-    
-                    if (nums === false) return false;
-    
-                    // Check if the data is less than or equal to the input
-                    return nums.x >= nums.y;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: { $lte: input }
+                        }
+                    }
                 },
 
                 input: 'Int',
-                data: 'number',
                 type: 'query'
             },
 
             Exists: {
-                func: (input: any, data: any): boolean => {
-                    // Check if the data exists
-                    const exists: boolean = data !== undefined && data !== null;
-    
-                    // If input is true, only return true if the data exists
-                    // If input is false, only return true if the data does not exist
-                    return input === true ? exists : !exists;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: { $exists: input }
+                        }
+                    }
                 },
 
                 input: 'Boolean',
-                data: 'boolean',
                 type: 'query'
             }
         },
@@ -212,28 +212,28 @@ export const TypeMap: {
         gql: 'Boolean',
         filter: {
             Is: {
-                func: (input: any, data: any): boolean => {
-                    // Check if the data is equal to the input
-                    return input == data;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: input
+                        }
+                    }
                 },
                 
                 input: '[Boolean]',
-                data: 'boolean',
                 type: 'query'
             },
 
             Exists: {
-                func: (input: any, data: any): boolean => {
-                    // Check if the data exists
-                    const exists: boolean = data !== undefined && data !== null;
-    
-                    // If input is true, only return true if the data exists
-                    // If input is false, only return true if the data does not exist
-                    return input === true ? exists : !exists;
-                },
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: { $exists: input }
+                        }
+                    }
+                },  
 
                 input: 'Boolean',
-                data: 'boolean',
                 type: 'query'
             }
         },
@@ -243,39 +243,41 @@ export const TypeMap: {
         gql: 'ID',
         filter: {
             Is: {
-                func: (input: any, data: any): boolean => {
-                    // Check if the data is equal to the input
-                    return input == data;
-                },
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: input
+                        }
+                    }
+                },  
 
                 input: '[ID]',
-                data: 'string',
                 type: 'query'
             },
 
             IsNot: {
-                func: (input: any, data: any): boolean => {
-                    // Check if the data is not equal to the input
-                    return input != data;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: { $ne: input }
+                        }
+                    }
                 },
 
                 input: '[ID]',
-                data: 'string',
                 type: 'query'
             },
 
             Exists: {
-                func: (input: any, data: any): boolean => {
-                    // Check if the data exists
-                    const exists: boolean = data !== undefined && data !== null;
-    
-                    // If input is true, only return true if the data exists
-                    // If input is false, only return true if the data does not exist
-                    return input === true ? exists : !exists;
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $match: {
+                            [self.actualKey]: { $exists: input }
+                        }
+                    }
                 },
 
                 input: 'Boolean',
-                data: 'boolean',
                 type: 'query'
             },
 

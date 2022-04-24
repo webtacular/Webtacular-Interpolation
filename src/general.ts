@@ -11,3 +11,8 @@ export const arrayToObject = (arr: Array<string>, val: any = 1): {
         return { [next]: obj };
     }, {});
 }
+
+export let internalConfiguration = {
+    // The defualt name for the values in a collection
+    defaultValueName: 'value',
+}
