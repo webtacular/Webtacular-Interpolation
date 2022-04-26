@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import SchemaValue from "..";
+import SchemaValue from "./value";
 
 // This is a function that validates that x, y are both valid numbers.
 const isNumber = (x: any, y: any): { x: number, y: number } | false => {

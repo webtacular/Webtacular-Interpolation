@@ -4,7 +4,7 @@ import { arrayToObject } from '../general';
 import SchemaObject from "./object";
 import SchemaValue from "./value";
 
-import { FilterObject, TypeMap } from "./value/src/types";
+import { FilterObject, TypeMap } from "./types";
 
 export interface Output {
     unique: Array<SchemaValue.init>;
@@ -61,11 +61,11 @@ const func = (Obj: SchemaObject.init): Output => {
                 const gqlType = TypeMap[value.options.type];
 
                 // Set the name of the value
-                value.setKey(key);
+                value.key = key;
 
                 // Check if value options contain a mask
                 if(value.options.mask) {
-                    value.setMask(value.options.mask);
+                    value.mask = value.options.mask;
 
                     // We need to grab the furthest child in the object
                     const maskRecurse = (obj: {[x: string]: number | {}}, maskArray: Array<string> = []) => {
@@ -82,15 +82,15 @@ const func = (Obj: SchemaObject.init): Output => {
                     }
 
                     // Set the mask array
-                    value.setObjectMaskArray(maskRecurse(value.options.mask));
+                    value.maskArray = maskRecurse(value.options.mask);
                 }
 
                 // If not, generate a mask based on the SchemaObject
                 else {
-                    value.setMask(arrayToObject([...parentNames, key]));
+                    value.mask = arrayToObject([...parentNames, key])
 
                     // Set the maskArray
-                    value.setObjectMaskArray([...parentNames, key]);
+                    value.maskArray = [...parentNames, key];
                 }
   
 

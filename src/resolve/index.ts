@@ -5,7 +5,7 @@ import fastify from "fastify";
 import parseQuery, { ArgumentsInterface, ProjectionInterface } from "./src/database/parseQuery";
 
 import { buildSchema } from 'graphql';
-import { FilterObject } from "../query/value/src/types";
+import { FilterObject } from "../query/types";
 
 import SchemaValue from "../query/value";
 

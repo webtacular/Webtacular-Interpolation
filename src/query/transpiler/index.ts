@@ -1,5 +1,5 @@
 import { Output } from '../parse';
-import { TypeMap } from "../value/src/types";
+import { TypeMap } from "../types";
 import { InputClass } from "./src/object2gql";
 
 import object2gql from "./src/object2gql";

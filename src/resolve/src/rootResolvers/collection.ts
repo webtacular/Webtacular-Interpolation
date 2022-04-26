@@ -16,8 +16,9 @@ import mapQuery from '../database/mapQuery';                 // [Func] //
 import { MongoResponseObject } from '../database/interface'; // [Interface] //
 import { RequestDetails } from '../..';                      // [Interface] //
 import { ProjectionInterface } from "../database/parseQuery";
-import { FuncFilterObject, QueryFilterObject, QueryFilterOutput } from "../../../query/value/src/types";
+import { FuncFilterObject, QueryFilterObject, QueryFilterOutput } from "../../../query/types";
 import { internalConfiguration } from "../../../general";
+import SchemaValue from "../../../query/value";
 
 const resolve = async(
     schemaObject:  SchemaObject.init,
@@ -35,7 +36,7 @@ const resolve = async(
     // Map the requested resouces
     for(const paramater in rawProjection){
         // Get the value
-        const value = schemaObject.obj[paramater];
+        const value = schemaObject.obj[paramater] as SchemaValue.init;
 
         // If the paramater is not found in the schema
         // Continue to the next paramater
@@ -95,7 +96,6 @@ const resolve = async(
         { $project: projection },
         { $match: query },
     ];
-
 
     const collection = client.getCollection(schemaObject.options.databaseName, schemaObject.options.collectionName); 
     // TODO: We are generalizing this, ^^ This should account for the fact that some values request data from multiple collections.

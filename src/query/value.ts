@@ -25,6 +25,12 @@ namespace SchemaValue {
             [key: string]: number | {}
         }
 
+        // Collection name
+        collectionName?: string;
+
+        // Database name
+        databaseName?: string;
+
         // The type of the value
         type: type
     } 
@@ -45,27 +51,10 @@ namespace SchemaValue {
 
         // This is the array that was used to create the mask
         maskArray: Array<string>;
-
+        
 
         constructor(opt: ValueConstructor) {
             this.options = opt;
-        }
-        
-
-        setKey(name: string) {
-            this.key = name;
-        }
-
-        setMask(obj: { [key: string]: number | {} }) {
-            this.mask = obj;
-        }
-
-        setObjectMaskObject(obj: { [key: string]: number | {} }) {
-            this.maskObject = obj;
-        }
-
-        setObjectMaskArray(arr: Array<string>) {
-            this.maskArray = arr;
         }
     }
 }
