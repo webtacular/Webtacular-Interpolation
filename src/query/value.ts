@@ -1,6 +1,9 @@
+import SchemaFunction from "../resolve/src/accessControl/funcExec";
+
 namespace SchemaValue { 
     export type type = 'string' | 'number' | 'float' | 'boolean' | 'id';
     export type GqlType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | '[String]' | '[Int]' | '[Float]' | '[Boolean]' | '[ID]';
+    export type TsType = string | number | Float64Array | boolean | string[] | number[] | Float64Array[] | boolean[];
 
     export interface ValueConstructor {
         // The name of the value
@@ -32,7 +35,9 @@ namespace SchemaValue {
         databaseName?: string;
 
         // The type of the value
-        type: type
+        type: type;
+
+        accessControl?: SchemaFunction.accessControlFunc;
     } 
 
     export class init {

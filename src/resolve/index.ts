@@ -1,7 +1,5 @@
 import SchemaObject from "../query/object";
 
-import hotQL from 'fastify-hotql';
-import fastify from "fastify";
 import parseQuery, { ArgumentsInterface, ProjectionInterface } from "./src/database/parseQuery";
 
 import { buildSchema } from 'graphql';
@@ -14,6 +12,7 @@ import collectionResolve from "./src/rootResolvers/collection";
 
 import MongoService from "./src/database";
 import _ from "lodash";
+import { Construct } from "..";
 
 export interface RequestDetails {
     collectionName: string;
@@ -30,7 +29,7 @@ export default (
     filter: { [x: string]: FilterObject }, 
     schema: string, 
     uniqueValues: SchemaValue.init[], 
-    client: MongoService
+    main: Construct.load
 ) => {
     //     
     // 
@@ -39,7 +38,7 @@ export default (
     // 
     //     
     let resolver = {
-        [input.options.key]: (root:any, args:any, context:any, info:any) => {
+        [input.key]: (root:any, args:any, context:any, info:any) => {
 
             // Parse the query
             let parsedQuery = parseQuery(context),
@@ -47,15 +46,15 @@ export default (
                 returnObject = {};
 
             // These are the arguments that the user has passed in
-            parsedQuery.arguments = parsedQuery.arguments[input.options.key];
+            parsedQuery.arguments = parsedQuery.arguments[input.key];
 
             // These are the arguments that the user has passed in
-            parsedQuery.projection = parsedQuery.projection[input.options.key];
+            parsedQuery.projection = parsedQuery.projection[input.key];
 
             // This object contains basic information about the SchemaObject
             const requestDetails: RequestDetails = {
-                collectionName: (input.options.key + 'Collection'),
-                individualName: input.options.key,
+                collectionName: (input.key + 'Collection'),
+                individualName: input.key,
 
                 projection: parsedQuery.projection,
                 arguments: parsedQuery.arguments,
@@ -74,7 +73,7 @@ export default (
                         [key]: individualResolve(
                             input, 
                             requestDetails,
-                            client
+                            main.client
                         )
                     });
                 }
@@ -85,7 +84,7 @@ export default (
                         [key]: collectionResolve(
                             input, 
                             requestDetails,
-                            client
+                            main.client
                         )
                     });
                 }
@@ -98,30 +97,10 @@ export default (
 
 
 
-
-
-    
     // --------------------[ALL OF THIS IS TEMPORARY]-------------------- //
-    // This is just a temporary solution to test the schema and resolver  //
-    const app = fastify();
-    
-    const gql = new hotQL(app, {
-        prefix: '/graphql',
-      
-        // You can start graphiql by setting this to true
-        // PS: The paramaters below are optional
-        graphiql: true,
-
-        graphiql_prefix: '/graphql/explore',
-    });
-
-    app.listen(9090).then(() => {
-        console.log(`server listening on http://localhost:9090`);
-    });
-
-    gql.addSchema(buildSchema(`
+    main.gql.addSchema(buildSchema(`
         type Query {
-            ${input.options.key}: ${input.options.key}Query
+            ${input.key}: ${input.key}Query
         }
         ${schema}
     `), resolver);

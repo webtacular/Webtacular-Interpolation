@@ -1,19 +1,6 @@
 import { ObjectId } from "mongodb";
 import SchemaValue from "./value";
 
-// This is a function that validates that x, y are both valid numbers.
-const isNumber = (x: any, y: any): { x: number, y: number } | false => {
-    // It could be a string, so we need to convert it to a number
-    const xNum: number = Number(x),
-        yNum: number = Number(y);
-
-    // Check if both are numbers
-    if (isNaN(xNum) || isNaN(yNum)) return false;
-    
-    // Return the numbers
-    return { x: xNum, y: yNum };
-}
-
 export type FilterType = 'function' | 'query';
 
 export interface FuncFilterObject { 

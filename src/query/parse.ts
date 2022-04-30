@@ -38,6 +38,7 @@ const func = (Obj: SchemaObject.init): Output => {
     };
 
     const recurse = (obj: SchemaObject.ValueInterface, parentNames: string[] = []) => {
+        
         for (const key in obj) {
             const value = obj[key];
 

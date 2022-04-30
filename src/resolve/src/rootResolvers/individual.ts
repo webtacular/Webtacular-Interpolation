@@ -17,22 +17,20 @@ import { MongoResponseObject } from '../database/interface'; // [Interface] //
 import { RequestDetails } from '../..';                      // [Interface] //
 import { ProjectionInterface } from "../database/parseQuery";
 
+import SchemaValue from "../../../query/value";
+
 const resolve = async(
     schemaObject:  SchemaObject.init,
     requestDetails: RequestDetails,
     client: MongoService
 ): Promise<MongoResponseObject> => {
-    // Get the collection
-    const collection = client.getCollection(schemaObject.options.databaseName, schemaObject.options.collectionName); 
-    // TODO: We are generalizing this, ^^ This should account for the fact that some values request data from multiple collections.
-
     // Start building the projection
     let projection: ProjectionInterface = {};
 
     // Map the requested resouces
     for(const paramater in requestDetails.projection[requestDetails.individualName]){
         // Get the value
-        const value = schemaObject.obj[paramater];
+        const value = schemaObject.obj[paramater] as SchemaValue.init;
 
         // If the paramater is not found in the schema
         // It probably means that the user is trying to access a
@@ -59,6 +57,8 @@ const resolve = async(
         { $project: projection },
         { $match: query }
     ];
+
+    const collection = client.getCollection(schemaObject.options.databaseName, schemaObject.options.collectionName); 
 
     // Use the projection and query to get the data
     const data = await collection.aggregate(requestData).toArray();

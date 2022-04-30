@@ -19,6 +19,7 @@ import { ProjectionInterface } from "../database/parseQuery";
 import { FuncFilterObject, QueryFilterObject, QueryFilterOutput } from "../../../query/types";
 import { internalConfiguration } from "../../../general";
 import SchemaValue from "../../../query/value";
+import SchemaFunction from "../accessControl/funcExec";
 
 const resolve = async(
     schemaObject:  SchemaObject.init,
@@ -33,6 +34,10 @@ const resolve = async(
     // Object to store the projection
     let projection: ProjectionInterface = {};
 
+    // Access Control Functions
+    let preRequest: Array<FuncFilterObject> = [],
+        postRequest: Array<FuncFilterObject> = [];
+
     // Map the requested resouces
     for(const paramater in rawProjection){
         // Get the value
@@ -41,7 +46,15 @@ const resolve = async(
         // If the paramater is not found in the schema
         // Continue to the next paramater
         if(!value) continue;
-        
+
+        // Check if the schema provided any access control functions
+        if(value.options?.accessControl) {
+            // Load the hooks
+            const hook = new SchemaFunction.init(value.options.accessControl);
+
+            console.log(hook)
+        }
+
         // Merge the projections
         _.merge(projection, value.mask);
     }
@@ -96,9 +109,8 @@ const resolve = async(
         { $project: projection },
         { $match: query },
     ];
-
+    
     const collection = client.getCollection(schemaObject.options.databaseName, schemaObject.options.collectionName); 
-    // TODO: We are generalizing this, ^^ This should account for the fact that some values request data from multiple collections.
 
     // Use the projection and query to get the data
     const data = await collection.aggregate([...requestData, ...queryFilters]).toArray();

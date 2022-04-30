@@ -1,17 +1,20 @@
-import Value from './value';
+import SchemaReference from './reference';
+import SchemaFunction from '../resolve/src/accessControl/funcExec';
+import SchemaValue from './value';
 
 namespace SchemaObject {
     export interface ValueInterface {
-        [key: string]: Value.init | SchemaObject.init;
+        [key: string]: SchemaValue.init | SchemaObject.init | SchemaReference.init;
     }
     
     export interface Constructor {
-        key: string;
         collectionName: string;
         databaseName: string;
         collectionize?: boolean;
         description?: string;
         searchable?: boolean;
+
+        accessControl?: SchemaFunction.accessControlFunc;
     }
 
     export class init {
