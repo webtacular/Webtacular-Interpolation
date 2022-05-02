@@ -39,7 +39,6 @@ export default (
     //     
     let resolver = {
         [input.key]: (root:any, args:any, context:any, info:any) => {
-
             // Parse the query
             let parsedQuery = parseQuery(context),
                 // This object will be used to store the response objects
@@ -84,7 +83,8 @@ export default (
                         [key]: collectionResolve(
                             input, 
                             requestDetails,
-                            main.client
+                            main.client,
+                            context
                         )
                     });
                 }
@@ -95,7 +95,8 @@ export default (
         }
     };
 
-
+     // Get any parameters that were passed in by 
+    // the url eg /users?limit=10 from the context
 
     // --------------------[ALL OF THIS IS TEMPORARY]-------------------- //
     main.gql.addSchema(buildSchema(`
