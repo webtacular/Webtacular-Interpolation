@@ -8,12 +8,12 @@
 import _ from "lodash";
 
 import SchemaObject from '../../../query/object';            // [Namespace] //
-import MongoService from '../database';                      // [Interface] //
+import MongoService from '../database/mongo';                      // [Interface] //
 
 import mapResponse from '../database/mapResponse';           // [Func] //
 import mapQuery from '../database/mapQuery';                 // [Func] //
 
-import { MongoResponseObject } from '../database/interface'; // [Interface] //
+import { MongoResponseObject } from '../database/mongo'; // [Interface] //
 import { RequestDetails } from '../..';                      // [Interface] //
 import { ProjectionInterface } from "../database/parseQuery";
 

@@ -10,7 +10,7 @@ import SchemaValue from "../query/value";
 import individualResolve from "./src/rootResolvers/individual";
 import collectionResolve from "./src/rootResolvers/collection";
 
-import MongoService from "./src/database";
+import MongoService from "./src/database/mongo";
 import _ from "lodash";
 import { Construct } from "..";
 
@@ -94,6 +94,7 @@ export default (
             return returnObject;
         }
     };
+
 
      // Get any parameters that were passed in by 
     // the url eg /users?limit=10 from the context

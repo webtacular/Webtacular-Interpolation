@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { arrayToObject } from '../../../general';
-import { MongoResponseObject } from './interface';
+import { MongoResponseObject } from './mongo';
 
 export default (contex:any): MongoResponseObject => {
     let returnable: MongoResponseObject = {};

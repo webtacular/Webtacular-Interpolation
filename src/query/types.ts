@@ -4,7 +4,7 @@ import SchemaValue from "./value";
 export type FilterType = 'function' | 'query';
 
 export interface FuncFilterObject { 
-    func: (input: any, data: any) => boolean, 
+    func: (input: any, data: any, maskArray: Array<string>) => boolean, 
     input: SchemaValue.GqlType, 
     data: SchemaValue.type,
     type: 'function',
@@ -13,11 +13,11 @@ export interface FuncFilterObject {
 };
 
 export interface QueryFilterObject {
-    func: (input: any, data: any) => QueryFilterOutput, 
+    func: (input: any, data: any, maskArray: Array<string>) => QueryFilterOutput, 
     input: SchemaValue.GqlType, 
     type: 'query',
     actualKey?: string,
-    schemaKey?: string
+    schemaKey?: string,
 }
 
 export interface QueryFilterOutput {
@@ -80,7 +80,7 @@ export const TypeMap: {
                     }
                 },
 
-                input: '[String]',
+                input: 'String',
                 type: 'query'
             },
             

@@ -4,7 +4,7 @@ import SchemaValue from './value';
 
 namespace SchemaObject {
     export interface ValueInterface {
-        [key: string]: SchemaValue.init | SchemaObject.init | SchemaReference.init;
+        [key: string]: SchemaValue.init | SchemaReference.init;
     }
     
     export interface Constructor {
@@ -13,7 +13,6 @@ namespace SchemaObject {
         collectionize?: boolean;
         description?: string;
         searchable?: boolean;
-
         accessControl?: SchemaFunction.accessControlFunc;
     }
 

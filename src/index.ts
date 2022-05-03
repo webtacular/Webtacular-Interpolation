@@ -1,7 +1,7 @@
 import parse from './query/parse';
 import SchemaObject from "./query/object";
 import transpiler from './query/transpiler';
-import MongoService from './resolve/src/database';
+import MongoService from './resolve/src/database/mongo';
 import resolve from './resolve';
 
 import hotQL from 'fastify-hotql';

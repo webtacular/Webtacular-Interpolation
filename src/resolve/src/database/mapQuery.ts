@@ -7,7 +7,7 @@
 //
 //
 
-import { MongoResponseObject } from "./interface";
+import { MongoResponseObject } from "./mongo";
 import { ObjectId } from "mongodb";
 
 import _ from "lodash";

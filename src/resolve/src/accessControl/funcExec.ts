@@ -16,6 +16,10 @@ namespace SchemaFunction {
             [key: string]: string;
         }
 
+        headers: {
+            [key: string]: string;
+        }
+
         // What value the user is trying to pass in, 
         // If any
         value?: SchemaValue.TsType | undefined;
@@ -53,7 +57,6 @@ namespace SchemaFunction {
     }
 
     export interface HookOptions { 
-        preRequest?: boolean,
         default?: 'allow' | 'block',
     }
 
@@ -79,7 +82,6 @@ namespace SchemaFunction {
 
     // Default configuration for hooks
     const defaultHookOpts: HookOptions = {
-        preRequest: true,
         default: 'block'
     }
 
