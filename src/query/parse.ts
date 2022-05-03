@@ -1,14 +1,14 @@
 import _ from 'lodash';
 import { arrayToObject } from '../general';
 
-import SchemaObject from "./object";
-import SchemaValue from "./value";
+import schemaObject from './object';
+import schemaValue from './value';
 
-import { FilterObject, TypeMap } from "./types";
+import { FilterObject, TypeMap } from './types';
 
 export interface Output {
-    unique: Array<SchemaValue.init>;
-    origin: SchemaObject.init;
+    unique: Array<schemaValue.init>;
+    origin: schemaObject.init;
     root: { [key: string]: string | boolean | number | {}; };
     filter: {[x: string]: FilterObject};
 }
@@ -23,29 +23,29 @@ export class Group {
     }
 }
 
-const func = (Obj: SchemaObject.init): Output => {
+const func = (Obj: schemaObject.init): Output => {
     let opts = {
         uniqueValue: false,
-        uniqueValues: [] as Array<SchemaValue.init>,
+        uniqueValues: [] as Array<schemaValue.init>,
         collectionize: Obj.options?.collectionize ?? false,
     }
 
     let graphQL: Output = {
         root: {},
         filter: {},
-        unique: [] as Array<SchemaValue.init>,
+        unique: [] as Array<schemaValue.init>,
         origin: Obj
     };
 
-    const recurse = (obj: SchemaObject.ValueInterface, parentNames: string[] = []) => {
+    const recurse = (obj: schemaObject.ValueInterface, parentNames: string[] = []) => {
         
         for (const key in obj) {
             const value = obj[key];
 
-            if (value instanceof SchemaValue.init) {
+            if (value instanceof schemaValue.init) {
 
                 // Check if we have a unique value
-                // This is important as if the SchemaObject
+                // This is important as if the schemaObject
                 // is a collection, It needs to have a unique
                 // value to be able to be queried.
                 if(value.options.unique) {
@@ -86,7 +86,7 @@ const func = (Obj: SchemaObject.init): Output => {
                     value.maskArray = maskRecurse(value.options.mask);
                 }
 
-                // If not, generate a mask based on the SchemaObject
+                // If not, generate a mask based on the schemaObject
                 else {
                     value.mask = arrayToObject([...parentNames, key])
 
@@ -128,8 +128,8 @@ const func = (Obj: SchemaObject.init): Output => {
 
             }
 
-            // If the value is an SchemaObject, recurse
-            if (value instanceof SchemaObject.init) 
+            // If the value is an schemaObject, recurse
+            if (value instanceof schemaObject.init) 
                 recurse(value.obj, [...parentNames, key]);
         }
     }
@@ -137,11 +137,11 @@ const func = (Obj: SchemaObject.init): Output => {
     // [ Entry ] //
     recurse(Obj.obj);
 
-    // Check if this SchemaObject is a searchable collection
+    // Check if this schemaObject is a searchable collection
     if(opts.collectionize === false) 
         // Check if we have the required unique values
         if(opts.uniqueValue === false)
-            throw new Error('SchemaObjects must have a unique value, or be a collection');
+            throw new Error('schemaObjects must have a unique value, or be a collection');
 
     // Loop through all the unique values
     opts.uniqueValues.forEach(value => {

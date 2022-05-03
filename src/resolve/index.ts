@@ -1,34 +1,34 @@
-import SchemaObject from "../query/object";
+import schemaObject from '../query/object';
 
-import parseQuery, { ArgumentsInterface, ProjectionInterface } from "./src/database/parseQuery";
+import parseQuery, { ArgumentsInterface, projectionInterface } from './src/database/parseQuery';
 
 import { buildSchema } from 'graphql';
-import { FilterObject } from "../query/types";
+import { FilterObject } from '../query/types';
 
-import SchemaValue from "../query/value";
+import schemaValue from '../query/value';
 
-import individualResolve from "./src/rootResolvers/individual";
-import collectionResolve from "./src/rootResolvers/collection";
+import individualResolve from './src/rootResolvers/individual';
+import collectionResolve from './src/rootResolvers/collection';
 
-import MongoService from "./src/database/mongo";
-import _ from "lodash";
-import { Construct } from "..";
+import mongoService from './src/database/mongo';
+import _ from 'lodash';
+import { Construct } from '..';
 
-export interface RequestDetails {
+export interface requestDetails {
     collectionName: string;
     individualName: string;
 
-    projection: ProjectionInterface;
+    projection: projectionInterface;
     arguments: ArgumentsInterface
 
     filter: { [x: string]: FilterObject };
 }
 
 export default (
-    input: SchemaObject.init, 
+    input: schemaObject.init, 
     filter: { [x: string]: FilterObject }, 
     schema: string, 
-    uniqueValues: SchemaValue.init[], 
+    uniqueValues: schemaValue.init[], 
     main: Construct.load
 ) => {
     //     
@@ -50,8 +50,8 @@ export default (
             // These are the arguments that the user has passed in
             parsedQuery.projection = parsedQuery.projection[input.key];
 
-            // This object contains basic information about the SchemaObject
-            const requestDetails: RequestDetails = {
+            // This object contains basic information about the schemaObject
+            const requestDetails: requestDetails = {
                 collectionName: (input.key + 'Collection'),
                 individualName: input.key,
 

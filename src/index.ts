@@ -1,21 +1,20 @@
 import parse from './query/parse';
-import SchemaObject from "./query/object";
+import schemaObject from './query/object';
 import transpiler from './query/transpiler';
-import MongoService from './resolve/src/database/mongo';
+import mongoService from './resolve/src/database/mongo';
 import resolve from './resolve';
 
 import hotQL from 'fastify-hotql';
-import fastify, { FastifyInstance } from "fastify";
+import fastify, { FastifyInstance } from 'fastify';
 
 export namespace Construct {
     export interface Schema {
-        [key: string]: SchemaObject.init;
+        [key: string]: schemaObject.init;
     }
 
     export interface Options {
         connectionString: string;
     }
-    
     
     const main = async(main: load) => {
         // Wait for the database to be ready
@@ -28,17 +27,17 @@ export namespace Construct {
             for (const key in obj) {
                 const value = obj[key];
                 
-                if(value instanceof SchemaObject.init) {
+                if(value instanceof schemaObject.init) {
                     // Set the key
                     value.key = key;
 
-                    // Parse the SchemaObject
+                    // Parse the schemaObject
                     const parsed = parse(value);
 
                     // Create the schema
                     const schmea = transpiler(parsed);
 
-                    // Create the resovler for the SchemaObject
+                    // Create the resovler for the schemaObject
                     const resolver = resolve(
                         schmea.orgin, 
                         parsed.filter, 
@@ -55,7 +54,7 @@ export namespace Construct {
 
     export class load {
         schema: Schema;
-        client: MongoService;
+        client: mongoService;
 
         gql: hotQL;
         app: FastifyInstance;
@@ -63,7 +62,7 @@ export namespace Construct {
         constructor(opts: Options, schema: Schema) {
             this.schema = schema;
 
-            this.client = new MongoService(opts.connectionString);
+            this.client = new mongoService(opts.connectionString);
 
             this.app = fastify();
     

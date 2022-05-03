@@ -1,4 +1,4 @@
-import { Output } from "../parse";
+import { Output } from '../parse';
 declare const _default: (input: Output) => {
     schema: string;
     type: string;

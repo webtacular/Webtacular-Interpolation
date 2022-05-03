@@ -5,45 +5,44 @@
 //
 //
 
-import _ from "lodash";
+import _ from 'lodash';
+         
+import { requestDetails } from '../..';       
+import { internalConfiguration } from '../../../general';        
+import { projectionInterface } from '../database/parseQuery';
+// import { FuncFilterObject, QueryFilterObject, QueryFilterOutput } from '../../../query/types';
 
-import SchemaObject from '../../../query/object';           
-import MongoService, { MongoResponseObject } from '../database/mongo';                 
+import mapQuery from '../database/mapQuery'; 
+import schemaValue from '../../../query/value';   
+import schemaObject from '../../../query/object';  
+import mapResponse from '../database/mapResponse';    
+import processHook from '../accessControl/processHook';    
+import schemaFunction from '../accessControl/funcExec';
 
-import mapResponse from '../database/mapResponse';        
-import mapQuery from '../database/mapQuery';           
-
-import { RequestDetails } from '../..';               
-import { ProjectionInterface } from "../database/parseQuery";
-// import { FuncFilterObject, QueryFilterObject, QueryFilterOutput } from "../../../query/types";
-import { internalConfiguration } from "../../../general";
-
-import SchemaValue from "../../../query/value";
-import SchemaFunction from "../accessControl/funcExec";
-import groupByFunction, { groupedHookType } from "../accessControl/groupHooks";
-import processHook from "../accessControl/processHook";
+import mongoService, { mongoResponseObject } from '../database/mongo';     
+import groupByFunction, { groupedHookType } from '../accessControl/groupHooks';
 
 const resolve = async(
-    schemaObject:  SchemaObject.init,
-    requestDetails: RequestDetails,
-    client: MongoService,
+    schemaObject: schemaObject.init,
+    requestDetails: requestDetails,
+    client: mongoService,
     context: any
 ) => {
 
     // ------------[ Process the rawProjection ]------------- //
     // Since this is the collection, the requested data is stored in 'items'
-    const rawProjection: ProjectionInterface = requestDetails.projection[requestDetails.collectionName]?.items ?? {};
+    const rawProjection: projectionInterface = requestDetails.projection[requestDetails.collectionName]?.items ?? {};
 
     // Object to store the projection
-    let projection: ProjectionInterface = {};
+    let projection: projectionInterface = {};
 
     // Access Control Functions
-    let hooks: SchemaFunction.hookMap = [];
+    let hooks: schemaFunction.hookMap = [];
 
     // Map the requested resouces
     for(const paramater in rawProjection){
         // Get the value
-        const value: SchemaValue.init = schemaObject.obj[paramater] as SchemaValue.init;
+        const value: schemaValue.init = schemaObject.obj[paramater] as schemaValue.init;
 
         // If the paramater is not found in the schema
         // Continue to the next paramater
@@ -52,7 +51,7 @@ const resolve = async(
         // Check if the schema provided any access control functions
         if(value.options.accessControl) {
             // Load the hooks
-            const hookObject = new SchemaFunction.init(
+            const hookObject = new schemaFunction.init(
                 value.options.accessControl, value);
 
             // Check if the hook is a preRequest hook
@@ -72,7 +71,7 @@ const resolve = async(
 
 
     // Variable to store the query
-    let requestData: Array<{[x: string]: ProjectionInterface | MongoResponseObject}> = [];
+    let requestData: Array<{[x: string]: projectionInterface | mongoResponseObject}> = [];
 
 
     // ---------------[ Manage Hooks ]--------------------- //
@@ -84,7 +83,7 @@ const resolve = async(
         const fastifyReq = context.rootValue.fastify.req;
 
         // Merge all the preHook projections together
-        const preHookProjection: ProjectionInterface = (await processHook({
+        const preHookProjection: projectionInterface = (await processHook({
             projection: {
                 preSchema: rawProjection,
                 postSchema: projection,
@@ -103,7 +102,7 @@ const resolve = async(
 
     // --------------------[ Projection ]--------------------- //
     // Construct the projection
-    const query: MongoResponseObject = mapQuery(
+    const query: mongoResponseObject = mapQuery(
         requestDetails.arguments[requestDetails.collectionName], 
         schemaObject
     );

@@ -1,4 +1,4 @@
-import SchemaObject from './object';
+import schemaObject from './object';
 
 namespace SchemaReference {
 
@@ -9,10 +9,10 @@ namespace SchemaReference {
 
     export class init {
         options: Constructor;
-        reference: SchemaObject.init;
+        reference: schemaObject.init;
 
 
-        constructor(options: Constructor, reference: SchemaObject.init) {
+        constructor(options: Constructor, reference: schemaObject.init) {
             this.options = options;
             this.reference = reference;
         }

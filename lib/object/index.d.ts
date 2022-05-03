@@ -1,7 +1,7 @@
 import Value from '../value';
-declare namespace SchemaObject {
+declare namespace schemaObject {
     interface ValueInterface {
-        [key: string]: Value.init | SchemaObject.init;
+        [key: string]: Value.init | schemaObject.init;
     }
     interface Constructor {
         key: string;
@@ -17,4 +17,4 @@ declare namespace SchemaObject {
         setKey(name: string): void;
     }
 }
-export default SchemaObject;
+export default schemaObject;

@@ -7,25 +7,25 @@
 //
 //
 
-import { MongoResponseObject } from "./mongo";
-import { ObjectId } from "mongodb";
+import _ from 'lodash';
 
-import _ from "lodash";
-import { arrayToObject } from "../../../general";
-import { ProjectionInterface } from "./parseQuery";
+import { ObjectId } from 'mongodb';
+import { mongoResponseObject } from './mongo';
+import { arrayToObject } from '../../../general';
+import { projectionInterface } from './parseQuery';
 
-import SchemaObject from "../../../query/object";
-import SchemaValue from "../../../query/value";
+import schemaObject from '../../../query/object';
+import schemaValue from '../../../query/value';
 
-export default (queryArguments: any, input: SchemaObject.init): MongoResponseObject => {
+export default (queryArguments: any, input: schemaObject.init): mongoResponseObject => {
     // Start building the query
-    let query: ProjectionInterface = {};
+    let query: projectionInterface = {};
 
     // Map the requested resouces
     for(const paramater in queryArguments) {
         
         // Get the value
-        let schemaParamater = input.obj[paramater] as SchemaValue.init,
+        let schemaParamater = input.obj[paramater] as schemaValue.init,
             // Input value from the user
             inputValue = queryArguments[paramater];
 

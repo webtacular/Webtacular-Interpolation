@@ -6,23 +6,23 @@
 //
 //
 
-import SchemaObject from "../../../query/object";
+import schemaObject from '../../../query/object';
 
-import _ from "lodash";
+import _ from 'lodash';
 
-import { MongoResponseObject } from "./mongo";
-import { arrayToObject } from "../../../general";
+import { mongoResponseObject } from './mongo';
+import { arrayToObject } from '../../../general';
 
-export default (input: SchemaObject.init, data: MongoResponseObject): MongoResponseObject => {
+export default (input: schemaObject.init, data: mongoResponseObject): mongoResponseObject => {
     // Walk through the data object, get the according value from the schema
     // and map it to the data object
-    let obj: MongoResponseObject = {};
+    let obj: mongoResponseObject = {};
 
     const walk = (data: any, schema: any, parentName: string[] = []) => {
         for (const key in schema) {
             const value = schema[key];
 
-            if (value instanceof SchemaObject.init)
+            if (value instanceof schemaObject.init)
                 walk(data[key], value.obj, [...parentName, key]);
 
             else {

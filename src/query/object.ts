@@ -1,10 +1,10 @@
 import SchemaReference from './reference';
 import SchemaFunction from '../resolve/src/accessControl/funcExec';
-import SchemaValue from './value';
+import schemaValue from './value';
 
-namespace SchemaObject {
+namespace schemaObject {
     export interface ValueInterface {
-        [key: string]: SchemaValue.init | SchemaReference.init;
+        [key: string]: schemaValue.init | SchemaReference.init;
     }
     
     export interface Constructor {
@@ -35,4 +35,4 @@ namespace SchemaObject {
     }
 }
 
-export default SchemaObject;
+export default schemaObject;

@@ -1,6 +1,6 @@
-import SchemaFunction from "../resolve/src/accessControl/funcExec";
+import SchemaFunction from '../resolve/src/accessControl/funcExec';
 
-namespace SchemaValue { 
+namespace schemaValue { 
     export type type = 'string' | 'number' | 'float' | 'boolean' | 'id';
     export type GqlType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | '[String]' | '[Int]' | '[Float]' | '[Boolean]' | '[ID]';
     export type TsType = string | number | Float64Array | boolean | string[] | number[] | Float64Array[] | boolean[];
@@ -41,7 +41,7 @@ namespace SchemaValue {
     } 
 
     export class init {
-        // These are the options that are passed to the SchemaObject
+        // These are the options that are passed to the schemaObject
         options: ValueConstructor;
 
         // This is the mask object used to fetch the data
@@ -64,4 +64,4 @@ namespace SchemaValue {
     }
 }
 
-export default SchemaValue;
+export default schemaValue;

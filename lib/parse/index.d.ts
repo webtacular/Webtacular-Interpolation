@@ -1,15 +1,15 @@
-import SchemaObject from "../object";
-import SchemaValue from "../value";
+import schemaObject from "../object";
+import schemaValue from "../value";
 export interface Output {
-    unique: Array<SchemaValue.init>;
-    origin: SchemaObject.init;
+    unique: Array<schemaValue.init>;
+    origin: schemaObject.init;
     root: {
         [key: string]: string | boolean | number | {};
     };
     filter: Array<{
         func: (input: any, data: any) => boolean;
-        input: SchemaValue.type;
-        data: SchemaValue.type;
+        input: schemaValue.type;
+        data: schemaValue.type;
         name: string;
     }>;
 }
@@ -22,5 +22,5 @@ export declare class Group {
         [key: string]: string | boolean | number | {};
     });
 }
-declare const func: (Obj: SchemaObject.init) => Output;
+declare const func: (Obj: schemaObject.init) => Output;
 export default func;

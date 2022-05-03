@@ -1,4 +1,4 @@
-declare namespace SchemaValue {
+declare namespace schemaValue {
     type type = 'string' | 'number' | 'float' | 'boolean' | 'id';
     interface ValueConstructor {
         key?: string;
@@ -31,4 +31,4 @@ declare namespace SchemaValue {
         setObjectMaskArray(arr: Array<string>): void;
     }
 }
-export default SchemaValue;
+export default schemaValue;

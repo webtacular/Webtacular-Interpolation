@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from 'lodash';
 
 // this function turns a array into a object
 export const arrayToObject = (arr: Array<string>, val: any = 1): {

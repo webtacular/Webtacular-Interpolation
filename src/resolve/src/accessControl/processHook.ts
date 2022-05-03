@@ -1,7 +1,7 @@
-import { ProjectionInterface } from "../database/parseQuery";
-import execGroupedHook from "./execGroupedHook";
-import SchemaFunction from "./funcExec";
-import { groupedHookType } from "./groupHooks";
+import { projectionInterface } from '../database/parseQuery';
+import execGroupedHook from './execGroupedHook';
+import SchemaFunction from './funcExec';
+import { groupedHookType } from './groupHooks';
 
 // Process all the preRequest hooks
 const preHookProjectionArray = (input: {
@@ -11,13 +11,13 @@ const preHookProjectionArray = (input: {
     headers: {[key: string]: string;}
     value?: any
     projection: {
-        preSchema: ProjectionInterface,
-        postSchema: ProjectionInterface
+        preSchema: projectionInterface,
+        postSchema: projectionInterface
     }
-}): Promise<Array<ProjectionInterface>> => {
+}): Promise<Array<projectionInterface>> => {
     return new Promise(async(resolve) => {
         // Promise array to store the projection promises
-        let promiseArray: Array<Promise<ProjectionInterface>> = [];
+        let promiseArray: Array<Promise<projectionInterface>> = [];
 
         // Go through each preRequest hook and execute it
         input.hooks.forEach(async(hooks) => promiseArray.push(execGroupedHook(hooks, {
@@ -34,7 +34,7 @@ const preHookProjectionArray = (input: {
         })));
 
         // Resolve the array of promises
-        return resolve(await Promise.all(promiseArray) as Array<ProjectionInterface>);
+        return resolve(await Promise.all(promiseArray) as Array<projectionInterface>);
     });
 }
 

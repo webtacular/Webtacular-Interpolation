@@ -1,15 +1,15 @@
 import { Output } from '../parse';
-import { TypeMap } from "../types";
-import { InputClass } from "./src/object2gql";
+import { TypeMap } from '../types';
+import { InputClass } from './src/object2gql';
 
-import object2gql from "./src/object2gql";
-import SchemaObject from '../object';
+import object2gql from './src/object2gql';
+import schemaObject from '../object';
 import { internalConfiguration } from '../../general';
 
 export default (input: Output): {
     schema: string;
     type: string;
-    orgin: SchemaObject.init;
+    orgin: schemaObject.init;
 } => {
     // Check if searchable is enabled
     const opts: { [key: string]: boolean } = {

@@ -1,6 +1,6 @@
-import SchemaValue from "../../../query/value";
-import { ProjectionInterface } from "../database/parseQuery";
-import _ from "lodash";
+import schemaValue from '../../../query/value';
+import { projectionInterface } from '../database/parseQuery';
+import _ from 'lodash';
 
 namespace SchemaFunction {
 
@@ -22,17 +22,17 @@ namespace SchemaFunction {
 
         // What value the user is trying to pass in, 
         // If any
-        value?: SchemaValue.TsType | undefined;
+        value?: schemaValue.TsType | undefined;
 
         // A projection of the entire request
         projection: {
             // PreSchema: It will return the projection map
             // before we have parsed it and applied any masks
-            preSchema: ProjectionInterface
+            preSchema: projectionInterface
 
             // PostSchema: It will return the projection map 
             // that is sent to the database.
-            postSchema: ProjectionInterface
+            postSchema: projectionInterface
         }
     }
 
@@ -43,7 +43,7 @@ namespace SchemaFunction {
         request: hookRequest;
 
         // Undecided for now
-        getRef: (key: string) => SchemaValue.TsType | undefined;
+        getRef: (key: string) => schemaValue.TsType | undefined;
 
         // If this function is envoked, it means that the request
         // Will be honored, and the user will be able to access
@@ -69,13 +69,13 @@ namespace SchemaFunction {
     export type hookFunc = (hook: accessControlHooks, request: (request: Func) => void, opts?: HookOptions) => void;
 
     // This is the access control function that can be accessed
-    // by the SchemaObject parameters or the SchemaObject parameters
+    // by the schemaObject parameters or the schemaObject parameters
     export type accessControlFunc = (hook: hookFunc) => void;
 
     export type hookObject = {
         hook: hook,
         type: accessControlHooks,
-        value: SchemaValue.init,
+        value: schemaValue.init,
     }
 
     export type hookMap = Array<hookObject>;
@@ -104,7 +104,7 @@ namespace SchemaFunction {
 
         constructor(
             accessControl: accessControlFunc,
-            schemaValue: SchemaValue.init,
+            schemaValue: schemaValue.init,
         ) {
             accessControl((hookType, request, opts) => {
                 this.hooks.push({

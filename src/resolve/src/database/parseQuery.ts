@@ -10,7 +10,7 @@ import _ from 'lodash';
 import parseArgs from './parseArgs';
 
 // --- These two interfaces need to strongly typed --- //
-export interface ProjectionInterface {
+export interface projectionInterface {
     [key: string]: any
 }
 
@@ -20,10 +20,10 @@ export interface ArgumentsInterface {
 // -------------------------------------------------- //
 
 export default (context:any): {
-    projection: ProjectionInterface,
+    projection: projectionInterface,
     arguments: ArgumentsInterface
 } => {
-    let projection: ProjectionInterface = {};
+    let projection: projectionInterface = {};
     let args: ArgumentsInterface = {};
 
     const recurse = (selection:any, parentName:string[] = []): void => {

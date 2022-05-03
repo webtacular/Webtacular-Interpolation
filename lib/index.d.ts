@@ -1,7 +1,7 @@
-import SchemaObject from "./object";
+import schemaObject from "./object";
 export declare namespace Construct {
     interface Schema {
-        [key: string]: SchemaObject.init;
+        [key: string]: schemaObject.init;
     }
     class load {
         schema: Schema;

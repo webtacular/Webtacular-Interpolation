@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import { arrayToObject } from '../../../general';
-import { MongoResponseObject } from './mongo';
+import { mongoResponseObject } from './mongo';
 
-export default (contex:any): MongoResponseObject => {
-    let returnable: MongoResponseObject = {};
+export default (contex:any): mongoResponseObject => {
+    let returnable: mongoResponseObject = {};
 
     // Walk the paramaters
     const walk = (data: any, parentName: string[] = []) => {

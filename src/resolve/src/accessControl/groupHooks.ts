@@ -1,11 +1,11 @@
-import SchemaValue from "../../../query/value";
-import SchemaFunction from "./funcExec";
+import schemaValue from '../../../query/value';
+import SchemaFunction from './funcExec';
 
 export interface groupHooksInterface {
     hook: SchemaFunction.hook,
     details: Array<{
         type: SchemaFunction.accessControlHooks,
-        value: SchemaValue.init
+        value: schemaValue.init
     }>
 }
 

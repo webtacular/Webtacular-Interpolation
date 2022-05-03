@@ -1,12 +1,12 @@
-import { ObjectId } from "mongodb";
-import SchemaValue from "./value";
+import { ObjectId } from 'mongodb';
+import schemaValue from './value';
 
 export type FilterType = 'function' | 'query';
 
 export interface FuncFilterObject { 
     func: (input: any, data: any, maskArray: Array<string>) => boolean, 
-    input: SchemaValue.GqlType, 
-    data: SchemaValue.type,
+    input: schemaValue.GqlType, 
+    data: schemaValue.type,
     type: 'function',
     actualKey?: string,
     schemaKey?: string
@@ -14,7 +14,7 @@ export interface FuncFilterObject {
 
 export interface QueryFilterObject {
     func: (input: any, data: any, maskArray: Array<string>) => QueryFilterOutput, 
-    input: SchemaValue.GqlType, 
+    input: schemaValue.GqlType, 
     type: 'query',
     actualKey?: string,
     schemaKey?: string,

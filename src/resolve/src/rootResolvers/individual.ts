@@ -5,32 +5,32 @@
 //
 //
 
-import _ from "lodash";
+import _ from 'lodash';
 
-import SchemaObject from '../../../query/object';            // [Namespace] //
-import MongoService from '../database/mongo';                      // [Interface] //
+import schemaObject from '../../../query/object';            // [Namespace] //
+import mongoService from '../database/mongo';                      // [Interface] //
 
 import mapResponse from '../database/mapResponse';           // [Func] //
 import mapQuery from '../database/mapQuery';                 // [Func] //
 
-import { MongoResponseObject } from '../database/mongo'; // [Interface] //
-import { RequestDetails } from '../..';                      // [Interface] //
-import { ProjectionInterface } from "../database/parseQuery";
+import { mongoResponseObject } from '../database/mongo'; // [Interface] //
+import { requestDetails } from '../..';                      // [Interface] //
+import { projectionInterface } from '../database/parseQuery';
 
-import SchemaValue from "../../../query/value";
+import schemaValue from '../../../query/value';
 
 const resolve = async(
-    schemaObject:  SchemaObject.init,
-    requestDetails: RequestDetails,
-    client: MongoService
-): Promise<MongoResponseObject> => {
+    schemaObject:  schemaObject.init,
+    requestDetails: requestDetails,
+    client: mongoService
+): Promise<mongoResponseObject> => {
     // Start building the projection
-    let projection: ProjectionInterface = {};
+    let projection: projectionInterface = {};
 
     // Map the requested resouces
     for(const paramater in requestDetails.projection[requestDetails.individualName]){
         // Get the value
-        const value = schemaObject.obj[paramater] as SchemaValue.init;
+        const value = schemaObject.obj[paramater] as schemaValue.init;
 
         // If the paramater is not found in the schema
         // It probably means that the user is trying to access a
@@ -48,12 +48,12 @@ const resolve = async(
     }
 
     // Construct the projection
-    const query: MongoResponseObject = mapQuery(
+    const query: mongoResponseObject = mapQuery(
         requestDetails.arguments[requestDetails.individualName],
         schemaObject
     );
 
-    const requestData: Array<{[x: string]: ProjectionInterface | MongoResponseObject}> = [
+    const requestData: Array<{[x: string]: projectionInterface | mongoResponseObject}> = [
         { $project: projection },
         { $match: query }
     ];

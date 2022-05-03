@@ -1,12 +1,12 @@
-import SchemaValue from "..";
+import schemaValue from '..';
 export declare const TypeMap: {
     string: {
         gql: string;
         filter: {
             [key: string]: {
                 func: (input: any, data: any) => boolean;
-                input: SchemaValue.type;
-                data: SchemaValue.type;
+                input: schemaValue.type;
+                data: schemaValue.type;
             };
         };
     };
@@ -15,8 +15,8 @@ export declare const TypeMap: {
         filter: {
             [key: string]: {
                 func: (input: any, data: any) => boolean;
-                input: SchemaValue.type;
-                data: SchemaValue.type;
+                input: schemaValue.type;
+                data: schemaValue.type;
             };
         };
     };
@@ -25,8 +25,8 @@ export declare const TypeMap: {
         filter: {
             [key: string]: {
                 func: (input: any, data: any) => boolean;
-                input: SchemaValue.type;
-                data: SchemaValue.type;
+                input: schemaValue.type;
+                data: schemaValue.type;
             };
         };
     };
@@ -35,8 +35,8 @@ export declare const TypeMap: {
         filter: {
             [key: string]: {
                 func: (input: any, data: any) => boolean;
-                input: SchemaValue.type;
-                data: SchemaValue.type;
+                input: schemaValue.type;
+                data: schemaValue.type;
             };
         };
     };
@@ -45,8 +45,8 @@ export declare const TypeMap: {
         filter: {
             [key: string]: {
                 func: (input: any, data: any) => boolean;
-                input: SchemaValue.type;
-                data: SchemaValue.type;
+                input: schemaValue.type;
+                data: schemaValue.type;
             };
         };
     };
