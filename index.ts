@@ -1,30 +1,74 @@
-import Object from "./src/query/object";
-import Value from "./src/query/value";
-import { Construct } from "./src/";
+import Object from './src/graphQL/schema/object';
+import Value from './src/graphQL/schema/value';
+import Reference from './src/graphQL/schema/reference';
 
-const test: Construct.Schema = {
-    user: new Object.init({
-        collectionName: 'users',
-        databaseName: 'test',
-        collectionize: true,
-        key: 'user',
-    }, {
-        user_name: new Value.init({
-            type: 'string',
-            description: 'The name of the user',
-        }),
+import { Construct } from './src/';
+import SchemaFunction from './src/graphQL/resolver/src/accessControl/funcExec';
 
-        id: new Value.init({
-            type: 'id',
-            unique: true,
-            mask: {
-                '_id': 1,
-            }
-        }),
 
-    })
-}
+const userSchema = new Object.init({
+    collectionName: 'users',
+    databaseName: 'test',
+    collectionize: true,
+}, {
+    user_name: new Value.init({
+        type: 'string',
+    }),
+
+    email: new Value.init({
+        type: 'string',
+        accessControl: (hook) => {
+            hook('view', (req) => {
+                req.allow();
+                
+            });
+        }
+    }),
+
+    password: new Value.init({
+        type: 'string',
+    }),
+
+    language: new Value.init({
+        type: 'string',
+    }),
+
+    profile_picture: new Value.init({
+        type: 'string',
+    }),
+
+    id: new Value.init({
+        type: 'id',
+        unique: true,
+        mask: {
+            '_id': 1,
+        }
+    }),
+
+    rare: new Value.init({
+        type: 'string',
+        description: 'The rare of the user',
+    }),
+});
+
+const tokenSchema = new Object.init({
+    collectionName: 'tokens',
+    databaseName: 'test',
+    collectionize: true,
+}, {
+    token: new Value.init({
+        type: 'string',
+        unique: true,
+    }),
+
+    user_id: new Reference.init({}, userSchema),
+});
 
 const schema = new Construct.load({
     connectionString: ''
-}, test); 
+}, {
+    user: userSchema,
+    token: tokenSchema,
+}); 
+
+schema.start();

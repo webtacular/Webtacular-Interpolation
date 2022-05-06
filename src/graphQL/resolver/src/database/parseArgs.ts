@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { arrayToObject } from '../../../general';
+import { arrayToObject } from '../../../../general';
 import { mongoResponseObject } from './mongo';
 
 export default (contex:any): mongoResponseObject => {

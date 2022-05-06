@@ -79,3 +79,12 @@ type Query {
 
 - We need a way to prevent some basic attacks, like supplying a huge Regex to a search.
   A way to limit the ammount of times a recursive function can recurse, so it doesn't go into an infinite loop.
+
+#### Optimization
+
+I've got a few ideas for optimization.
+
+- When a user makes a request, hooks need to be gatherd, grouped and executed.
+  This is a lot of work, I was thinking of grouping hooks when the server is starting up, and then only executing them when the user makes a request.
+
+  This will be implemented when I rewrite the schema parser.

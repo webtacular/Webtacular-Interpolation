@@ -1,4 +1,4 @@
-import SchemaFunction from '../resolve/src/accessControl/funcExec';
+import SchemaFunction from '../resolver/src/accessControl/funcExec';
 
 namespace schemaValue { 
     export type type = 'string' | 'number' | 'float' | 'boolean' | 'id';

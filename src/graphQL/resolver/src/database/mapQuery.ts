@@ -11,11 +11,11 @@ import _ from 'lodash';
 
 import { ObjectId } from 'mongodb';
 import { mongoResponseObject } from './mongo';
-import { arrayToObject } from '../../../general';
+import { arrayToObject } from '../../../../general';
 import { projectionInterface } from './parseQuery';
 
-import schemaObject from '../../../query/object';
-import schemaValue from '../../../query/value';
+import schemaObject from '../../../schema/object';
+import schemaValue from '../../../schema/value';
 
 export default (queryArguments: any, input: schemaObject.init): mongoResponseObject => {
     // Start building the query

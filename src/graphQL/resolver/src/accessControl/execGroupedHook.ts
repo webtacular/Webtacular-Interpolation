@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { arrayToObject } from '../../../general';
+import { arrayToObject } from '../../../../general';
 import { projectionInterface } from '../database/parseQuery';
 import SchemaFunction from './funcExec';
 import { groupHooksInterface } from './groupHooks';

@@ -6,12 +6,12 @@
 //
 //
 
-import schemaObject from '../../../query/object';
+import schemaObject from '../../../schema/object';
 
 import _ from 'lodash';
 
 import { mongoResponseObject } from './mongo';
-import { arrayToObject } from '../../../general';
+import { arrayToObject } from '../../../../general';
 
 export default (input: schemaObject.init, data: mongoResponseObject): mongoResponseObject => {
     // Walk through the data object, get the according value from the schema

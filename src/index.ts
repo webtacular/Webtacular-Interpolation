@@ -1,8 +1,8 @@
-import parse from './query/parse';
-import schemaObject from './query/object';
-import transpiler from './query/transpiler';
-import mongoService from './resolve/src/database/mongo';
-import resolve from './resolve';
+import parse from './graphQL/schema/parse';
+import schemaObject from './graphQL/schema/object';
+import transpiler from './graphQL/schema/transpiler';
+import mongoService from './graphQL/resolver/src/database/mongo';
+import resolve from './graphQL/resolver';
 
 import hotQL from 'fastify-hotql';
 import fastify, { FastifyInstance } from 'fastify';

@@ -1,18 +1,18 @@
-import schemaObject from '../query/object';
+import schemaObject from '../schema/object';
 
 import parseQuery, { ArgumentsInterface, projectionInterface } from './src/database/parseQuery';
 
 import { buildSchema } from 'graphql';
-import { FilterObject } from '../query/types';
+import { FilterObject } from '../schema/types';
 
-import schemaValue from '../query/value';
+import schemaValue from '../schema/value';
 
-import individualResolve from './src/rootResolvers/individual';
-import collectionResolve from './src/rootResolvers/collection';
+import individualResolve from './src/resolvers/mongoDB/individual';
+import collectionResolve from './src/resolvers/mongoDB/collection';
 
 import mongoService from './src/database/mongo';
 import _ from 'lodash';
-import { Construct } from '..';
+import { Construct } from '../..';
 
 export interface requestDetails {
     collectionName: string;
@@ -67,27 +67,13 @@ export default (
             rootKeys.forEach((key: string) => {
 
                 // Check if a root value is requested
-                if(key === requestDetails.individualName) {
-                    _.merge(returnObject, {
-                        [key]: individualResolve(
-                            input, 
-                            requestDetails,
-                            main.client
-                        )
-                    });
-                }
-
+                if(key === requestDetails.individualName) _.merge(returnObject, {
+                    [key]: individualResolve(input, requestDetails, main.client, context)});
+                
                 // Check if the requested value is a collection
-                if(key === requestDetails.collectionName) {
-                    _.merge(returnObject, {
-                        [key]: collectionResolve(
-                            input, 
-                            requestDetails,
-                            main.client,
-                            context
-                        )
-                    });
-                }
+                else if(key === requestDetails.collectionName) _.merge(returnObject, {
+                    [key]: collectionResolve(input, requestDetails, main.client, context)});
+
             });
 
             // Finaly, return the data to the user

@@ -1,5 +1,5 @@
 import SchemaReference from './reference';
-import SchemaFunction from '../resolve/src/accessControl/funcExec';
+import SchemaFunction from '../resolver/src/accessControl/funcExec';
 import schemaValue from './value';
 
 namespace schemaObject {

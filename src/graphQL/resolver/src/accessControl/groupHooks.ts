@@ -1,4 +1,4 @@
-import schemaValue from '../../../query/value';
+import schemaValue from '../../../schema/value';
 import SchemaFunction from './funcExec';
 
 export interface groupHooksInterface {
