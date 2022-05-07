@@ -1,61 +1,43 @@
-import _ from 'lodash';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { Context } from 'apollo-server-core';
 import { arrayToObject } from '../../../../general';
-import { mongoResponseObject } from './mongo';
+import { mongoResponseObject } from './mongoDB/mongo';
+import _ from 'lodash';
+import { types } from '../../../../types';
 
-export default (contex:any): mongoResponseObject => {
-    let returnable: mongoResponseObject = {};
+export default (contex: Context): types.obj => {
+    const returnable: mongoResponseObject = {};
 
     // Walk the paramaters
-    const walk = (data: any, parentName: string[] = []) => {
+    const walk = (data: types.obj, parentName: string[] = []) => {
         for (const key in data) {
             const value = data[key];
-
+            // @ts-ignore
             if(value.value.kind === 'ObjectValue')
+            // @ts-ignore
                 walk(value.value.fields, [...parentName, value.name.value]);
             
-            else {
+            else {// @ts-ignore
                 let paramater = value?.value?.value;
-
+// @ts-ignore
                 if(paramater === undefined && value?.value?.values) {
-                    let paramArray: Array<any> = [];
-
-                    value.value.values.forEach((value: any) => {
-                        paramArray.push(convert(value.kind, value.value));
+                    const paramArray: Array<types.basic> = [];
+// @ts-ignore
+                    value.value.values.forEach((value: { value: { value: types.basic}}) => {
+                        paramArray.push(value.value.value);
                     });
 
                     paramater = paramArray;
-                } else paramater = convert(value.kind, paramater);
+                }
 
                 // returnable[value.name.value] = paramater;
+                // @ts-ignore
                 _.merge(returnable, arrayToObject([...parentName, value.name.value], paramater));
             }
         }
     }
-
+// @ts-ignore
     walk(contex.arguments);
-
+// @ts-ignore
     return returnable;
-}
-
-//https://github.com/apollographql/apollo-server/blob/e468367d52e11f3127597e4fe920eb8294538289/packages/apollo-server-core/src/plugin/usageReporting/defaultUsageReportingSignature.ts
-const convert = (type: string, value: any): number | Float64Array | string | Array<any> | {} => {
-    switch (type) {
-        case 'IntValue':
-            return parseInt(value.value, 10);
-
-        case 'FloatValue':
-            return parseFloat(value.value);
-
-        case 'StringValue':
-            return value;
-
-        case 'ListValue':
-            return value as Array<any>;
-            
-        case 'ObjectValue':
-            return value as {};
-
-        default:
-            return value;
-    }
 }

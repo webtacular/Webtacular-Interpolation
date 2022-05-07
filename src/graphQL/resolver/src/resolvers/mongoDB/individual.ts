@@ -5,21 +5,20 @@
 //
 //
 
-import _ from 'lodash';
+import { Context } from 'apollo-server-core';
          
 import { requestDetails } from '../../..';       
-import { internalConfiguration } from '../../../../../general';        
 
 import schemaObject from '../../../../schema/object';  
 import mapResponse from '../../database/mapResponse';    
-import mongoService from '../../database/mongo';     
+import mongoService from '../../database/mongoDB/mongo';     
 import intermediate from './shared';
 
 const resolve = async(
     schemaObject: schemaObject.init,
     requestDetails: requestDetails,
     client: mongoService,
-    context: any
+    context: Context
 ) => {
     console.log(requestDetails);
     // Process the request

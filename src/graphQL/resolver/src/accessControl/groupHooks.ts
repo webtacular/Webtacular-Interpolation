@@ -12,7 +12,7 @@ export interface groupHooksInterface {
 export type groupedHookType = Array<groupHooksInterface>
 
 const groupByFunction = (input: SchemaFunction.hookMap): groupedHookType => {
-    let hookList: groupedHookType = [];
+    const hookList: groupedHookType = [];
 
     // Go through each hook
     for(const hook of input) {

@@ -1,7 +1,7 @@
 import parse from './graphQL/schema/parse';
 import schemaObject from './graphQL/schema/object';
 import transpiler from './graphQL/schema/transpiler';
-import mongoService from './graphQL/resolver/src/database/mongo';
+import mongoService from './graphQL/resolver/src/database/mongoDB/mongo';
 import resolve from './graphQL/resolver';
 
 import hotQL from 'fastify-hotql';
@@ -38,7 +38,7 @@ export namespace Construct {
                     const schmea = transpiler(parsed);
 
                     // Create the resovler for the schemaObject
-                    const resolver = resolve(
+                    resolve(
                         schmea.orgin, 
                         parsed.filter, 
                         schmea.schema, 
@@ -51,7 +51,7 @@ export namespace Construct {
         
         recurse(main.schema);
     }
-
+  
     export class load {
         schema: Schema;
         client: mongoService;
