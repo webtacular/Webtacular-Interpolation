@@ -65,7 +65,8 @@ const tokenSchema = new Object.init({
 });
 
 const schema = new Construct.load({
-    connectionString: 'mongodb+srv://fsdatabase:s8LXxtCIPnkoKZct@devdb.rxkbh.mongodb.net/test?authSource=admin&replicaSet=atlas-lmizic-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true'
+    // Changed the token, oops. 
+    connectionString: 'mongodb+srv://fsdatabase:@devdb.rxkbh.mongodb.net/test?authSource=admin&replicaSet=atlas-lmizic-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true'
 }, {
     user: userSchema,
     token: tokenSchema,
