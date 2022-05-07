@@ -3,7 +3,7 @@ import Value from './src/graphQL/schema/value';
 import Reference from './src/graphQL/schema/reference';
 
 import { Construct } from './src/';
-import SchemaFunction from './src/graphQL/resolver/src/accessControl/funcExec';
+// import SchemaFunction from './src/graphQL/resolver/src/accessControl/funcExec';
 
 
 const userSchema = new Object.init({
@@ -65,7 +65,8 @@ const tokenSchema = new Object.init({
 });
 
 const schema = new Construct.load({
-    connectionString: ''
+    // Changed the token, oops. 
+    connectionString: 'mongodb+srv://fsdatabase:@devdb.rxkbh.mongodb.net/test?authSource=admin&replicaSet=atlas-lmizic-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true'
 }, {
     user: userSchema,
     token: tokenSchema,
