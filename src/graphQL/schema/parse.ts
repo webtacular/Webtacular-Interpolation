@@ -119,12 +119,17 @@ const func = (Obj: schemaObject.init): Output => {
                 }, {})); 
             
                 // ----[ Collection ]---- //
-                Object.keys(gqlType.filter).forEach(filterName => 
+                const filterKeys = Object.keys(gqlType.filter);
+
+                for(let i = 0; i < filterKeys.length; i++) {
+                    const filterName = filterKeys[i];
+
                     graphQL.filter[key + filterName] = { 
                         actualKey: value.maskArray[value.maskArray.length - 1], 
                         schemaKey: key,
                         ...gqlType.filter[filterName] 
-                });
+                    }
+                }
 
             }
 
@@ -144,9 +149,12 @@ const func = (Obj: schemaObject.init): Output => {
             throw new Error('schemaObjects must have a unique value, or be a collection');
 
     // Loop through all the unique values
-    opts.uniqueValues.forEach(value => {
+    for (let i = 0; i < opts.uniqueValues.length; i++) {
+        const value = opts.uniqueValues[i];
+
+        // Set the mask
         graphQL.unique.push(value);
-    });
+    }
 
     // Return the graphQL object
     return graphQL;

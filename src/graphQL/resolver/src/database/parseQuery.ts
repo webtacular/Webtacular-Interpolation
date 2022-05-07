@@ -19,10 +19,12 @@ export interface ArgumentsInterface {
 }
 // -------------------------------------------------- //
 
-export default (context:any): {
+export type queryExport = {
     projection: projectionInterface,
     arguments: ArgumentsInterface
-} => {
+}
+
+export default function(context:any): queryExport {
     let projection: projectionInterface = {};
     let args: ArgumentsInterface = {};
 

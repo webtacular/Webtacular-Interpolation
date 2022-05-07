@@ -10,10 +10,10 @@ import schemaObject from '../../../schema/object';
 
 import _ from 'lodash';
 
-import { mongoResponseObject } from './mongo';
+import { mongoResponseObject } from './mongoDB';
 import { arrayToObject } from '../../../../general';
 
-export default (input: schemaObject.init, data: mongoResponseObject): mongoResponseObject => {
+export default function (input: schemaObject.init, data: mongoResponseObject): mongoResponseObject {
     // Walk through the data object, get the according value from the schema
     // and map it to the data object
     let obj: mongoResponseObject = {};

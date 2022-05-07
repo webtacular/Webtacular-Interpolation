@@ -14,7 +14,7 @@ export default (input: Output): {
     // Check if searchable is enabled
     const opts: { [key: string]: boolean } = {
         collectionize: input.origin.options.collectionize ?? false,
-        hasUnique:  input.unique.length > 0,
+        hasUnique: input.unique.length > 0,
     }
 
     // Store the unique values

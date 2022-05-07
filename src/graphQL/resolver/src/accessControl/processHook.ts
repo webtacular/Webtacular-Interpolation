@@ -4,7 +4,7 @@ import SchemaFunction from './funcExec';
 import { groupedHookType } from './groupHooks';
 
 // Process all the preRequest hooks
-const preHookProjectionArray = (input: {
+function preHookProjectionArray(input: {
     hooks: groupedHookType,
     params:  {[key: string]: string;}
     cookies: {[key: string]: string;}
@@ -14,24 +14,28 @@ const preHookProjectionArray = (input: {
         preSchema: projectionInterface,
         postSchema: projectionInterface
     }
-}): Promise<Array<projectionInterface>> => {
+}): Promise<Array<projectionInterface>> {
     return new Promise(async(resolve) => {
         // Promise array to store the projection promises
         let promiseArray: Array<Promise<projectionInterface>> = [];
 
         // Go through each preRequest hook and execute it
-        input.hooks.forEach(async(hooks) => promiseArray.push(execGroupedHook(hooks, {
-            urlParams: input.params,
-            cookies: input.cookies,
-            headers: input.headers,
+        for(let i = 0; i < input.hooks.length; i++) {
+            const hooks = input.hooks[i];
 
-            projection: {
-                preSchema: input.projection.preSchema,
-                postSchema: input.projection.postSchema,
-            },
-
-            value: input.value,
-        })));
+            promiseArray.push(execGroupedHook(hooks, {
+                urlParams: input.params,
+                cookies: input.cookies,
+                headers: input.headers,
+    
+                projection: {
+                    preSchema: input.projection.preSchema,
+                    postSchema: input.projection.postSchema,
+                },
+    
+                value: input.value,
+            }))
+        }
 
         // Resolve the array of promises
         return resolve(await Promise.all(promiseArray) as Array<projectionInterface>);

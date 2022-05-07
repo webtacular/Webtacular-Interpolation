@@ -1,14 +1,14 @@
 import _ from 'lodash';
 import { arrayToObject } from '../../../../general';
-import { mongoResponseObject } from './mongo';
+import { mongoResponseObject } from './mongoDB';
 
-export default (contex:any): mongoResponseObject => {
+export default function (contex:any): mongoResponseObject {
     let returnable: mongoResponseObject = {};
 
     // Walk the paramaters
     const walk = (data: any, parentName: string[] = []) => {
-        for (const key in data) {
-            const value = data[key];
+        for (let i = 0; i < data.length; i++) {
+            const value = data[i];
 
             if(value.value.kind === 'ObjectValue')
                 walk(value.value.fields, [...parentName, value.name.value]);
@@ -19,9 +19,11 @@ export default (contex:any): mongoResponseObject => {
                 if(paramater === undefined && value?.value?.values) {
                     let paramArray: Array<any> = [];
 
-                    value.value.values.forEach((value: any) => {
-                        paramArray.push(convert(value.kind, value.value));
-                    });
+                    for(let i = 0; i < value.value.values.length; i++) {
+                        const val = value.value.values[i];
+
+                        paramArray.push(convert(val.kind, val.value));
+                    }
 
                     paramater = paramArray;
                 } else paramater = convert(value.kind, paramater);

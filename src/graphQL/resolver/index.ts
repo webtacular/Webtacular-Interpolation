@@ -10,7 +10,7 @@ import schemaValue from '../schema/value';
 import individualResolve from './src/resolvers/mongoDB/individual';
 import collectionResolve from './src/resolvers/mongoDB/collection';
 
-import mongoService from './src/database/mongo';
+import mongoService from './src/database/mongoDB';
 import _ from 'lodash';
 import { Construct } from '../..';
 
@@ -24,13 +24,13 @@ export interface requestDetails {
     filter: { [x: string]: FilterObject };
 }
 
-export default (
+export default function (
     input: schemaObject.init, 
     filter: { [x: string]: FilterObject }, 
     schema: string, 
     uniqueValues: schemaValue.init[], 
     main: Construct.load
-) => {
+) {
     //     
     // 
     // We need a better way to do this, but for now this will do.
@@ -63,8 +63,8 @@ export default (
 
             const rootKeys: string[] = Object.keys(parsedQuery.projection);
 
-            // For each requested root key
-            rootKeys.forEach((key: string) => {
+            for(let i = 0; i < rootKeys.length; i++) {
+                const key = rootKeys[i];
 
                 // Check if a root value is requested
                 if(key === requestDetails.individualName) _.merge(returnObject, {
@@ -73,8 +73,7 @@ export default (
                 // Check if the requested value is a collection
                 else if(key === requestDetails.collectionName) _.merge(returnObject, {
                     [key]: collectionResolve(input, requestDetails, main.client, context)});
-
-            });
+            }
 
             // Finaly, return the data to the user
             return returnObject;

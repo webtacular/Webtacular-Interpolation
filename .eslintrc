@@ -1,0 +1,17 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+    ],
+    "rules": {
+        "no-underscore-dangle": 2,
+        "@typescript-eslint/no-namespace": "off",
+        "no-compare-neg-zero": 1,
+        "no-const-assign": 2,
+        "no-constructor-return": 2,
+        "prefer-const": 1,
+    }
+} 

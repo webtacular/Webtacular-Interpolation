@@ -10,14 +10,14 @@
 import _ from 'lodash';
 
 import { ObjectId } from 'mongodb';
-import { mongoResponseObject } from './mongo';
+import { mongoResponseObject } from './mongoDB';
 import { arrayToObject } from '../../../../general';
 import { projectionInterface } from './parseQuery';
 
 import schemaObject from '../../../schema/object';
 import schemaValue from '../../../schema/value';
 
-export default (queryArguments: any, input: schemaObject.init): mongoResponseObject => {
+export default function (queryArguments: any, input: schemaObject.init): mongoResponseObject {
     // Start building the query
     let query: projectionInterface = {};
 

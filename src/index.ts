@@ -1,7 +1,7 @@
 import parse from './graphQL/schema/parse';
 import schemaObject from './graphQL/schema/object';
 import transpiler from './graphQL/schema/transpiler';
-import mongoService from './graphQL/resolver/src/database/mongo';
+import mongoService from './graphQL/resolver/src/database/mongoDB';
 import resolve from './graphQL/resolver';
 
 import hotQL from 'fastify-hotql';
@@ -16,7 +16,7 @@ export namespace Construct {
         connectionString: string;
     }
     
-    const main = async(main: load) => {
+    async function main (main: load) {
         // Wait for the database to be ready
         await main.client.init();
         await main.app.listen(9090);

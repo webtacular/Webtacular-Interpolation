@@ -8,24 +8,27 @@ import schemaObject from '../../../../schema/object';
 import processHook from '../../accessControl/processHook';    
 import schemaFunction from '../../accessControl/funcExec';
 
-import mongoService, { mongoResponseObject } from '../../database/mongo';     
+import mongoService, { mongoResponseObject } from '../../database/mongoDB'   
 import groupByFunction, { groupedHookType } from '../../accessControl/groupHooks';
 import { Collection } from 'mongodb';
+import { Context } from 'apollo-server-core';
 
-const intermediate = async(
-    schemaObject: schemaObject.init,
-    requestDetails: requestDetails,
-    client: mongoService,
-    context: any,
-    isCollection: boolean = false
-): Promise<{
+export type sharedExport = {
     collection: Collection<Document>;
     requestData: Array<{[x: string]: projectionInterface | mongoResponseObject}>;
     projection: projectionInterface;
     hooks: schemaFunction.hookMap;
-}> => {
+};
+
+async function intermediate(
+    schemaObject: schemaObject.init,
+    requestDetails: requestDetails,
+    client: mongoService,
+    context: Context,
+    isCollection = false
+): Promise<sharedExport> {
     // Variable to store the query
-    let requestData: Array<{[x: string]: projectionInterface | mongoResponseObject}> = [];
+    const requestData: Array<{[x: string]: projectionInterface | mongoResponseObject}> = [];
 
     // ------------[ Process the rawProjection ]------------- //
     // Object to store the projection
@@ -33,7 +36,8 @@ const intermediate = async(
 
     // Access Control Functions
     let hooks: schemaFunction.hookMap = [];
-
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const paramaters = isCollection === true ? requestDetails.projection[requestDetails.collectionName]?.items ?? {} : requestDetails.projection[requestDetails.individualName] ?? {};
 
     // Map the requested resouces
@@ -51,19 +55,20 @@ const intermediate = async(
             const hookObject = new schemaFunction.init(value.options.accessControl, value);
 
             // Check if the hook is a preRequest hook
-            hookObject.hooks.forEach(hook => {
+            for(let i = 0; i < hookObject.hooks.length; i++) {
+                const hook = hookObject.hooks[i];
 
-                // Only add the hook if its a view hook
-                // as this resolver can only get data
-                if(hook.type === 'view') 
+                // Check if the hook is a preRequest hook
+                if(hook.type === 'view')
+                    // Add the hook to the list
                     hooks.push(hook);
-            });
+            }
         }
 
         // Merge the projections
         _.merge(projection, value.mask);
     }
-    
+
     if(projection !== {})
         requestData.push({ $project: projection });
     // ------------------------------------------------------- //
@@ -76,12 +81,12 @@ const intermediate = async(
         const groupedHooks: groupedHookType = groupByFunction(hooks);
         
         // Get any parameters that were passed in by 
-        const fastifyReq = context.rootValue.fastify.req;
+        const fastifyReq = (context as any).rootValue.fastify.req;
 
         // Merge all the preHook projections together
         const preHookProjection: projectionInterface = (await processHook({
             projection: {
-                preSchema: requestDetails.projection[requestDetails.collectionName]?.items ?? {},
+                preSchema: (requestDetails.projection[requestDetails.collectionName] as any)?.items ?? {},
                 postSchema: projection,
             },
             hooks: groupedHooks,
@@ -106,8 +111,7 @@ const intermediate = async(
     ); 
     // ------------------------------------ //
 
-    
-    // Finaly, return the data
+     // Finaly, return the data
     return {
         collection,
         requestData,
