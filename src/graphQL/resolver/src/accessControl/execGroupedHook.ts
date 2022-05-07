@@ -1,9 +1,7 @@
 import _ from 'lodash';
-
-import SchemaFunction from './funcExec';
-
 import { arrayToObject } from '../../../../general';
 import { projectionInterface } from '../database/parseQuery';
+import SchemaFunction from './funcExec';
 import { groupHooksInterface } from './groupHooks';
 
 const execGroupedHook = async(hook: groupHooksInterface, request: SchemaFunction.hookRequest): Promise<projectionInterface> => {
@@ -14,9 +12,7 @@ const execGroupedHook = async(hook: groupHooksInterface, request: SchemaFunction
     // Generate the response object
     const allow = () => pass = true,
         block = () => pass = false,
-        getRef = (key: string) => {
-            return key
-        };
+        getRef = (key: string) => '';
 
     // Await all the hook 
     await Promise.all([func({
@@ -31,7 +27,7 @@ const execGroupedHook = async(hook: groupHooksInterface, request: SchemaFunction
     if(pass === true) return {};
 
     // Variable to hold the projection
-    const projectionObject: projectionInterface = {};
+    let projectionObject: projectionInterface = {};
 
     // Create the projection object and merge them
     hook.details.forEach(val => _.merge(projectionObject, arrayToObject(val.value.maskArray, 0)));

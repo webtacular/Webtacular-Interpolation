@@ -1,6 +1,7 @@
 import schemaObject from '../schema/object';
 
-import parseQuery, { argumentsInterface, projectionInterface } from './src/database/parseQuery';
+import parseQuery, { ArgumentsInterface, projectionInterface } from './src/database/parseQuery';
+
 import { buildSchema } from 'graphql';
 import { FilterObject } from '../schema/types';
 
@@ -9,17 +10,16 @@ import schemaValue from '../schema/value';
 import individualResolve from './src/resolvers/mongoDB/individual';
 import collectionResolve from './src/resolvers/mongoDB/collection';
 
+import mongoService from './src/database/mongo';
 import _ from 'lodash';
 import { Construct } from '../..';
-import { Context } from 'apollo-server-core';
-import { types } from '../../types';
 
 export interface requestDetails {
     collectionName: string;
     individualName: string;
 
     projection: projectionInterface;
-    arguments: argumentsInterface
+    arguments: ArgumentsInterface
 
     filter: { [x: string]: FilterObject };
 }
@@ -37,32 +37,26 @@ export default (
     // Once we start cleaning up the code, we can change this.
     // 
     //     
-    const resolver: {
-        [x: string]: (
-            root: undefined,
-            args: Record<string, unknown>,
-            context: Context,
-        ) => types.obj
-    } = {
-        [input.key]: (root, args, context) => {
+    let resolver = {
+        [input.key]: (root:any, args:any, context:any, info:any) => {
             // Parse the query
-            const parsedQuery = parseQuery(context);
+            let parsedQuery = parseQuery(context),
+                // This object will be used to store the response objects
+                returnObject = {};
 
-            // This object will be used to store the response objects
-            const returnObject: types.obj = {};
+            // These are the arguments that the user has passed in
+            parsedQuery.arguments = parsedQuery.arguments[input.key];
 
-            // These are the arguments that the user has passed in,
-            // the projection.
-            const argument: argumentsInterface = parsedQuery.arguments[input.key] as argumentsInterface,
-                projection: projectionInterface = parsedQuery.projection[input.key] as projectionInterface;
+            // These are the arguments that the user has passed in
+            parsedQuery.projection = parsedQuery.projection[input.key];
 
             // This object contains basic information about the schemaObject
             const requestDetails: requestDetails = {
                 collectionName: (input.key + 'Collection'),
                 individualName: input.key,
 
-                projection: projection,
-                arguments: argument,
+                projection: parsedQuery.projection,
+                arguments: parsedQuery.arguments,
 
                 filter: filter
             }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 //
 //
 // This here file is the opposite of mapQuery.ts, it is used to map the database to the Schema.
@@ -11,25 +10,20 @@ import schemaObject from '../../../schema/object';
 
 import _ from 'lodash';
 
-import { mongoResponseObject } from './mongoDB/mongo';
+import { mongoResponseObject } from './mongo';
 import { arrayToObject } from '../../../../general';
 
 export default (input: schemaObject.init, data: mongoResponseObject): mongoResponseObject => {
     // Walk through the data object, get the according value from the schema
     // and map it to the data object
-    const obj: mongoResponseObject = {};
+    let obj: mongoResponseObject = {};
 
-    const walk = (
-        data: mongoResponseObject, 
-        // @ts-ignore
-        schema: any, 
-        parentName: string[] = []
-    ) => {
+    const walk = (data: any, schema: any, parentName: string[] = []) => {
         for (const key in schema) {
             const value = schema[key];
 
             if (value instanceof schemaObject.init)
-                walk(data[key] as mongoResponseObject, value.obj, [...parentName, key]);
+                walk(data[key], value.obj, [...parentName, key]);
 
             else {
                 // Find the value in the schema
@@ -44,7 +38,6 @@ export default (input: schemaObject.init, data: mongoResponseObject): mongoRespo
                 // If the value is found, then we can map it to the schema
                 const reMaped = arrayToObject(
                     [...parentName, schemaValue.key], 
-                    // @ts-ignore
                     dataValue
                 );
 

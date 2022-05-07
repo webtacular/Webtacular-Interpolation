@@ -6,68 +6,75 @@
 //
 //
 
-import { Context } from 'apollo-server-core';
 import _ from 'lodash';
-import { arrayToObject } from '../../../../general';
-import { types } from '../../../../types';
 import parseArgs from './parseArgs';
 
 // --- These two interfaces need to strongly typed --- //
-export type projectionInterface = {
-    [key: string]: number | { [x: string]: projectionInterface }
+export interface projectionInterface {
+    [key: string]: any
 }
 
-export type argumentsInterface = types.obj;
+export interface ArgumentsInterface {
+    [key: string]: any
+}
 // -------------------------------------------------- //
 
-export default (context: Context): {
+export default (context:any): {
     projection: projectionInterface,
-    arguments: argumentsInterface
+    arguments: ArgumentsInterface
 } => {
-    const projection: projectionInterface = {};
-    const args: argumentsInterface = {};
+    let projection: projectionInterface = {};
+    let args: ArgumentsInterface = {};
 
-    const recurse = (selection: types.obj, parentName: string[] = []): void => {
+    const recurse = (selection:any, parentName:string[] = []): void => {
         
         for(const newSelection in Object.keys(selection)) {
             // Current selection
-            const current = selection[newSelection] as types.obj;
+            const current: any = selection[newSelection];
 
             // If the current selection is a field
             if(current?.kind === 'Field') {
                 // -----------------[ Value ]----------------- //
-                const name: string | undefined = (current.name as types.obj)?.value as string ?? undefined;
-
                 // If the current selection name is not null
-                if(!name) continue;
+                if(current.name === null) continue;
 
                 // If the parent name is not undefined
-                if(parentName[0] !== undefined)
-                    _.merge(projection, arrayToObject(parentName, {[name]: 1}));
-                
-    
+                if(parentName[0] !== undefined) {
+                    // turn tje parentName array into an object
+                    // eg [ 'hello', 'other' ], name => { hello: other: { name: 1 } }
+
+                    _.merge(projection, [...parentName, null].reduceRight((obj: {}, next : string | null):  { [x: string]: {}}  => {
+                        if(next === null) return ({[current.name.value]: 1});
+
+                        return ({[next]: obj});
+                    }, {})); 
+                }
+                    
                 // If the parent name is null,
                 // then merge the projection with the current selection
-                else _.merge(projection, {[name]: 1});
+                else _.merge(projection, {[current.name.value]: 1});
                 // -----------------[ Value ]----------------- //
 
 
                 // -----------------[ Args ]----------------- //
-                _.merge(args, arrayToObject(parentName, parseArgs(current)));
+                _.merge(args, [...parentName, null].reduceRight((obj: {}, next : string | null):  { [x: string]: {}}  => {
+                    if(next === null) 
+                        // If the current selection has no arguments,
+                        // Return an empty object
+                        return { [current.name.value]: parseArgs(current) };
+
+                    return ({[next]: obj});
+                }, {}));
                 // -----------------[ Args ]----------------- //
             }
 
             // If the current selection is an array, we need to recurse
-            // Lovely typescript here, I know, dont worry about it, just 
-            // look away. ill fix it later.
-            if((current?.selectionSet as types.obj)?.selections)
-                recurse((current?.selectionSet as types.obj)?.selections as types.obj, [...parentName, (current.name as types.obj)?.value as string]);
+            if(current?.selectionSet?.selections)
+                recurse(current.selectionSet.selections, [...parentName, current.name.value]);
         }
     }
 
     // Start the recursive function
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     recurse(context.operation.selectionSet.selections);
 
     // Finally return the projection

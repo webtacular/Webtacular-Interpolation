@@ -2,11 +2,11 @@ import { Collection, MongoClient, ObjectId, MongoClientOptions } from 'mongodb';
 
 // An type definition for an object that can contain all valid MongoDB types.
 export interface mongoResponseObject {
-    [key: string]: string | number | boolean | ObjectId | mongoResponseObject | Array<mongoResponseObject> | Record<string, unknown>;
+    [key: string]: string | number | boolean | ObjectId | mongoResponseObject | Array<mongoResponseObject> | {};
 }
 
 export default class {
-    #connectionString = '';
+    #connectionString: string = '';
     #options: MongoClientOptions | undefined;
     #client: MongoClient | undefined;
     
@@ -22,7 +22,7 @@ export default class {
         return new Promise((resolve, reject) => {
 
             // Check if the connection string is valid ('mongodb://' or 'mongodb+srv://')
-            const exp = /^(mongodb:\/\/|mongodb\+srv:\/\/)/;
+            const exp: RegExp = /^(mongodb:\/\/|mongodb\+srv:\/\/)/;
 
             if(!exp.test(this.#connectionString))
                 return reject(new Error(`Invalid connection string: ${this.#connectionString}`));

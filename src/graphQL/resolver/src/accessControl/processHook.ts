@@ -1,8 +1,7 @@
 import { projectionInterface } from '../database/parseQuery';
-import { groupedHookType } from './groupHooks';
-
 import execGroupedHook from './execGroupedHook';
-import { types } from '../../../../types';
+import SchemaFunction from './funcExec';
+import { groupedHookType } from './groupHooks';
 
 // Process all the preRequest hooks
 const preHookProjectionArray = (input: {
@@ -10,15 +9,15 @@ const preHookProjectionArray = (input: {
     params:  {[key: string]: string;}
     cookies: {[key: string]: string;}
     headers: {[key: string]: string;}
-    value?: types.basicUnion
+    value?: any
     projection: {
         preSchema: projectionInterface,
         postSchema: projectionInterface
     }
 }): Promise<Array<projectionInterface>> => {
-    return new Promise((resolve) => {
+    return new Promise(async(resolve) => {
         // Promise array to store the projection promises
-        const promiseArray: Array<Promise<projectionInterface>> = [];
+        let promiseArray: Array<Promise<projectionInterface>> = [];
 
         // Go through each preRequest hook and execute it
         input.hooks.forEach(async(hooks) => promiseArray.push(execGroupedHook(hooks, {
@@ -35,7 +34,7 @@ const preHookProjectionArray = (input: {
         })));
 
         // Resolve the array of promises
-        resolve(Promise.all(promiseArray));
+        return resolve(await Promise.all(promiseArray) as Array<projectionInterface>);
     });
 }
 

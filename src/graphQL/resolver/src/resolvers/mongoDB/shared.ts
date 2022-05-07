@@ -8,17 +8,16 @@ import schemaObject from '../../../../schema/object';
 import processHook from '../../accessControl/processHook';    
 import schemaFunction from '../../accessControl/funcExec';
 
-import mongoService, { mongoResponseObject } from '../../database/mongoDB/mongo';     
+import mongoService, { mongoResponseObject } from '../../database/mongo';     
 import groupByFunction, { groupedHookType } from '../../accessControl/groupHooks';
 import { Collection } from 'mongodb';
-import { Context } from 'apollo-server-core';
 
 const intermediate = async(
     schemaObject: schemaObject.init,
     requestDetails: requestDetails,
     client: mongoService,
-    context: Context,
-    isCollection = false
+    context: any,
+    isCollection: boolean = false
 ): Promise<{
     collection: Collection<Document>;
     requestData: Array<{[x: string]: projectionInterface | mongoResponseObject}>;
@@ -26,17 +25,16 @@ const intermediate = async(
     hooks: schemaFunction.hookMap;
 }> => {
     // Variable to store the query
-    const requestData: Array<{[x: string]: projectionInterface | mongoResponseObject}> = [];
+    let requestData: Array<{[x: string]: projectionInterface | mongoResponseObject}> = [];
 
     // ------------[ Process the rawProjection ]------------- //
     // Object to store the projection
-    const projection: projectionInterface = {};
+    let projection: projectionInterface = {};
 
     // Access Control Functions
-    const hooks: schemaFunction.hookMap = [];
-    
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const paramaters = isCollection === true ? (requestDetails.projection[requestDetails.collectionName] as any)?.items ?? {} : requestDetails.projection[requestDetails.individualName] ?? {};
+    let hooks: schemaFunction.hookMap = [];
+
+    const paramaters = isCollection === true ? requestDetails.projection[requestDetails.collectionName]?.items ?? {} : requestDetails.projection[requestDetails.individualName] ?? {};
 
     // Map the requested resouces
     for(const paramater in paramaters){
@@ -78,14 +76,12 @@ const intermediate = async(
         const groupedHooks: groupedHookType = groupByFunction(hooks);
         
         // Get any parameters that were passed in by 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const fastifyReq = (context as any).rootValue.fastify.req;
+        const fastifyReq = context.rootValue.fastify.req;
 
         // Merge all the preHook projections together
         const preHookProjection: projectionInterface = (await processHook({
             projection: {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                preSchema: (requestDetails.projection[requestDetails.collectionName] as any)?.items ?? {},
+                preSchema: requestDetails.projection[requestDetails.collectionName]?.items ?? {},
                 postSchema: projection,
             },
             hooks: groupedHooks,
@@ -96,8 +92,6 @@ const intermediate = async(
         
         // Push the preHookProjection to the requestData
         if(preHookProjection.length > 0)
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             requestData.push(preHookProjection);
     }
     // ---------------[ PreRequestHooks ]--------------------- //

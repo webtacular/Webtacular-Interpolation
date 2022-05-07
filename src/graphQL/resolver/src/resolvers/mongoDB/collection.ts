@@ -12,7 +12,7 @@ import { internalConfiguration } from '../../../../../general';
 
 import schemaObject from '../../../../schema/object';  
 import mapResponse from '../../database/mapResponse';    
-import mongoService from '../../database/mongoDB/mongo';     
+import mongoService from '../../database/mongo';     
 import intermediate from './shared';
 
 const resolve = async(
@@ -34,7 +34,7 @@ const resolve = async(
     // ------------------------------ //
 
     // variable to store the data
-    const reMapedData: Array<any> = [];
+    let reMapedData: Array<any> = [];
 
     // Remap the data
     data.forEach(item => {

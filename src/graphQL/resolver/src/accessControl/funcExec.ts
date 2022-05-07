@@ -1,8 +1,6 @@
-import { projectionInterface } from '../database/parseQuery';
-
 import schemaValue from '../../../schema/value';
+import { projectionInterface } from '../database/parseQuery';
 import _ from 'lodash';
-import { types } from '../../../../types';
 
 namespace SchemaFunction {
 
@@ -24,7 +22,7 @@ namespace SchemaFunction {
 
         // What value the user is trying to pass in, 
         // If any
-        value?: types.basicUnion | undefined;
+        value?: schemaValue.TsType | undefined;
 
         // A projection of the entire request
         projection: {
@@ -45,7 +43,7 @@ namespace SchemaFunction {
         request: hookRequest;
 
         // Undecided for now
-        getRef: (key: string) => types.basicUnion | undefined;
+        getRef: (key: string) => schemaValue.TsType | undefined;
 
         // If this function is envoked, it means that the request
         // Will be honored, and the user will be able to access
