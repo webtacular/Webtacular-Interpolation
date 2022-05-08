@@ -38,11 +38,10 @@ export namespace Construct {
                     const schmea = transpiler(parsed);
 
                     // Create the resovler for the schemaObject
-                    const resolver = resolve(
+                    resolve(
                         schmea.orgin, 
-                        parsed.filter, 
+                        parsed,
                         schmea.schema, 
-                        parsed.unique,
                         main
                     );
                 }

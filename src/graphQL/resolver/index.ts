@@ -10,9 +10,10 @@ import schemaValue from '../schema/value';
 import individualResolve from './src/resolvers/mongoDB/individual';
 import collectionResolve from './src/resolvers/mongoDB/collection';
 
-import mongoService from './src/database/mongoDB';
 import _ from 'lodash';
 import { Construct } from '../..';
+import { Output } from '../schema/parse';
+import { groupHooks } from '../../accessControl/groupHooks';
 
 export interface requestDetails {
     collectionName: string;
@@ -22,13 +23,13 @@ export interface requestDetails {
     arguments: ArgumentsInterface
 
     filter: { [x: string]: FilterObject };
+    hookBank: groupHooks;
 }
 
 export default function (
     input: schemaObject.init, 
-    filter: { [x: string]: FilterObject }, 
+    parsed: Output,
     schema: string, 
-    uniqueValues: schemaValue.init[], 
     main: Construct.load
 ) {
     //     
@@ -58,7 +59,8 @@ export default function (
                 projection: parsedQuery.projection,
                 arguments: parsedQuery.arguments,
 
-                filter: filter
+                filter: parsed.filter,
+                hookBank: parsed.hookBank,
             }
 
             const rootKeys: string[] = Object.keys(parsedQuery.projection);

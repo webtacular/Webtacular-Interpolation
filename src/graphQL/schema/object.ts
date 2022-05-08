@@ -1,10 +1,9 @@
-import SchemaReference from './reference';
-import SchemaFunction from '../resolver/src/accessControl/funcExec';
+import HookFunction from '../../accessControl/hook';
 import schemaValue from './value';
 
 namespace schemaObject {
     export interface ValueInterface {
-        [key: string]: schemaValue.init | SchemaReference.init;
+        [key: string]: schemaValue.init;
     }
     
     export interface Constructor {
@@ -13,7 +12,7 @@ namespace schemaObject {
         collectionize?: boolean;
         description?: string;
         searchable?: boolean;
-        accessControl?: SchemaFunction.accessControlFunc;
+        accessControl?: HookFunction.accessControlFunc;
     }
 
     export class init {

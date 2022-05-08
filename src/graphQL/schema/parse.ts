@@ -5,12 +5,15 @@ import schemaObject from './object';
 import schemaValue from './value';
 
 import { FilterObject, TypeMap } from './types';
+import HookFunction from '../../accessControl/hook';
+import { groupHooks, groupHooksInterface } from '../../accessControl/groupHooks';
 
 export interface Output {
     unique: Array<schemaValue.init>;
     origin: schemaObject.init;
     root: { [key: string]: string | boolean | number | {}; };
     filter: {[x: string]: FilterObject};
+    hookBank: groupHooks;
 }
 
 export class Group {
@@ -23,6 +26,8 @@ export class Group {
     }
 }
 
+
+
 const func = (Obj: schemaObject.init): Output => {
     let opts = {
         uniqueValue: false,
@@ -34,8 +39,13 @@ const func = (Obj: schemaObject.init): Output => {
         root: {},
         filter: {},
         unique: [] as Array<schemaValue.init>,
-        origin: Obj
+        origin: Obj,
+        hookBank: {},
     };
+
+    let hookBank: {
+        [key: string]: groupHooksInterface
+    } = {};
 
     const recurse = (obj: schemaObject.ValueInterface, parentNames: string[] = []) => {
         
@@ -43,6 +53,9 @@ const func = (Obj: schemaObject.init): Output => {
             const value = obj[key];
 
             if (value instanceof schemaValue.init) {
+
+                // Assign an unique identifier to each value
+                value.uniqueIdentifier = `${parentNames.join('.')}.${key}`;
 
                 // Check if we have a unique value
                 // This is important as if the schemaObject
@@ -71,12 +84,10 @@ const func = (Obj: schemaObject.init): Output => {
                     // We need to grab the furthest child in the object
                     const maskRecurse = (obj: {[x: string]: number | {}}, maskArray: Array<string> = []) => {
                         for (const key in obj) {
-
                             const value = obj[key];
-
                             maskArray.push(key);
-
-                            if (value instanceof Object) maskRecurse(value, maskArray);
+                            if (value instanceof Object)
+                                maskRecurse(value, maskArray);
                         }
 
                         return maskArray;
@@ -131,6 +142,18 @@ const func = (Obj: schemaObject.init): Output => {
                     }
                 }
 
+                // ----[ Hooks ]---- //
+                if(value.options.accessControl) {
+                    const accessControl = value.options.accessControl;
+
+                    const hookObject = new HookFunction.init(accessControl);
+
+                    const grouped = groupHooks(hookBank, hookObject.hooks, value.uniqueIdentifier);
+
+                    value.hookIdentifers = grouped.hookIdentifiers;
+                    hookBank = grouped.hookBank;
+                }
+                
             }
 
             // If the value is an schemaObject, recurse
@@ -155,6 +178,9 @@ const func = (Obj: schemaObject.init): Output => {
         // Set the mask
         graphQL.unique.push(value);
     }
+
+    // Set the hookBank
+    graphQL.hookBank = hookBank;
 
     // Return the graphQL object
     return graphQL;

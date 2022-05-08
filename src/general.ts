@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import HookFunction from './accessControl/hook';
 
 // this function turns a array into a object
 export const arrayToObject = (arr: Array<string>, val: any = 1): {
@@ -12,7 +13,19 @@ export const arrayToObject = (arr: Array<string>, val: any = 1): {
     }, {});
 }
 
-export const internalConfiguration = {
+export interface internalConfiguration {
+    defaultValueName: string;
+    hooks: {
+        defualtAccessControl: HookFunction.hookAccessControl;
+        defaultExecution: HookFunction.hookExecution;
+    }
+}
+
+export const internalConfiguration: internalConfiguration = {
     // The defualt name for the values in a collection
     defaultValueName: 'items',
+    hooks: {
+        defualtAccessControl: 'allow',
+        defaultExecution: 'preRequest',
+    }
 }

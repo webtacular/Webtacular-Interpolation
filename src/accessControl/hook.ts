@@ -1,8 +1,9 @@
-import schemaValue from '../../../schema/value';
-import { projectionInterface } from '../database/parseQuery';
+import schemaValue from '../graphQL/schema/value';
+import { projectionInterface } from '../graphQL/resolver/src/database/parseQuery';
 import _ from 'lodash';
+import { internalConfiguration } from '../general';
 
-namespace SchemaFunction {
+namespace HookFunction {
 
     export interface hookRequest {
         // Url params, pretty self explanatory
@@ -56,8 +57,12 @@ namespace SchemaFunction {
         block: () => void;
     }
 
+    export type hookAccessControl = 'allow' | 'block';
+    export type hookExecution = 'preRequest' | 'postRequest';
+
     export interface HookOptions { 
-        default?: 'allow' | 'block',
+        fallback?: hookAccessControl,
+        execution?: hookExecution,
     }
 
     // This type contains all the different types of hooks that
@@ -75,14 +80,14 @@ namespace SchemaFunction {
     export type hookObject = {
         hook: hook,
         type: accessControlHooks,
-        value: schemaValue.init,
     }
 
     export type hookMap = Array<hookObject>;
 
     // Default configuration for hooks
     const defaultHookOpts: HookOptions = {
-        default: 'block'
+        fallback: internalConfiguration.hooks.defualtAccessControl,
+        execution: internalConfiguration.hooks.defaultExecution,
     }
 
     export class hook {
@@ -104,17 +109,15 @@ namespace SchemaFunction {
 
         constructor(
             accessControl: accessControlFunc,
-            schemaValue: schemaValue.init,
         ) {
             accessControl((hookType, request, opts) => {
                 this.hooks.push({
                     hook: new hook(request, opts),
                     type: hookType,
-                    value: schemaValue
                 });
             });
         }
     }
 }
 
-export default SchemaFunction;
+export default HookFunction;

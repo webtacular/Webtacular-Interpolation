@@ -1,4 +1,4 @@
-import SchemaFunction from '../resolver/src/accessControl/funcExec';
+import HookFunction from '../../accessControl/hook';
 
 namespace schemaValue { 
     export type type = 'string' | 'number' | 'float' | 'boolean' | 'id';
@@ -37,7 +37,7 @@ namespace schemaValue {
         // The type of the value
         type: type;
 
-        accessControl?: SchemaFunction.accessControlFunc;
+        accessControl?: HookFunction.accessControlFunc;
     } 
 
     export class init {
@@ -51,6 +51,10 @@ namespace schemaValue {
         // This is the key that will be used to access the value
         // Trough GraphQL.
         key: string;
+
+        uniqueIdentifier: string;
+
+        hookIdentifers: Array<string>;
 
         maskObject: { [key: string]: number | {} };
 

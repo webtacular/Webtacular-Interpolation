@@ -1,17 +1,18 @@
 import _ from 'lodash';
-import { arrayToObject } from '../../../../general';
-import { projectionInterface } from '../database/parseQuery';
-import SchemaFunction from './funcExec';
+import { arrayToObject } from '../general';
+import { projectionInterface } from '../graphQL/resolver/src/database/parseQuery';
+import HookFunction from './hook';
 import { groupHooksInterface } from './groupHooks';
 
-async function execGroupedHook(hook: groupHooksInterface, request: SchemaFunction.hookRequest): Promise<projectionInterface> {
+async function execGroupedHook(hook: groupHooksInterface, request: HookFunction.hookRequest): Promise<projectionInterface> {
     const func = hook.hook.request;
 
-    let pass: boolean = hook.hook.opts.default === 'block' ? false : true;
+    // Set the default access control to the one defined in the options
+    let pass: boolean = hook.hook.opts.fallback === 'block' ? false : true;
 
     // Generate the response object
-    const allow = () => pass = true,
-        block = () => pass = false,
+    const allow = (): boolean => pass = true,
+        block = (): boolean => pass = false,
         getRef = (key: string) => '';
 
     // Await all the hook 

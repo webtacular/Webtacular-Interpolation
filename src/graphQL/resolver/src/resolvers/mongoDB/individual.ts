@@ -9,7 +9,6 @@ import { Context } from 'apollo-server-core';
 import _ from 'lodash';
          
 import { requestDetails } from '../../..';       
-import { internalConfiguration } from '../../../../../general';        
 
 import schemaObject from '../../../../schema/object';  
 import mapResponse from '../../database/mapResponse';    

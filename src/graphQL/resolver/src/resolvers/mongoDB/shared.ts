@@ -5,11 +5,9 @@ import { projectionInterface } from '../../database/parseQuery';
 
 import schemaValue from '../../../../schema/value';   
 import schemaObject from '../../../../schema/object';  
-import processHook from '../../accessControl/processHook';    
-import schemaFunction from '../../accessControl/funcExec';
+import HookFunction from '../../../../../accessControl/hook';
 
 import mongoService, { mongoResponseObject } from '../../database/mongoDB'   
-import groupByFunction, { groupedHookType } from '../../accessControl/groupHooks';
 import { Collection } from 'mongodb';
 import { Context } from 'apollo-server-core';
 
@@ -17,7 +15,10 @@ export type sharedExport = {
     collection: Collection<Document>;
     requestData: Array<{[x: string]: projectionInterface | mongoResponseObject}>;
     projection: projectionInterface;
-    hooks: schemaFunction.hookMap;
+    hooks: {
+        preRequest: HookFunction.hookMap;
+        postRequest: HookFunction.hookMap;
+    };
 };
 
 async function intermediate(
@@ -35,34 +36,31 @@ async function intermediate(
     let projection: projectionInterface = {};
 
     // Access Control Functions
-    let hooks: schemaFunction.hookMap = [];
+    let hooks: {
+        preRequest: HookFunction.hookMap;
+        postRequest: HookFunction.hookMap;
+    } = {
+        preRequest: [],
+        postRequest: [],
+    }
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const paramaters = isCollection === true ? requestDetails.projection[requestDetails.collectionName]?.items ?? {} : requestDetails.projection[requestDetails.individualName] ?? {};
 
+    console.log(requestDetails.hookBank);
     // Map the requested resouces
     for(const paramater in paramaters){
         // Get the value
         const value: schemaValue.init = schemaObject.obj[paramater] as schemaValue.init;
-
+        
         // If the paramater is not found in the schema
         // Continue to the next paramater
         if(!value) continue;
 
         // Check if the schema provided any access control functions
         if(value.options.accessControl) {
-            // Load the hooks
-            const hookObject = new schemaFunction.init(value.options.accessControl, value);
-
-            // Check if the hook is a preRequest hook
-            for(let i = 0; i < hookObject.hooks.length; i++) {
-                const hook = hookObject.hooks[i];
-
-                // Check if the hook is a preRequest hook
-                if(hook.type === 'view')
-                    // Add the hook to the list
-                    hooks.push(hook);
-            }
+            // Find the hook in the bank
+            
         }
 
         // Merge the projections
@@ -75,30 +73,30 @@ async function intermediate(
     
 
     // ---------------[ Manage Hooks ]--------------------- //
-    // Check if there are any preRequest hooks
-    if(hooks.length > 0) {
-        // Group any existing hooks together
-        const groupedHooks: groupedHookType = groupByFunction(hooks);
+    // // Check if there are any preRequest hooks
+    // if(hooks.preRequest.length > 0) {
+    //     // Group any existing hooks together
+    //     const groupedHooks: groupedHookType = groupByFunction(hooks.preRequest);
         
-        // Get any parameters that were passed in by 
-        const fastifyReq = (context as any).rootValue.fastify.req;
+    //     // Get any parameters that were passed in by 
+    //     const fastifyReq = (context as any).rootValue.fastify.req;
 
-        // Merge all the preHook projections together
-        const preHookProjection: projectionInterface = (await processHook({
-            projection: {
-                preSchema: (requestDetails.projection[requestDetails.collectionName] as any)?.items ?? {},
-                postSchema: projection,
-            },
-            hooks: groupedHooks,
-            params: fastifyReq.query,
-            cookies: fastifyReq.cookies,
-            headers: fastifyReq.headers,
-        })).reduce((acc, curr) => _.merge(acc, curr));
+    //     // Merge all the preHook projections together
+    //     const preHookProjection: projectionInterface = (await processHook({
+    //         projection: {
+    //             preSchema: (requestDetails.projection[requestDetails.collectionName] as any)?.items ?? {},
+    //             postSchema: projection,
+    //         },
+    //         hooks: groupedHooks,
+    //         params: fastifyReq.query,
+    //         cookies: fastifyReq.cookies,
+    //         headers: fastifyReq.headers,
+    //     })).reduce((acc, curr) => _.merge(acc, curr));
         
-        // Push the preHookProjection to the requestData
-        if(preHookProjection.length > 0)
-            requestData.push(preHookProjection);
-    }
+    //     // Push the preHookProjection to the requestData
+    //     if(preHookProjection.length > 0)
+    //         requestData.push(preHookProjection);
+    // }
     // ---------------[ PreRequestHooks ]--------------------- //
 
 
