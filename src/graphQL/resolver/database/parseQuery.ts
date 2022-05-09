@@ -7,6 +7,7 @@
 //
 
 import _ from 'lodash';
+import { arrayToObject } from '../../../general';
 import parseArgs from './parseArgs';
 
 // --- These two interfaces need to strongly typed --- //
@@ -45,11 +46,13 @@ export default function(context:any): queryExport {
                     // turn tje parentName array into an object
                     // eg [ 'hello', 'other' ], name => { hello: other: { name: 1 } }
 
-                    _.merge(projection, [...parentName, null].reduceRight((obj: {}, next : string | null):  { [x: string]: {}}  => {
-                        if(next === null) return ({[current.name.value]: 1});
+                    // _.merge(projection, [...parentName, null].reduceRight((obj: {}, next : string | null):  { [x: string]: {}}  => {
+                    //     if(next === null) return ({[current.name.value]: 1});
 
-                        return ({[next]: obj});
-                    }, {})); 
+                    //     return ({[next]: obj});
+                    // }, {})); 
+
+                    _.merge(projection, arrayToObject(parentName, {[current.name.value]: 1}));
                 }
                     
                 // If the parent name is null,
@@ -59,11 +62,9 @@ export default function(context:any): queryExport {
 
 
                 // -----------------[ Args ]----------------- //
-                _.merge(args, [...parentName].reduceRight((obj: {}, next : string):  { [x: string]: {}}  => {
+                _.merge(args, [...parentName].reduceRight((obj, next)  => {
                     const parsedArgs = parseArgs(current);
-
-                    if(parsedArgs !== {})
-                        return ({[next]: parsedArgs});
+                    if(parsedArgs !== {}) return ({[next]: parsedArgs});
                 }, {}));
                 // -----------------[ Args ]----------------- //
             }
