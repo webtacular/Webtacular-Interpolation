@@ -4,6 +4,7 @@ import schemaValue from "../graphQL/schema/value";
 import { projectionInterface } from "../graphQL/resolver/database/parseQuery";
 import { arrayToObject } from "../general";
 import { ObjectId } from "mongodb";
+import { merge } from "../merge";
 
 export interface groupHooksInterface {
     hook: HookFunction.hook,
@@ -85,15 +86,11 @@ export function groupHooks(hookBank: groupHooks, hooks: HookFunction.init, value
 
             if(newHookBank[index].execution === 'preRequest') {
                 newHookBank[index].preMask.allow = 
-                    _.merge(
-                        newHookBank[index].preMask.allow, 
-                        arrayToObject(value.maskArray, 1)
+                    merge(newHookBank[index].preMask.allow, arrayToObject(value.maskArray, 1)
                 );
 
                 newHookBank[index].preMask.block = 
-                    _.merge(
-                        newHookBank[index].preMask.block, 
-                        arrayToObject(value.maskArray, 0)
+                    merge(newHookBank[index].preMask.block, arrayToObject(value.maskArray, 0)
                 );
             }
 

@@ -6,7 +6,6 @@
 //
 
 import { Context } from 'apollo-server-core';
-import _ from 'lodash';
          
 import { requestDetails } from '../../main';       
 

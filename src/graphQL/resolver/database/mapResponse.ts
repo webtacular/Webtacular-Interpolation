@@ -8,10 +8,10 @@
 
 import schemaObject from '../../schema/object';
 
-import _ from 'lodash';
 
 import { mongoResponseObject } from './mongoDB';
 import { arrayToObject } from '../../../general';
+import { merge } from '../../../merge';
 
 export default function (input: schemaObject.init, data: mongoResponseObject): mongoResponseObject {
     // Walk through the data object, get the according value from the schema
@@ -42,7 +42,7 @@ export default function (input: schemaObject.init, data: mongoResponseObject): m
                 );
 
                 // Merge the reMaped object to the obj
-                _.merge(obj, reMaped);
+                obj = merge(obj, reMaped);
             }
         }
     }

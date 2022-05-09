@@ -1,5 +1,5 @@
-import _ from 'lodash';
 import { arrayToObject } from '../../../general';
+import { merge } from '../../../merge';
 import { mongoResponseObject } from './mongoDB';
 
 export default function (contex:any): mongoResponseObject {
@@ -29,7 +29,7 @@ export default function (contex:any): mongoResponseObject {
 
                 } else paramater = convert(value.value.kind, value.value.value);
 
-                _.merge(returnable, arrayToObject([...parentName, value.name.value], paramater));
+                returnable = merge(returnable, arrayToObject([...parentName, value.name.value], paramater));
             }
         }
     }

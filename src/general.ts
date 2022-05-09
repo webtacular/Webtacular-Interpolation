@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import HookFunction from './accessControl/hook';
 import { types } from "./types";
 
@@ -6,26 +5,12 @@ import { types } from "./types";
 export function arrayToObject(arr: Array<string>, val: types.anyType = 1): {
     [key: string]: number | {}
 } {
-    class endStop {
-        endVal: string;
-        constructor(val: string) {
-            this.endVal = val;
-        }
-    }
+    const lastValue: string = arr[arr.length - 1];
 
-    const lastValue: endStop = new endStop(arr[arr.length - 1]);
-
-    arr.pop();
-
-    const returnable: types.obj = [...arr, lastValue].reduceRight((obj: types.obj, next: string): types.obj => {
-
-        if (lastValue instanceof endStop) return ({ [lastValue.endVal]: val });
-
+    return arr.reduceRight((obj: { [key: string]: number | {} }, next: string): { [key: string]: number | {} } => {
+        if (next === lastValue) return ({ [next]: val });
         return { [next]: obj };
-
     }, {});
-
-    return returnable;
 }
 
 export interface internalConfiguration {

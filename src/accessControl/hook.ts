@@ -1,7 +1,7 @@
 import schemaValue from '../graphQL/schema/value';
 import { projectionInterface } from '../graphQL/resolver/database/parseQuery';
-import _ from 'lodash';
 import { internalConfiguration } from '../general';
+import { merge } from '../merge';
 
 namespace HookFunction {
 
@@ -108,7 +108,7 @@ namespace HookFunction {
             opts?: HookOptions
         ) {
             this.request = request;
-            this.opts = _.merge(defaultHookOpts, opts);
+            this.opts = merge(defaultHookOpts, opts);
         }
 
         execute(request: hookRequest): boolean | Promise<boolean> {

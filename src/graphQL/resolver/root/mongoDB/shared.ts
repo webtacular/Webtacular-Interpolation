@@ -1,4 +1,3 @@
-import _ from 'lodash';
          
 import { requestDetails } from '../../main';       
 import { projectionInterface } from '../../database/parseQuery';
@@ -13,6 +12,7 @@ import { Context } from 'apollo-server-core';
 import preHookProjectionArray from '../../../../accessControl/processHook';
 import { groupHooksInterface } from '../../../../accessControl/groupHooks';
 import { internalConfiguration } from '../../../../general';
+import { merge } from '../../../../merge';
 
 export type sharedExport = {
     collection: Collection<Document>;
@@ -109,7 +109,7 @@ async function intermediate(
         }
 
         // Merge the projections
-        _.merge(projection, value.mask);
+        projection = merge(projection, value.mask);
     }
 
     if(projection !== {})
@@ -145,7 +145,7 @@ async function intermediate(
         });
 
         // Merge the hook output
-        hooks.hookOutput = _.merge(hooks.hookOutput, hook.hook.passThrough);
+        hooks.hookOutput = merge(hooks.hookOutput, hook.hook.passThrough);
 
         // Add the hook output to the array
         hookReturns.push(hookOutput);

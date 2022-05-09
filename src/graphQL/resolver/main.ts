@@ -10,11 +10,11 @@ import schemaValue from '../schema/value';
 import individualResolve from './root/mongoDB/individual';
 import collectionResolve from './root/mongoDB/collection';
 
-import _ from 'lodash';
 import { Construct } from '../..';
 import { Output } from '../schema/parse';
 import { groupHooks } from '../../accessControl/groupHooks';
 import { internalConfiguration } from '../../general';
+import { merge } from '../../merge';
 
 export interface requestDetails {
     collectionName: string;
@@ -73,11 +73,11 @@ export default function (
                 const key = rootKeys[i];
 
                 // Check if a root value is requested
-                if(key === requestDetails.individualName) _.merge(returnObject, {
+                if(key === requestDetails.individualName) returnObject = merge(returnObject, {
                     [key]: individualResolve(input, requestDetails, main.client, context)});
                 
                 // Check if the requested value is a collection
-                else if(key === requestDetails.collectionName) _.merge(returnObject, {
+                else if(key === requestDetails.collectionName) returnObject = merge(returnObject, {
                     [key]: collectionResolve(input, requestDetails, main.client, context)});
             }
 

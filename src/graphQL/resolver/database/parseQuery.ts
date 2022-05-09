@@ -6,8 +6,8 @@
 //
 //
 
-import _ from 'lodash';
 import { arrayToObject } from '../../../general';
+import { merge } from '../../../merge';
 import parseArgs from './parseArgs';
 
 // --- These two interfaces need to strongly typed --- //
@@ -42,18 +42,17 @@ export default function(context:any): queryExport {
                 if(current.name === null) continue;
 
                 // If the parent name is not undefined
-                if(parentName[0] !== undefined) 
-                    _.merge(projection, arrayToObject(parentName, {[current.name.value]: 1}));
-                
+                if(parentName.length > 0) 
+                    projection = merge(projection, arrayToObject(parentName, {[current.name.value]: 1}));
                     
                 // If the parent name is null,
                 // then merge the projection with the current selection
-                else _.merge(projection, {[current.name.value]: 1});
+                else projection = merge(projection, {[current.name.value]: 1});
                 // -----------------[ Value ]----------------- //
 
 
                 // -----------------[ Args ]----------------- //
-                _.merge(args, [...parentName].reduceRight((obj, next)  => {
+                args = merge(args, [...parentName].reduceRight((obj, next)  => {
                     const parsedArgs = parseArgs(current);
                     if(parsedArgs !== {}) return ({[next]: parsedArgs});
                 }, {}));

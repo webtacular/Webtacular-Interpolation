@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { arrayToObject } from '../../general';
 
 import schemaObject from './object';
@@ -7,6 +6,7 @@ import schemaValue from './value';
 import { FilterObject, TypeMap } from './types';
 import HookFunction from '../../accessControl/hook';
 import { groupHooks, groupHooksInterface } from '../../accessControl/groupHooks';
+import { merge } from '../../merge';
 
 export interface Output {
     unique: Array<schemaValue.init>;
@@ -108,7 +108,7 @@ const func = (Obj: schemaObject.init): Output => {
 
                 // ----[ Root ]---- //
                 // Merge the object
-                _.merge(graphQL.root, [...parentNames, null].reduceRight((obj: {}, next : string | null):  { [x: string]: {} }  => {
+                graphQL.root = merge(graphQL.root, [...parentNames, null].reduceRight((obj: {}, next : string | null):  { [x: string]: {} }  => {
 
                     if(next === null) {
                         // Format the type to fit the schema

@@ -7,7 +7,6 @@
 //
 //
 
-import _ from 'lodash';
 
 import { ObjectId } from 'mongodb';
 import { mongoResponseObject } from './mongoDB';
@@ -16,6 +15,7 @@ import { projectionInterface } from './parseQuery';
 
 import schemaObject from '../../schema/object';
 import schemaValue from '../../schema/value';
+import { merge } from '../../../merge';
 
 export default function (queryArguments: any, input: schemaObject.init): mongoResponseObject {
     // Start building the query
@@ -54,7 +54,7 @@ export default function (queryArguments: any, input: schemaObject.init): mongoRe
         );
 
         // Merge the query
-        _.merge(query, object);
+        query = merge(query, object);
     }
 
     return query;
