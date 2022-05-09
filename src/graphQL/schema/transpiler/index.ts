@@ -44,6 +44,8 @@ export default (input: Output): {
     let collectionObject: { [key: string]: string } = {
         total: 'Int',
         max: 'Int',
+        page: 'Int',
+        size: 'Int',
         [internalConfiguration.defaultValueName]: `[${input.origin.key}]`,
     };
 

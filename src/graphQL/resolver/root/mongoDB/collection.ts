@@ -27,25 +27,28 @@ async function resolve(
     const processedData =
         await intermediate(schemaObject, requestDetails, client, context, true);
     
+    const args = requestDetails.arguments;
     
     // Get the page data the the user requested
     let pageData = {
-        max: requestDetails.arguments[requestDetails.collectionName]?.pageSize,
-        page: requestDetails.arguments[requestDetails.collectionName]?.page ?? 0
+        size: args?.pageSize,
+        page: isNaN(args?.page) ? 0 : args?.page 
     }
 
     // Make sure that the user cant request a 
     // page size larger than the max page size
-    if(pageData.max > processedData.hooks.hookOutput.maxPageSize)
-        pageData.max = processedData.hooks.hookOutput.maxPageSize;
+    if(pageData.size > processedData.hooks.hookOutput.maxPageSize)
+        pageData.size = processedData.hooks.hookOutput.maxPageSize;
 
-    if(pageData.max < 1)
-        pageData.max = 1;
+    if(pageData.size === undefined)
+        pageData.size = processedData.hooks.hookOutput.defPageSize;
+
+    if(pageData.size < 1)
+        pageData.size = 1;
 
     if(pageData.page < 0)
         pageData.page = 0;
-
-
+    
     // ------------------------------ //
     // Get the data from the database //
     // ------------------------------ //
@@ -57,10 +60,10 @@ async function resolve(
     const data = await processedData.collection.aggregate([
         ...processedData.requestData,
         {
-            $skip: pageData.page * pageData.max
+            $skip: pageData.page * pageData.size
         },
         {
-            $limit: pageData.max
+            $limit: pageData.size
         }
     ]).toArray();
     
@@ -90,6 +93,8 @@ async function resolve(
         [internalConfiguration.defaultValueName]: reMapedData,
         total: data.length,
         max: processedData.hooks.hookOutput.maxPageSize,
+        page: pageData.page,
+        size: pageData.size,
     };
 }
 

@@ -59,13 +59,11 @@ export default function(context:any): queryExport {
 
 
                 // -----------------[ Args ]----------------- //
-                _.merge(args, [...parentName, null].reduceRight((obj: {}, next : string | null):  { [x: string]: {}}  => {
-                    if(next === null) 
-                        // If the current selection has no arguments,
-                        // Return an empty object
-                        return { [current.name.value]: parseArgs(current) };
+                _.merge(args, [...parentName].reduceRight((obj: {}, next : string):  { [x: string]: {}}  => {
+                    const parsedArgs = parseArgs(current);
 
-                    return ({[next]: obj});
+                    if(parsedArgs !== {})
+                        return ({[next]: parsedArgs});
                 }, {}));
                 // -----------------[ Args ]----------------- //
             }
