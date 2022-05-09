@@ -1,18 +1,18 @@
 import _ from 'lodash';
          
-import { requestDetails } from '../../..';       
+import { requestDetails } from '../../main';       
 import { projectionInterface } from '../../database/parseQuery';
 
-import schemaValue from '../../../../schema/value';   
-import schemaObject from '../../../../schema/object';  
-import HookFunction from '../../../../../accessControl/hook';
+import schemaValue from '../../../schema/value';   
+import schemaObject from '../../../schema/object';  
+import HookFunction from '../../../../accessControl/hook';
 
 import mongoService, { mongoResponseObject } from '../../database/mongoDB'   
 import { Collection } from 'mongodb';
 import { Context } from 'apollo-server-core';
-import preHookProjectionArray from '../../../../../accessControl/processHook';
-import { groupHooksInterface } from '../../../../../accessControl/groupHooks';
-import { internalConfiguration } from '../../../../../general';
+import preHookProjectionArray from '../../../../accessControl/processHook';
+import { groupHooksInterface } from '../../../../accessControl/groupHooks';
+import { internalConfiguration } from '../../../../general';
 
 export type sharedExport = {
     collection: Collection<Document>;

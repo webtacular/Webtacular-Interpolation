@@ -1,14 +1,14 @@
 import schemaObject from '../schema/object';
 
-import parseQuery, { ArgumentsInterface, projectionInterface } from './src/database/parseQuery';
+import parseQuery, { ArgumentsInterface, projectionInterface } from './database/parseQuery';
 
 import { buildSchema } from 'graphql';
 import { FilterObject } from '../schema/types';
 
 import schemaValue from '../schema/value';
 
-import individualResolve from './src/resolvers/mongoDB/individual';
-import collectionResolve from './src/resolvers/mongoDB/collection';
+import individualResolve from './root/mongoDB/individual';
+import collectionResolve from './root/mongoDB/collection';
 
 import _ from 'lodash';
 import { Construct } from '../..';

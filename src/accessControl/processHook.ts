@@ -1,4 +1,4 @@
-import { projectionInterface } from '../graphQL/resolver/src/database/parseQuery';
+import { projectionInterface } from '../graphQL/resolver/database/parseQuery';
 import { groupHooksInterface } from './groupHooks';
 import HookFunction from './hook';
 

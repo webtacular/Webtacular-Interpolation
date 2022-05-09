@@ -1,5 +1,5 @@
 import schemaValue from '../graphQL/schema/value';
-import { projectionInterface } from '../graphQL/resolver/src/database/parseQuery';
+import { projectionInterface } from '../graphQL/resolver/database/parseQuery';
 import _ from 'lodash';
 import { internalConfiguration } from '../general';
 

@@ -8,9 +8,9 @@
 import { Context } from 'apollo-server-core';
 import _ from 'lodash';
          
-import { requestDetails } from '../../..';       
+import { requestDetails } from '../../main';       
 
-import schemaObject from '../../../../schema/object';  
+import schemaObject from '../../../schema/object';  
 import mapResponse from '../../database/mapResponse';    
 import mongoService from '../../database/mongoDB';     
 import intermediate from './shared';

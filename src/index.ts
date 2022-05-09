@@ -1,8 +1,8 @@
 import parse from './graphQL/schema/parse';
 import schemaObject from './graphQL/schema/object';
 import transpiler from './graphQL/schema/transpiler';
-import mongoService from './graphQL/resolver/src/database/mongoDB';
-import resolve from './graphQL/resolver';
+import mongoService from './graphQL/resolver/database/mongoDB';
+import resolve from './graphQL/resolver/main';
 
 import hotQL from 'fastify-hotql';
 import fastify, { FastifyInstance } from 'fastify';
