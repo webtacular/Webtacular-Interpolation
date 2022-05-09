@@ -7,6 +7,23 @@ The aim of this project is to recreate the functionality of [Contentful](https:/
 Note, There is a plan to offer both a GraphQL and a REST API, but for now, only the GraphQL API is available.
 thers also a plan to offer different flavours of databases, but for now, only MongoDB is supported.
 
+### Speedtest: Total 25ms (Inc network time)
+
+3 Hooks, requesting 3 objects, each with 3 fields each.
+
+| Total | Start | Finish |
+|---|---|---|
+Overhead time: 0.2285ms | Test start: 539956873.5162ms | Test end: 539956873.7447ms
+Processing time: 0.4468ms | Test start: 539956873.7082ms | Test end: 539956874.155ms
+Query time: 17.5882ms | Test start 539956874.3865ms | Test end: 539956891.9747ms
+
+- Overthead time: The time it takes to pass the request to the resolver
+- Processing time: The time it takes to process the request, hooks etc.
+- Query time: The time it takes to execute the database query.
+
+As you can see, this poorly optimized module is not perticulary slow, which is great as it leaves me with a lot of room to improve it, and to make it faster.
+
+On average, processing each value trough this modulel with hooks only adds 0.07503ms to the total time per value, on my slow machine.
 #### Example (Very very early version)
 
 ```js

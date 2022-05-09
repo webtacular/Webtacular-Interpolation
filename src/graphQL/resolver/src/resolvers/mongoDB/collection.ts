@@ -22,6 +22,7 @@ async function resolve(
     client: mongoService,
     context: Context
 ) {
+
     // Process the request
     const processedData =
         await intermediate(schemaObject, requestDetails, client, context, true);
@@ -29,14 +30,22 @@ async function resolve(
     // ------------------------------ //
     // Get the data from the database //
     // ------------------------------ //
-    const data = await processedData.collection.aggregate([
-        ...processedData.requestData, 
-    ]).toArray();
+
+    const qt = process.hrtime()
+
+    const data = await processedData.collection.aggregate(
+        processedData.requestData, 
+    ).toArray();
+
+    const qtDiff = process.hrtime(qt)
+
+    if(internalConfiguration.debug === true)
+        console.log(`Query time: ${qtDiff[0] * 1000 + qtDiff[1] / 1000000}ms | Test start ${qt[0] * 1000 + qt[1] / 1000000}ms | Test end: ${(qt[0] * 1000 + qt[1] / 1000000) + (qtDiff[0] * 1000 + qtDiff[1] / 1000000)}ms`)
     // ------------------------------ //
 
     // variable to store the data
     let reMapedData: Array<any> = [];
-
+    
     // Remap the data
     for(let i = 0; i < data.length; i++) {
         const item = data[i];
@@ -45,6 +54,7 @@ async function resolve(
 
         reMapedData.push(reMapedItem);
     }
+
 
     // Finally, return the data
     return { [internalConfiguration.defaultValueName]: reMapedData };

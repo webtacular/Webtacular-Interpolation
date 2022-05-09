@@ -1,11 +1,20 @@
 import HookFunction from "./hook";
 import _ from "lodash";
+import schemaValue from "../graphQL/schema/value";
+import { projectionInterface } from "../graphQL/resolver/src/database/parseQuery";
+import { arrayToObject } from "../general";
+import { ObjectId } from "mongodb";
 
 export interface groupHooksInterface {
     hook: HookFunction.hook,
     type: HookFunction.accessControlHooks,
     opts: HookFunction.HookOptions,
     identifier: string,
+    preMask?: {
+        allow: projectionInterface;
+        block: projectionInterface;
+    }
+    execution: HookFunction.hookExecution;
     keys: Array<string>
 }
 
@@ -13,23 +22,23 @@ export interface groupHooks {
     [key: string]: groupHooksInterface,
 }
 
-export function groupHooks(hookBank: groupHooks, hooks: HookFunction.hookMap, identifier: string): {
+export function groupHooks(hookBank: groupHooks, hooks: HookFunction.init, value: schemaValue.init): {
     hookBank: groupHooks,
     hookIdentifiers: Array<string>
 } {
     let newHookBank: groupHooks = hookBank,
         hookIdentifiers: Array<string> = [];
 
-    for(let i = 0; i < hooks.length; i++) {
-        const hook = hooks[i];
+    for(let i = 0; i < hooks.hooks.length; i++) {
+        const hook = hooks.hooks[i];
 
         // Check if the hook is already in the bank
-        const bankKeys = Object.keys(newHookBank);
+        const bankKeys = Object.keys(hookBank);
 
         let index: string | undefined = undefined;
 
         for(let j = 0; j < bankKeys.length; j++) {
-            const bankHook = newHookBank[bankKeys[j]];
+            const bankHook = hookBank[bankKeys[j]];
 
             // Compare the hook options
             if(_.isMatch(bankHook.opts, hook.hook.opts) !== true) continue;
@@ -38,7 +47,7 @@ export function groupHooks(hookBank: groupHooks, hooks: HookFunction.hookMap, id
             if(bankHook.type !== hook.type) continue;
 
             // Compare the function
-            if(bankHook.hook.toString() !== hook.hook.toString()) continue;
+            if(bankHook.hook.request.toString() !== hook.hook.request.toString()) continue;
 
             // If we get here, we have a match
             index = bankKeys[j];
@@ -48,7 +57,7 @@ export function groupHooks(hookBank: groupHooks, hooks: HookFunction.hookMap, id
 
         // If we dont have a match, add the hook
         if(index === undefined) {
-            const hookIdentifier: string = 'HOOK-' + (Date.now() * Math.random()).toString()
+            const hookIdentifier: string = new ObjectId().toString();
             
             // Set the hook
             Object.assign(newHookBank, { [hookIdentifier]: {
@@ -56,7 +65,12 @@ export function groupHooks(hookBank: groupHooks, hooks: HookFunction.hookMap, id
                 hook: hook.hook,
                 type: hook.type,
                 opts: hook.hook.opts,
-                keys: [identifier],
+                keys: [value.uniqueIdentifier],
+                preMask: {
+                    allow: arrayToObject(value.maskArray, 1),
+                    block: arrayToObject(value.maskArray, 0),
+                },
+                execution: hook.hook.opts.execution,
             } as groupHooksInterface });
 
             // Add the hook identifier
@@ -65,9 +79,23 @@ export function groupHooks(hookBank: groupHooks, hooks: HookFunction.hookMap, id
 
         // If we have a match, add the key
         else {
-            if(newHookBank[index].keys.includes(identifier)) continue;
+            if(newHookBank[index].keys.includes(value.uniqueIdentifier)) continue;
 
-            newHookBank[index].keys.push(identifier);
+            newHookBank[index].keys.push(value.uniqueIdentifier);
+
+            if(newHookBank[index].execution === 'preRequest') {
+                newHookBank[index].preMask.allow = 
+                    _.merge(
+                        newHookBank[index].preMask.allow, 
+                        arrayToObject(value.maskArray, 1)
+                );
+
+                newHookBank[index].preMask.block = 
+                    _.merge(
+                        newHookBank[index].preMask.block, 
+                        arrayToObject(value.maskArray, 0)
+                );
+            }
 
             hookIdentifiers.push(index);
         }

@@ -27,7 +27,9 @@ async function resolve(
 
     // Use the projection and query to get the data
     const data = 
-        await processedData.collection.aggregate(processedData.requestData).toArray();
+        await processedData.collection.aggregate(
+            processedData.requestData
+    ).toArray();
 
     // Check if any data was returned
     if(data.length === 0)

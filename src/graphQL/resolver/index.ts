@@ -14,6 +14,7 @@ import _ from 'lodash';
 import { Construct } from '../..';
 import { Output } from '../schema/parse';
 import { groupHooks } from '../../accessControl/groupHooks';
+import { internalConfiguration } from '../../general';
 
 export interface requestDetails {
     collectionName: string;
@@ -40,6 +41,9 @@ export default function (
     //     
     let resolver = {
         [input.key]: (root:any, args:any, context:any, info:any) => {
+
+            const qt = process.hrtime();
+
             // Parse the query
             let parsedQuery = parseQuery(context),
                 // This object will be used to store the response objects
@@ -76,6 +80,11 @@ export default function (
                 else if(key === requestDetails.collectionName) _.merge(returnObject, {
                     [key]: collectionResolve(input, requestDetails, main.client, context)});
             }
+
+            const qtDiff = process.hrtime(qt)
+
+            if(internalConfiguration.debug === true)
+                console.log(`Overhead time: ${qtDiff[0] * 1000 + qtDiff[1] / 1000000}ms | Test start: ${qt[0] * 1000 + qt[1] / 1000000}ms | Test end: ${(qt[0] * 1000 + qt[1] / 1000000) + (qtDiff[0] * 1000 + qtDiff[1] / 1000000)}ms`)
 
             // Finaly, return the data to the user
             return returnObject;

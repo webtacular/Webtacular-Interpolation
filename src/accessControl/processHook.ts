@@ -1,45 +1,38 @@
-// import { projectionInterface } from '../graphQL/resolver/src/database/parseQuery';
-// import execGroupedHook from './execGroupedHook';
-// import HookFunction from './hook';
-// import { groupHooksInterface } from './groupHooks';
+import { projectionInterface } from '../graphQL/resolver/src/database/parseQuery';
+import { groupHooksInterface } from './groupHooks';
+import HookFunction from './hook';
 
-// // Process all the preRequest hooks
-// function preHookProjectionArray(input: {
-//     hooks: groupHooksInterface,
-//     params:  {[key: string]: string;}
-//     cookies: {[key: string]: string;}
-//     headers: {[key: string]: string;}
-//     value?: any
-//     projection: {
-//         preSchema: projectionInterface,
-//         postSchema: projectionInterface
-//     }
-// }): Promise<Array<projectionInterface>> {
-//     return new Promise(async(resolve) => {
-//         // Promise array to store the projection promises
-//         let promiseArray: Array<Promise<projectionInterface>> = [];
+export type hookInput = HookFunction.hookRequest & {
+    hook: groupHooksInterface;
+}
 
-//         // Go through each preRequest hook and execute it
-//         for(let i = 0; i < input.hooks.length; i++) {
-//             const hooks = input.hooks[i];
+// Process all the preRequest hooks
+function preHookProjectionArray(input: hookInput): Promise<projectionInterface> {
+    return new Promise(async(resolve) => {
+        const hookReturn = await input.hook.hook.execute(input);
 
-//             promiseArray.push(execGroupedHook(hooks, {
-//                 urlParams: input.params,
-//                 cookies: input.cookies,
-//                 headers: input.headers,
-    
-//                 projection: {
-//                     preSchema: input.projection.preSchema,
-//                     postSchema: input.projection.postSchema,
-//                 },
-    
-//                 value: input.value,
-//             }))
-//         }
+        switch(hookReturn) {
+            case true:
+                resolve({ $project: input.hook.preMask.allow });
+                break;
 
-//         // Resolve the array of promises
-//         return resolve(await Promise.all(promiseArray) as Array<projectionInterface>);
-//     });
-// }
+            case false:
+                resolve({ $project: input.hook.preMask.block });
+                break;
 
-// export default preHookProjectionArray;
+            default:
+                switch(input.hook.hook.opts.fallback) {
+                    case 'allow':
+                        resolve({ $project: input.hook.preMask.allow });
+                        break;
+
+                    case 'block':
+                        resolve({ $project: input.hook.preMask.block });
+                        break;
+                }
+                break;
+        }
+    });
+}
+
+export default preHookProjectionArray;

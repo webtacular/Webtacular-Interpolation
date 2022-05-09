@@ -144,11 +144,9 @@ const func = (Obj: schemaObject.init): Output => {
 
                 // ----[ Hooks ]---- //
                 if(value.options.accessControl) {
-                    const accessControl = value.options.accessControl;
+                    const hookObject = new HookFunction.init(value.options.accessControl);
 
-                    const hookObject = new HookFunction.init(accessControl);
-
-                    const grouped = groupHooks(hookBank, hookObject.hooks, value.uniqueIdentifier);
+                    const grouped = groupHooks(hookBank, hookObject, value);
 
                     value.hookIdentifers = grouped.hookIdentifiers;
                     hookBank = grouped.hookBank;

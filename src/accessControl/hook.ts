@@ -7,13 +7,9 @@ namespace HookFunction {
 
     export interface hookRequest {
         // Url params, pretty self explanatory
-        urlParams: {
+        params: {
             // eg, www.example.com/gql?id=5
             // = { id: 5 }
-            [key: string]: string;
-        }
-
-        cookies: {
             [key: string]: string;
         }
 
@@ -49,12 +45,12 @@ namespace HookFunction {
         // If this function is envoked, it means that the request
         // Will be honored, and the user will be able to access
         // the data.
-        allow: () => void;
+        allow: () => true;
 
         // If this function is envoked, it means that the request
         // Will be denied, and the user will not be able to access
         // the data.
-        block: () => void;
+        block: () => false;
     }
 
     export type hookAccessControl = 'allow' | 'block';
@@ -71,7 +67,7 @@ namespace HookFunction {
 
     // This is the hook function, it is whats given to the 
     // developer by the accessControlFunc function
-    export type hookFunc = (hook: accessControlHooks, request: (request: Func) => void, opts?: HookOptions) => void;
+    export type hookFunc = (hook: accessControlHooks, request: (request: Func) => boolean | Promise<boolean>, opts?: HookOptions) => void;
 
     // This is the access control function that can be accessed
     // by the schemaObject parameters or the schemaObject parameters
@@ -92,15 +88,25 @@ namespace HookFunction {
 
     export class hook {
         hook: accessControlHooks;
-        request: (request: Func) => void;
+        request: (request: Func) => boolean | Promise<boolean>;
         opts: HookOptions;
 
         constructor(
-            request: (request: Func) => void,
+            request: (request: Func) => boolean | Promise<boolean>,
             opts?: HookOptions
         ) {
             this.request = request;
             this.opts = _.merge(defaultHookOpts, opts);
+        }
+
+        execute(request: hookRequest): boolean | Promise<boolean> {
+            return this.request({
+                request,
+
+                getRef: (key: string) => '',
+                allow: () => true,
+                block: () => false,
+            });
         }
     }
 

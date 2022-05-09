@@ -18,7 +18,8 @@ export interface internalConfiguration {
     hooks: {
         defualtAccessControl: HookFunction.hookAccessControl;
         defaultExecution: HookFunction.hookExecution;
-    }
+    },
+    debug: boolean;
 }
 
 export const internalConfiguration: internalConfiguration = {
@@ -27,5 +28,7 @@ export const internalConfiguration: internalConfiguration = {
     hooks: {
         defualtAccessControl: 'allow',
         defaultExecution: 'preRequest',
-    }
+    },
+    debug: true,
 }
+
