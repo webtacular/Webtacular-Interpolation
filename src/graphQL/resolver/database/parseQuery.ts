@@ -42,18 +42,9 @@ export default function(context:any): queryExport {
                 if(current.name === null) continue;
 
                 // If the parent name is not undefined
-                if(parentName[0] !== undefined) {
-                    // turn tje parentName array into an object
-                    // eg [ 'hello', 'other' ], name => { hello: other: { name: 1 } }
-
-                    // _.merge(projection, [...parentName, null].reduceRight((obj: {}, next : string | null):  { [x: string]: {}}  => {
-                    //     if(next === null) return ({[current.name.value]: 1});
-
-                    //     return ({[next]: obj});
-                    // }, {})); 
-
+                if(parentName[0] !== undefined) 
                     _.merge(projection, arrayToObject(parentName, {[current.name.value]: 1}));
-                }
+                
                     
                 // If the parent name is null,
                 // then merge the projection with the current selection
