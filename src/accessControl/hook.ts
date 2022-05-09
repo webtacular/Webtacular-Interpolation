@@ -51,6 +51,12 @@ namespace HookFunction {
         // Will be denied, and the user will not be able to access
         // the data.
         block: () => false;
+
+        // This function allows the user to set the page size
+        // for the collection
+        setMaxPageSize: (pageSize: number) => void;
+
+        setDefPageSize: (pageSize: number) => void;
     }
 
     export type hookAccessControl = 'allow' | 'block';
@@ -78,6 +84,11 @@ namespace HookFunction {
         type: accessControlHooks,
     }
 
+    export interface hookPasstrhough {
+        maxPageSize?: number;
+        defPageSize?: number;
+    }
+
     export type hookMap = Array<hookObject>;
 
     // Default configuration for hooks
@@ -90,6 +101,7 @@ namespace HookFunction {
         hook: accessControlHooks;
         request: (request: Func) => boolean | Promise<boolean>;
         opts: HookOptions;
+        passThrough: hookPasstrhough = {}
 
         constructor(
             request: (request: Func) => boolean | Promise<boolean>,
@@ -106,6 +118,8 @@ namespace HookFunction {
                 getRef: (key: string) => '',
                 allow: () => true,
                 block: () => false,
+                setMaxPageSize: (number) => this.passThrough.maxPageSize = number,
+                setDefPageSize: (number) => this.passThrough.defPageSize = number,
             });
         }
     }

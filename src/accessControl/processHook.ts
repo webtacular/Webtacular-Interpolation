@@ -9,7 +9,11 @@ export type hookInput = HookFunction.hookRequest & {
 // Process all the preRequest hooks
 function preHookProjectionArray(input: hookInput): Promise<projectionInterface> {
     return new Promise(async(resolve) => {
-        const hookReturn = await input.hook.hook.execute(input);
+        // Get the hook function
+        const hookFunc = input.hook.hook;
+
+        // Execute the hook
+        const hookReturn = await hookFunc.execute(input);
 
         switch(hookReturn) {
             case true:

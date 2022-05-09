@@ -24,7 +24,8 @@ export type sharedExport = {
         };
         postRequest: {
             [x: string]: groupHooksInterface
-        }
+        };
+        hookOutput: HookFunction.hookPasstrhough;
     };
 };
 
@@ -51,10 +52,15 @@ async function intermediate(
         };
         postRequest: {
             [x: string]: groupHooksInterface
-        }
+        };
+        hookOutput: HookFunction.hookPasstrhough;
     } = {
         preRequest: {},
         postRequest: {},
+        hookOutput: {
+            maxPageSize: schemaObject?.options?.page?.maxSize ?? internalConfiguration.page.maxSize,
+            defPageSize: schemaObject?.options?.page?.defaultSize ?? internalConfiguration.page.defaultSize,
+        },
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -138,6 +144,10 @@ async function intermediate(
             }
         });
 
+        // Merge the hook output
+        hooks.hookOutput = _.merge(hooks.hookOutput, hook.hook.passThrough);
+
+        // Add the hook output to the array
         hookReturns.push(hookOutput);
     }
 

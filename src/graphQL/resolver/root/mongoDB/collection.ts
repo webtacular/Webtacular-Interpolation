@@ -26,19 +26,48 @@ async function resolve(
     // Process the request
     const processedData =
         await intermediate(schemaObject, requestDetails, client, context, true);
+    
+    
+    // Get the page data the the user requested
+    let pageData = {
+        max: requestDetails.arguments[requestDetails.collectionName]?.pageSize,
+        page: requestDetails.arguments[requestDetails.collectionName]?.page ?? 0
+    }
+
+    // Make sure that the user cant request a 
+    // page size larger than the max page size
+    if(pageData.max > processedData.hooks.hookOutput.maxPageSize)
+        pageData.max = processedData.hooks.hookOutput.maxPageSize;
+
+    if(pageData.max < 1)
+        pageData.max = 1;
+
+    if(pageData.page < 0)
+        pageData.page = 0;
+
 
     // ------------------------------ //
     // Get the data from the database //
     // ------------------------------ //
 
+    // DEBUG: timer
     const qt = process.hrtime()
 
-    const data = await processedData.collection.aggregate(
-        processedData.requestData, 
-    ).toArray();
-
+    // Get the data from the database
+    const data = await processedData.collection.aggregate([
+        ...processedData.requestData,
+        {
+            $skip: pageData.page * pageData.max
+        },
+        {
+            $limit: pageData.max
+        }
+    ]).toArray();
+    
+    // DEBUG: timer
     const qtDiff = process.hrtime(qt)
-
+    
+    // DEBUG: timer
     if(internalConfiguration.debug === true)
         console.log(`Query time: ${qtDiff[0] * 1000 + qtDiff[1] / 1000000}ms | Test start ${qt[0] * 1000 + qt[1] / 1000000}ms | Test end: ${(qt[0] * 1000 + qt[1] / 1000000) + (qtDiff[0] * 1000 + qtDiff[1] / 1000000)}ms`)
     // ------------------------------ //
@@ -57,7 +86,11 @@ async function resolve(
 
 
     // Finally, return the data
-    return { [internalConfiguration.defaultValueName]: reMapedData };
+    return { 
+        [internalConfiguration.defaultValueName]: reMapedData,
+        total: data.length,
+        max: processedData.hooks.hookOutput.maxPageSize,
+    };
 }
 
 export default resolve;

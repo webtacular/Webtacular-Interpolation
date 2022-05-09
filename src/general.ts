@@ -20,6 +20,10 @@ export interface internalConfiguration {
         defaultExecution: HookFunction.hookExecution;
     },
     debug: boolean;
+    page: {
+        maxSize: number;
+        defaultSize: number;
+    }
 }
 
 export const internalConfiguration: internalConfiguration = {
@@ -29,6 +33,10 @@ export const internalConfiguration: internalConfiguration = {
         defualtAccessControl: 'allow',
         defaultExecution: 'preRequest',
     },
-    debug: true,
+    debug: false,
+    page: {
+        maxSize: 15,
+        defaultSize: 10,
+    }
 }
 

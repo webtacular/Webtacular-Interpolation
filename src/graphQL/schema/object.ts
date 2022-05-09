@@ -10,6 +10,10 @@ namespace schemaObject {
         collectionName: string;
         databaseName: string;
         collectionize?: boolean;
+        page?: {
+            maxSize?: number;
+            defaultSize?: number;
+        }
         description?: string;
         searchable?: boolean;
         accessControl?: HookFunction.accessControlFunc;

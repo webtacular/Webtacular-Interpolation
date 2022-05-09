@@ -26,9 +26,9 @@ export default function (contex:any): mongoResponseObject {
                     }
 
                     paramater = paramArray;
-                } else paramater = convert(value.kind, paramater);
 
-                // returnable[value.name.value] = paramater;
+                } else paramater = convert(value.value.kind, value.value.value);
+
                 _.merge(returnable, arrayToObject([...parentName, value.name.value], paramater));
             }
         }
@@ -43,10 +43,10 @@ export default function (contex:any): mongoResponseObject {
 const convert = (type: string, value: any): number | Float64Array | string | Array<any> | {} => {
     switch (type) {
         case 'IntValue':
-            return parseInt(value.value, 10);
+            return parseInt(value);
 
         case 'FloatValue':
-            return parseFloat(value.value);
+            return parseFloat(value);
 
         case 'StringValue':
             return value;

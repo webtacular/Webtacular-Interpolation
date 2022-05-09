@@ -58,6 +58,8 @@ export default (input: Output): {
         Object.assign(queryObject, { 
             [input.origin.key + 'Collection']: new InputClass({
                 filter: `${input.origin.key}Filter`,
+                page: 'Int',
+                pageSize: 'Int',
             }, `${input.origin.key + 'Collection'}`,)
         });
 
