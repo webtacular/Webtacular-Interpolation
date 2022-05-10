@@ -32,11 +32,6 @@ namespace HookFunction {
             // that is sent to the database.
             postSchema: projectionInterface
         }
-
-        // Filter object that is passed in
-        filters: {
-            [x: string]: FilterObject;
-        }
     }
 
     // This here interface is what will be

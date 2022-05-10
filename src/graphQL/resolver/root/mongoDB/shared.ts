@@ -147,8 +147,7 @@ async function intermediate(
             projection: {
                 preSchema: (requestDetails.projection[requestDetails.collectionName] as any)?.items ?? {},
                 postSchema: projection,
-            },
-            filters: {},
+            }
         });
 
         // Merge the hook output
