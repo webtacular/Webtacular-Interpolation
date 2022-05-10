@@ -33,15 +33,6 @@ export const TypeMap: {
             //
             // @Return: boolean - true if the data should be included in the query
             //                  - false if the data should be excluded from the query
-            MatchesRegex: {
-                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
-                    return {
-                        $regex: input,
-                        $options: 'i',
-                    };
-                },
-                input: 'String',
-            },
 
             Is: {
                 func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
