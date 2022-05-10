@@ -13,15 +13,32 @@ export default function filter(values: Array<schemaValue.init>, input: Arguments
             filters = value.filters,
             filterKeys = Object.keys(filters);
 
+        // Loop through all the filters for this value
         for (let j = 0; j < filterKeys.length; j++) {
-            const filterName = filterKeys[j],
+
+            // Get the filter's name
+            const filterName = filterKeys[j], 
+                // Get filter
                 filter = filters[filterName];
 
-            if(!input.filter[filterName]) continue;
+            // If no filter was asked for, continue
+            if(!input.filter[filterName])
+                continue;
 
-            filteredValues.push(filter.func(input[filterName], filter, database));
+            // Process the filter
+            const filterOutput = filter.func(
+                input.filter[filterName],
+                filter, 
+                database
+            );
+
+            // Add the filter to the stack
+            filteredValues.push(
+                filterOutput
+            );
         }
     }
 
+    // Finally, return the filtered values
     return filteredValues;
 }
