@@ -1,21 +1,12 @@
 import { ObjectId } from 'mongodb';
+import { types } from '../../types';
 import schemaValue from './value';
 
 export type FilterType = 'function' | 'query';
 
-export interface FuncFilterObject { 
-    func: (input: any, data: any, maskArray: Array<string>) => boolean, 
-    input: schemaValue.GqlType, 
-    data: schemaValue.type,
-    type: 'function',
-    actualKey?: string,
-    schemaKey?: string
-};
-
 export interface QueryFilterObject {
-    func: (input: any, data: any, maskArray: Array<string>) => QueryFilterOutput, 
+    func: (input: any, data: any, database?: types.database) => QueryFilterOutput, 
     input: schemaValue.GqlType, 
-    type: 'query',
     actualKey?: string,
     schemaKey?: string,
 }
@@ -24,7 +15,7 @@ export interface QueryFilterOutput {
     [key: string]: string | number | boolean | ObjectId | Array<string | number | boolean | ObjectId> | {} | QueryFilterOutput;
 }
 
-export type FilterObject = FuncFilterObject | QueryFilterObject;
+export type FilterObject = QueryFilterObject;
 
 export const TypeMap: {
     [x: string]: { 
@@ -43,19 +34,13 @@ export const TypeMap: {
             // @Return: boolean - true if the data should be included in the query
             //                  - false if the data should be excluded from the query
             MatchesRegex: {
-                func: (input: any, data: any): boolean => {
-                    // We want to check if the data matches the regex (input, user provided)
-                    
-                    // Instantiate a regex instance
-                    const regex: RegExp = new RegExp(input);
-    
-                    // Check the data against the regex
-                    return regex.test(data);
+                func: (input: any, self: QueryFilterObject): QueryFilterOutput => {
+                    return {
+                        $regex: input,
+                        $options: 'i',
+                    };
                 },
-
                 input: 'String',
-                data: 'string',
-                type: 'function'
             },
 
             Is: {
@@ -66,9 +51,7 @@ export const TypeMap: {
                         }
                     }
                 },
-
                 input: '[String]',
-                type: 'query'
             },
 
             IsNot: {
@@ -79,9 +62,7 @@ export const TypeMap: {
                         }
                     }
                 },
-
                 input: 'String',
-                type: 'query'
             },
             
             Exists: {
@@ -92,9 +73,7 @@ export const TypeMap: {
                         }
                     }
                 },
-
                 input: 'Boolean',
-                type: 'query'
             }
         },
     },
@@ -110,9 +89,7 @@ export const TypeMap: {
                         }
                     }
                 },
-
-                input: '[Int]',
-                type: 'query'
+                input: '[Int]',                
             },
 
             IsNot: {
@@ -123,9 +100,7 @@ export const TypeMap: {
                         }
                     }
                 },
-
-                input: '[Int]',
-                type: 'query'
+                input: '[Int]',               
             },
 
             IsGreaterThan: {
@@ -136,9 +111,7 @@ export const TypeMap: {
                         }
                     }
                 },
-
-                input: 'Int',
-                type: 'query'
+                input: 'Int',          
             },
 
             IsGreaterThanOrEqualTo: {
@@ -149,9 +122,7 @@ export const TypeMap: {
                         }
                     }
                 },
-
-                input: 'Int',
-                type: 'query'
+                input: 'Int',       
             },
 
             IsLessThan: {
@@ -162,9 +133,7 @@ export const TypeMap: {
                         }
                     }
                 },
-
-                input: 'Int',
-                type: 'query'
+                input: 'Int',       
             },
 
             IsLessThanOrEqualTo: {
@@ -175,9 +144,7 @@ export const TypeMap: {
                         }
                     }
                 },
-
-                input: 'Int',
-                type: 'query'
+                input: 'Int',          
             },
 
             Exists: {
@@ -188,9 +155,7 @@ export const TypeMap: {
                         }
                     }
                 },
-
-                input: 'Boolean',
-                type: 'query'
+                input: 'Boolean',            
             }
         },
     },
@@ -205,10 +170,8 @@ export const TypeMap: {
                             [self.actualKey]: input
                         }
                     }
-                },
-                
-                input: '[Boolean]',
-                type: 'query'
+                },        
+                input: '[Boolean]',         
             },
 
             Exists: {
@@ -219,9 +182,7 @@ export const TypeMap: {
                         }
                     }
                 },  
-
-                input: 'Boolean',
-                type: 'query'
+                input: 'Boolean', 
             }
         },
     },
@@ -237,9 +198,7 @@ export const TypeMap: {
                         }
                     }
                 },  
-
-                input: '[ID]',
-                type: 'query'
+                input: '[ID]', 
             },
 
             IsNot: {
@@ -250,9 +209,7 @@ export const TypeMap: {
                         }
                     }
                 },
-
-                input: '[ID]',
-                type: 'query'
+                input: '[ID]',   
             },
 
             Exists: {
@@ -263,9 +220,7 @@ export const TypeMap: {
                         }
                     }
                 },
-
-                input: 'Boolean',
-                type: 'query'
+                input: 'Boolean',       
             },
 
         },

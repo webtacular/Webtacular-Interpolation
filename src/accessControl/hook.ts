@@ -2,6 +2,7 @@ import schemaValue from '../graphQL/schema/value';
 import { projectionInterface } from '../graphQL/resolver/database/parseQuery';
 import { internalConfiguration } from '../general';
 import { merge } from '../merge';
+import { FilterObject } from '../graphQL/schema/types';
 
 namespace HookFunction {
 
@@ -30,6 +31,11 @@ namespace HookFunction {
             // PostSchema: It will return the projection map 
             // that is sent to the database.
             postSchema: projectionInterface
+        }
+
+        // Filter object that is passed in
+        filters: {
+            [x: string]: FilterObject;
         }
     }
 

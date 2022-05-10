@@ -6,10 +6,10 @@ import schemaValue from '../../../schema/value';
 import schemaObject from '../../../schema/object';  
 import HookFunction from '../../../../accessControl/hook';
 
+import preHookProjectionArray from '../../../../accessControl/processHook';
 import mongoService, { mongoResponseObject } from '../../database/mongoDB'   
 import { Collection } from 'mongodb';
 import { Context } from 'apollo-server-core';
-import preHookProjectionArray from '../../../../accessControl/processHook';
 import { groupHooksInterface } from '../../../../accessControl/groupHooks';
 import { internalConfiguration } from '../../../../general';
 import { merge } from '../../../../merge';
@@ -27,6 +27,7 @@ export type sharedExport = {
         };
         hookOutput: HookFunction.hookPasstrhough;
     };
+    values: Array<schemaValue.init>;
 };
 
 async function intermediate(
@@ -44,6 +45,8 @@ async function intermediate(
     // ------------[ Process the rawProjection ]------------- //
     // Object to store the projection
     let projection: projectionInterface = {};
+    
+    let values: Array<schemaValue.init> = [];
 
     // Access Control Functions
     let hooks: {
@@ -108,6 +111,9 @@ async function intermediate(
             }
         }
 
+        // Add the value to the values array
+        values.push(value);
+
         // Merge the projections
         projection = merge(projection, value.mask);
     }
@@ -141,7 +147,8 @@ async function intermediate(
             projection: {
                 preSchema: (requestDetails.projection[requestDetails.collectionName] as any)?.items ?? {},
                 postSchema: projection,
-            }
+            },
+            filters: {},
         });
 
         // Merge the hook output
@@ -157,7 +164,6 @@ async function intermediate(
     // Merge the hooks
     requestData = [...requestData, ...processedHooks];
     // ---------------[ PreRequestHooks ]--------------------- //
-
 
     // ------------------------------------ //
     // Get the collection from the database //
@@ -179,6 +185,7 @@ async function intermediate(
         requestData,
         projection,
         hooks,
+        values,
     }
 }
 

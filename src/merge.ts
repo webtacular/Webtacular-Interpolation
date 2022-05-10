@@ -12,6 +12,9 @@ export function merge(target: any, source: any): any {
         // Loop through the source object
         const r_sourceKeys = Object.keys(r_source ?? {});
 
+        r_target = r_target ?? {};
+        r_source = r_source ?? {};
+
         for (let i = 0; i < r_sourceKeys.length; i++) {
             const key = r_sourceKeys[i],
                 value = r_source[key],

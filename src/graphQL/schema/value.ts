@@ -1,4 +1,5 @@
 import HookFunction from '../../accessControl/hook';
+import { FilterObject } from './types';
 
 namespace schemaValue { 
     export type type = 'string' | 'number' | 'float' | 'boolean' | 'id';
@@ -61,9 +62,12 @@ namespace schemaValue {
         // This is the array that was used to create the mask
         maskArray: Array<string>;
         
+        filters: { [x: string]: FilterObject; }
 
         constructor(opt: ValueConstructor) {
             this.options = opt;
+
+            this.filters = {};
         }
     }
 }

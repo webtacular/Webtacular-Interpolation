@@ -14,6 +14,7 @@ import schemaObject from '../../../schema/object';
 import mapResponse from '../../database/mapResponse';    
 import mongoService from '../../database/mongoDB';     
 import intermediate from './shared';
+import filter from '../../filter/resolve';
 
 async function resolve(
     schemaObject: schemaObject.init,
@@ -25,7 +26,11 @@ async function resolve(
     // Process the request
     const processedData =
         await intermediate(schemaObject, requestDetails, client, context, true);
-    
+
+    // Process the filters
+    const filters = filter(processedData.values, requestDetails.arguments, 'mongo');
+
+    // Arguments from the request
     const args = requestDetails.arguments;
     
     // Get the page data the the user requested
@@ -58,6 +63,7 @@ async function resolve(
     // Get the data from the database
     const data = await processedData.collection.aggregate([
         ...processedData.requestData,
+        ...filters,
         {
             $skip: pageData.page * pageData.size
         },

@@ -5,4 +5,6 @@ export namespace types {
 
     export type obj = { [x: string]: basicUnion | obj };
     export type anyType = basic | obj;
+
+    export type database = 'mongo' | 'sql';
 }

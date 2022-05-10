@@ -3,7 +3,7 @@ import { arrayToObject } from '../../general';
 import schemaObject from './object';
 import schemaValue from './value';
 
-import { FilterObject, TypeMap } from './types';
+import { FilterObject, QueryFilterOutput, TypeMap } from './types';
 import HookFunction from '../../accessControl/hook';
 import { groupHooks, groupHooksInterface } from '../../accessControl/groupHooks';
 import { merge } from '../../merge';
@@ -25,8 +25,6 @@ export class Group {
         this.schema = schema;
     }
 }
-
-
 
 const func = (Obj: schemaObject.init): Output => {
     let opts = {
@@ -135,11 +133,21 @@ const func = (Obj: schemaObject.init): Output => {
                 for(let i = 0; i < filterKeys.length; i++) {
                     const filterName = filterKeys[i];
 
-                    graphQL.filter[key + filterName] = { 
+                    const newFilter = { 
                         actualKey: value.maskArray[value.maskArray.length - 1], 
                         schemaKey: key,
-                        ...gqlType.filter[filterName] 
+                        ...gqlType.filter[filterName],
                     }
+
+                    // merge the filter
+                    merge(graphQL.filter, {
+                        [key + filterName]: newFilter,
+                    });
+
+                    // add the filter to the value
+                    merge(value.filters, {
+                        [key + filterName]: newFilter
+                    });
                 }
 
                 // ----[ Hooks ]---- //
