@@ -1,14 +1,16 @@
 import HookFunction from '../../accessControl/hook';
+import schemaNested from './nested';
 import schemaValue from './value';
 
 namespace schemaObject {
     export interface ValueInterface {
-        [key: string]: schemaValue.init;
+        [key: string]: schemaValue.init | schemaNested.init;
     }
     
     export interface Constructor {
         collectionName: string;
         databaseName: string;
+        name?: string;
         collectionize?: boolean;
         page?: {
             maxSize?: number;
@@ -21,15 +23,23 @@ namespace schemaObject {
 
     export class init {
         options: Constructor;
-        obj: ValueInterface;
-        key: string;
         
+        obj: ValueInterface;
+
+        key: string;
+
+        identifier: string;
+
+        uniqueValues: Array<string>;
+
         maskArray: string[] = [];
+
         mask: { [key: string]: number | {} } = {};
 
         constructor(options: Constructor, obj: ValueInterface) {
             this.options = options;
             this.obj = obj;
+            this.uniqueValues = [];
         }
 
         setKey(name: string) {

@@ -2,8 +2,8 @@
 import { requestDetails } from '../../main';       
 import { projectionInterface } from '../../database/parseQuery';
 
-import schemaValue from '../../../schema/value';   
-import schemaObject from '../../../schema/object';  
+import schemaValue from '../../../../parse/types/value';   
+import schemaObject from '../../../../parse/types/object';  
 import HookFunction from '../../../../accessControl/hook';
 
 import preHookProjectionArray from '../../../../accessControl/processHook';

@@ -7,4 +7,24 @@ export namespace types {
     export type anyType = basic | obj;
 
     export type database = 'mongo' | 'sql';
+
+    // export type mongoDBversion = 3.0 | 3.2 | 3.4 | 3.6 | 4.0 | 4.2 | 4.4 |
+
+    export type mongoDBconnection = {
+        host: string;
+        port: number;
+        user: string;
+        password: string;
+        database: string;
+    }
+
+    export type sqlDBconnection = {
+        host: string;
+        port: number;
+        user: string;
+        password: string;
+        database: string;
+    }
+
+    export type databaseConnection = mongoDBconnection | sqlDBconnection;
 }

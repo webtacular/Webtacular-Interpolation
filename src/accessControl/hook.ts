@@ -1,4 +1,4 @@
-import schemaValue from '../graphQL/schema/value';
+import schemaValue from '../parse/types/value';
 import { projectionInterface } from '../graphQL/resolver/database/parseQuery';
 import { internalConfiguration } from '../general';
 import { merge } from '../merge';

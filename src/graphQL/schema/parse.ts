@@ -1,7 +1,7 @@
 import { arrayToObject } from '../../general';
 
-import schemaObject from './object';
-import schemaValue from './value';
+import schemaObject from '../../parse/types/object';
+import schemaValue from '../../parse/types/value';
 
 import { FilterObject, QueryFilterOutput, TypeMap } from './types';
 import HookFunction from '../../accessControl/hook';

@@ -1,6 +1,6 @@
 import HookFunction from "./hook";
 import _ from "lodash";
-import schemaValue from "../graphQL/schema/value";
+import schemaValue from "../parse/types/value";
 import { projectionInterface } from "../graphQL/resolver/database/parseQuery";
 import { arrayToObject } from "../general";
 import { ObjectId } from "mongodb";
@@ -66,10 +66,10 @@ export function groupHooks(hookBank: groupHooks, hooks: HookFunction.init, value
                 hook: hook.hook,
                 type: hook.type,
                 opts: hook.hook.opts,
-                keys: [value.uniqueIdentifier],
+                keys: [value.identifier],
                 preMask: {
-                    allow: arrayToObject(value.maskArray, 1),
-                    block: arrayToObject(value.maskArray, 0),
+                    allow: arrayToObject(value.mask.database.maskArray, 1),
+                    block: arrayToObject(value.mask.database.maskArray, 0),
                 },
                 execution: hook.hook.opts.execution,
             } as groupHooksInterface });
@@ -80,17 +80,17 @@ export function groupHooks(hookBank: groupHooks, hooks: HookFunction.init, value
 
         // If we have a match, add the key
         else {
-            if(newHookBank[index].keys.includes(value.uniqueIdentifier)) continue;
+            if(newHookBank[index].keys.includes(value.identifier)) continue;
 
-            newHookBank[index].keys.push(value.uniqueIdentifier);
+            newHookBank[index].keys.push(value.identifier);
 
             if(newHookBank[index].execution === 'preRequest') {
                 newHookBank[index].preMask.allow = 
-                    merge(newHookBank[index].preMask.allow, arrayToObject(value.maskArray, 1)
+                    merge(newHookBank[index].preMask.allow, arrayToObject(value.mask.database.maskArray, 1)
                 );
 
                 newHookBank[index].preMask.block = 
-                    merge(newHookBank[index].preMask.block, arrayToObject(value.maskArray, 0)
+                    merge(newHookBank[index].preMask.block, arrayToObject(value.mask.database.maskArray, 0)
                 );
             }
 

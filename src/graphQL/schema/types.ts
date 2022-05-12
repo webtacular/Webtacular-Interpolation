@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { types } from '../../types';
-import schemaValue from './value';
+import schemaValue from '../../parse/types/value';
 
 export type FilterType = 'function' | 'query';
 
