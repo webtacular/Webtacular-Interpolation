@@ -9,19 +9,17 @@ import schemaValue from "./types/value";
 import schemaNested from "./types/nested";
 
 export interface processedObject {
-    [x: string]: schemaObject.init | {
-            identifier: string;
-            parent: string;
-            parents: string[];
-            values: Array<schemaValue.init>;
-    };
+    identifier: string;
+    parent: string;
+    parents: string[];
+    values: Array<schemaValue.init>;
 }
 
 export interface Output {
     processed: {
-        nested: processedObject;
-        values: processedObject;
-        object: processedObject;
+        nested: { [x: string]: schemaNested.init };
+        values: { [key: string]: processedObject };
+        object: { [key: string]: schemaObject.init };
     };
     hookBank: {
         [key: string]: groupHooksInterface
@@ -29,7 +27,11 @@ export interface Output {
 }
 
 function parse(object: schemaObject.init): Output {
-    let returnable: any = {
+    let returnable: {
+        nested: { [x: string]: schemaNested.init };
+        values: { [key: string]: processedObject };
+        object: { [key: string]: schemaObject.init };
+    } = {
         nested: {},
         values: {},
         object: {}
@@ -43,7 +45,7 @@ function parse(object: schemaObject.init): Output {
         schema: schemaObject.init | schemaObject.ValueInterface | schemaNested.ValueInterface,
         parents: Array<schemaObject.init | schemaNested.init> = [],
         parentsId: Array<string> = [],
-        parentsKeys: Array<string> = []): any => 
+        parentsKeys: Array<string> = []): void => 
     {
 
         // ---------------------------------[ Object ]--------------------------------- //
