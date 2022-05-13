@@ -1,5 +1,5 @@
 import parse from './graphQL/schema/parse';
-import schemaObject from './parse/types/object';
+import schemaObject from './parser/types/object';
 import transpiler from './graphQL/schema/transpiler';
 import mongoService from './graphQL/resolver/database/mongoDB';
 import resolve from './graphQL/resolver/main';

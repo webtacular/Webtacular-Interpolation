@@ -1,6 +1,6 @@
 import { merge } from "lodash";
 import { types } from "../../../types";
-import schemaValue from "../../../parse/types/value";
+import schemaValue from "../../../parser/types/value";
 import { ArgumentsInterface, projectionInterface } from "../database/parseQuery";
 
 export default function filter(values: Array<schemaValue.init>, input: ArgumentsInterface, database: types.database): Array<projectionInterface> {

@@ -10,7 +10,7 @@ import { Context } from 'apollo-server-core';
 import { requestDetails } from '../../main';       
 import { internalConfiguration } from '../../../../general';        
 
-import schemaObject from '../../../../parse/types/object';  
+import schemaObject from '../../../../parser/types/object';  
 import mapResponse from '../../database/mapResponse';    
 import mongoService from '../../database/mongoDB';     
 import intermediate from './shared';

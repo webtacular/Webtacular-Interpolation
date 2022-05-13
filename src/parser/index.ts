@@ -299,4 +299,4 @@ const a = parse(new schemaObject.init({
 
 // console.log(JSON.stringify(a.processed))
 
-console.log(a)
+console.log(a.processed.object)

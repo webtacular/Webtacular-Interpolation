@@ -13,8 +13,8 @@ import { mongoResponseObject } from './mongoDB';
 import { arrayToObject } from '../../../general';
 import { projectionInterface } from './parseQuery';
 
-import schemaObject from '../../../parse/types/object';
-import schemaValue from '../../../parse/types/value';
+import schemaObject from '../../../parser/types/object';
+import schemaValue from '../../../parser/types/value';
 import { merge } from '../../../merge';
 
 export default function (queryArguments: any, input: schemaObject.init): mongoResponseObject {
