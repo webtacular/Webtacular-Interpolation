@@ -18,19 +18,19 @@ export interface processedObject {
 export interface Output {
     processed: {
         nested: { [x: string]: schemaNested.init };
-        values: { [key: string]: processedObject };
-        object: { [key: string]: schemaObject.init };
+        values: { [x: string]: processedObject };
+        object: { [x: string]: schemaObject.init };
     };
     hookBank: {
-        [key: string]: groupHooksInterface
+        [x: string]: groupHooksInterface
     };
 }
 
-function parse(object: schemaObject.init): Output {
+export function parse(object: schemaObject.init): Output {
     let returnable: {
         nested: { [x: string]: schemaNested.init };
-        values: { [key: string]: processedObject };
-        object: { [key: string]: schemaObject.init };
+        values: { [x: string]: processedObject };
+        object: { [x: string]: schemaObject.init };
     } = {
         nested: {},
         values: {},
@@ -55,6 +55,8 @@ function parse(object: schemaObject.init): Output {
             const objectIdentifier: string = new ObjectId().toString();
 
             schema.identifier = objectIdentifier;
+
+            schema.key = schema.options.name;
 
             merge(returnable.object, {
                 [objectIdentifier]: schema
@@ -92,6 +94,8 @@ function parse(object: schemaObject.init): Output {
 
                     // Set the unique identifier
                     value.identifier = nestedIdentifier;
+
+                    value.key = objKeys[i];
 
                     // Merge the returnable
                     merge(returnable.nested, {
@@ -255,48 +259,3 @@ function parse(object: schemaObject.init): Output {
         hookBank
     }
 }
-
-const a = parse(new schemaObject.init({
-    collectionName: 'config',
-    databaseName: 'test',
-    name: 'config',
-    collectionize: true,
-}, {
-    id: new schemaValue.init({
-        type: 'id',
-        unique: true,
-
-        mask: {
-            schema: {  '_id': 1, }
-        },
-    }),
-
-    values: new schemaNested.init({
-        collectionize: true,
-    }, {
-        idNested: new schemaValue.init({
-            type: 'id',
-            unique: true,
-        }),
-
-        valueNested: new schemaValue.init({
-            type: 'string',
-            unique: true,
-        }),
-    }),
-
-    precedence: new schemaValue.init({
-        type: 'id',
-        array: true,
-    }),
-}));
-
-// Object.keys(a.processed).forEach(key => {
-//     const value = a.processed[key];
-
-//     console.log((value as any)?.values);
-// });
-
-// console.log(JSON.stringify(a.processed))
-
-console.log(a.processed.object)

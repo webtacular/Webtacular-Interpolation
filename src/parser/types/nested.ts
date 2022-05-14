@@ -29,6 +29,8 @@ namespace schemaNested {
 
         uniqueValues: Array<string> = [];
 
+        key: string;
+
         constructor(options: Constructor, obj: ValueInterface) {
             // Perform a few checks to make sure that the options are valid
             
