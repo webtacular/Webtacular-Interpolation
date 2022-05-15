@@ -79,11 +79,13 @@ function graphQL(input: Output) {
         // List of all the parents names
         let nameArray: string[] = [parent.key];
 
-        // Loop through the parents
+        // Check if we are a nested object
         if(parent instanceof schemaNested.init) {
+
             // Keys of the parents
             const parentsKeys = Object.keys(parent.parents);
 
+            // Loop through the parents
             for (let i = parentsKeys.length - 1; i > -1; i--) {
                 // If the value is the last one, skip it
                 if(i === parentsKeys.length - 1) continue;
@@ -96,6 +98,17 @@ function graphQL(input: Output) {
                 // Add the parent to the name array
                 nameArray.push(parent.key);
             }
+
+            const parentParent = 
+                input.processed.object[parent.parent] ?? input.processed.nested[parent.parent];
+
+            // Add self to nested value
+            merge(object, {
+                [(parentParent as schemaObject.init).options.name]: {
+                    [nameArray[0]]: formatNameArray(nameArray)
+                }
+            });
+                
         }
 
         // Formated name
