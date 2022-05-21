@@ -1,7 +1,7 @@
 import { parse, processedObject } from '../';
 import { Output } from "..";
-import schemaNested from "../types/nested";
-import schemaObject from "../types/object";
+import schemaNested from "../types/objects/nested";
+import schemaObject from "../types/objects/object";
 import schemaValue from "../types/value";
 import { merge } from 'lodash';
 
@@ -130,4 +130,5 @@ function graphQL(input: Output) {
     console.log(JSON.stringify(object, null, 2));
 }
 
-graphQL(a);
+// graphQL(a);
+console.log(JSON.stringify(a, null, 2));

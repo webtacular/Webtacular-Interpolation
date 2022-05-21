@@ -1,4 +1,4 @@
-import schemaObject from '../../parser/types/object';
+import schemaObject from '../../parser/types/objects/object';
 
 import parseQuery, { ArgumentsInterface, projectionInterface } from './database/parseQuery';
 

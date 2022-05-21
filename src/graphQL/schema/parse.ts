@@ -1,6 +1,6 @@
 import { arrayToObject } from '../../general';
 
-import schemaObject from '../../parser/types/object';
+import schemaObject from '../../parser/types/objects/object';
 import schemaValue from '../../parser/types/value';
 
 import { FilterObject, QueryFilterOutput, TypeMap } from './types';

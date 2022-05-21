@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import HookFunction from '../../accessControl/hook';
 import { FilterObject } from '../../graphQL/schema/types';
 
@@ -70,9 +71,9 @@ namespace schemaValue {
             value: any;
         }> = [];
 
-        identifier: string;
+        identifier = new ObjectId();
 
-        hookIdentifers: Array<string>;
+        hookIdentifers: Array<ObjectId>;
 
         unique: boolean;
         
@@ -81,7 +82,6 @@ namespace schemaValue {
         constructor(options: Constructor) {
             this.additionalValues = [];
             
-            this.identifier = '';
 
             this.hookIdentifers = [];
 

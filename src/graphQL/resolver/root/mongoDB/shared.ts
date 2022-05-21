@@ -3,7 +3,7 @@ import { requestDetails } from '../../main';
 import { projectionInterface } from '../../database/parseQuery';
 
 import schemaValue from '../../../../parser/types/value';   
-import schemaObject from '../../../../parser/types/object';  
+import schemaObject from '../../../../parser/types/objects/object';  
 import HookFunction from '../../../../accessControl/hook';
 
 import preHookProjectionArray from '../../../../accessControl/processHook';

@@ -3,46 +3,50 @@ import { arrayToObject } from "../general";
 import { ObjectId } from "mongodb";
 import { merge } from "../merge";
 
-import schemaObject from "./types/object";
+import schemaObject from "./types/objects/object";
 import HookFunction from "../accessControl/hook";
 import schemaValue from "./types/value";
-import schemaNested from "./types/nested";
+import schemaNested from "./types/objects/nested";
+import baseObject from "./types/objects/base";
+
+export interface Reference {
+    identifier: ObjectId;
+    get: () => schemaNested.init | processedObject | schemaObject.init;
+}
+
+export interface NestedValuesInterface {
+    [key: string]: Reference
+}
 
 export interface processedObject {
-    identifier: string;
-    parent: string;
-    parents: string[];
+    identifier: ObjectId;
+    parent: Reference;
+    nested: NestedValuesInterface;
     values: Array<schemaValue.init>;
 }
 
+export interface hookBankInterface {
+    [x: string]: groupHooksInterface;
+}
+
+export interface ProcessedObjectInterface {
+    nested: { [x: string]: schemaNested.init };
+    values: { [x: string]: processedObject };
+    object: { [x: string]: schemaObject.init };
+}
+
 export interface Output {
-    processed: {
-        nested: { [x: string]: schemaNested.init };
-        values: { [x: string]: processedObject };
-        object: { [x: string]: schemaObject.init };
-    };
-    hookBank: {
-        [x: string]: groupHooksInterface
-    };
+    processed: ProcessedObjectInterface;
+    hookBank: hookBankInterface;
 }
 
 export function parse(object: schemaObject.init): Output {
-    let returnable: {
-        nested: { [x: string]: schemaNested.init };
-        values: { [x: string]: processedObject };
-        object: { [x: string]: schemaObject.init };
-    } = {
-        nested: {},
-        values: {},
-        object: {}
-    };
-
-    let hookBank: {
-        [key: string]: groupHooksInterface
-    } = {};
+    let returnable: ProcessedObjectInterface = { nested: {}, values: {}, object: {} };
+    let hookBank: hookBankInterface = {};
+    let clearObjectArr: Array<() => void> = [];
 
     const walk = (
-        schema: schemaObject.init | schemaObject.ValueInterface | schemaNested.ValueInterface,
+        schema: schemaObject.init | baseObject.ValueInterface,
         parents: Array<schemaObject.init | schemaNested.init> = [],
         parentsId: Array<string> = [],
         parentsKeys: Array<string> = []): void => 
@@ -52,21 +56,18 @@ export function parse(object: schemaObject.init): Output {
         // Recurse through the schema if the schema
         // an instance of schemaObject.init
         if(schema instanceof schemaObject.init) {
-            const objectIdentifier: string = new ObjectId().toString();
-
-            schema.identifier = objectIdentifier;
-
-            schema.key = schema.options.name;
+            // Push the clear function to the array
+            clearObjectArr.push(() => schema.clearObject());
 
             merge(returnable.object, {
-                [objectIdentifier]: schema
+                [schema.identifier.toString()]: schema
             });
 
             // Recurse
             walk(
                 schema.obj, 
                 [...parents, schema], 
-                [...parentsId, objectIdentifier],
+                [...parentsId, schema.identifier.toString()],
                 [...parentsKeys, schema.options.name]
             );
         } 
@@ -74,39 +75,62 @@ export function parse(object: schemaObject.init): Output {
         // ----------------------------------[ Value ]--------------------------------- //
         else {
             
-            const objKeys = Object.keys(schema);
+            const objKeys: string[] = Object.keys(schema);
 
+            // Temporary object to store the processed values
             let temporaryReturnable: any = {};
 
-            for(let i = 0; i < objKeys.length; i++) {
+            // Nested values
+            let nestedValues: NestedValuesInterface = {};
+
+            // Loop trough the values
+            for(let i: number = 0; i < objKeys.length; i++) {
+
                 // ------------------------------[ Nested ]---------------------------- //
                 if(schema[objKeys[i]] instanceof schemaNested.init) {
-                    // Generate a new identifier
-                    const nestedIdentifier: string = new ObjectId().toString(),
-                        // Get the nested object
-                        value = schema[objKeys[i]] as schemaNested.init;
 
-                    // Set the parent
-                    value.parent = parentsId[parentsId.length - 1];
-
+                    // Get the nested object
+                    const value = schema[objKeys[i]] as schemaNested.init;
+                    
                     // Set the parents
-                    value.parents = [...parentsId, value.parent];
+                    for(let j: number = 0; j < parents.length; j++) {
+                        // Set the parent
+                        value.parents.push({
+                            identifier: parents[j].identifier,
+                            get: () => parents[j]
+                        });
 
-                    // Set the unique identifier
-                    value.identifier = nestedIdentifier;
+                        // If we are at the last parent 
+                        if(j === parents.length - 1)
+                            // Set the parent key
+                            value.parent = {
+                                identifier: parents[j].identifier,
+                                get: () => parents[j]
+                            }
+                    }
 
-                    value.key = objKeys[i];
+                    // Set the key name
+                    value.collectionizeObject(objKeys[i]);
+
+                    // Add self to the nested Values object
+                    nestedValues[value.key] = {
+                        identifier: value.identifier,
+                        get: () => value
+                    }
 
                     // Merge the returnable
                     merge(returnable.nested, {
-                        [nestedIdentifier]: value
+                        [value.identifier.toString()]: value
                     });
+
+                    // Push the clear function to the array
+                    clearObjectArr.push(() => value.clearObject());
 
                     // Recurse
                     walk(
                         value.obj,
                         parents,
-                        [...parentsId, nestedIdentifier],
+                        [...parentsId, value.identifier.toString()],
                         [...parentsKeys, objKeys[i]]
                     );
 
@@ -116,14 +140,10 @@ export function parse(object: schemaObject.init): Output {
 
                 // -----------------------------[ General ]---------------------------- //
                 const key = objKeys[i],
-                    value = schema[key] as schemaValue.init,
-                    valueIdentifier: string = new ObjectId().toString();
-
-                // Assign an unique identifier to each value
-                value.identifier = valueIdentifier;
+                    value = schema[key] as schemaValue.init;
 
 
-        
+                    
                 // -----------------------------[ Unique ]---------------------------- //
                 // Check if we have a unique value
                 if(value.options?.unique === true) {
@@ -131,7 +151,7 @@ export function parse(object: schemaObject.init): Output {
 
                     // Push the value to the uniqueValues array
                     parents[parents.length - 1]
-                        .uniqueValues.push(valueIdentifier);
+                        .uniqueValues.push(value.identifier);
                 }
 
 
@@ -183,6 +203,7 @@ export function parse(object: schemaObject.init): Output {
                     // set the schema object mask
                     value.mask.database.mask = arrayToObject(value.mask.database.maskArray);
                 } 
+
                 // If the user did not specify a mask, we can use the default mask
                 else value.mask.database = value.mask.schema;
 
@@ -239,23 +260,73 @@ export function parse(object: schemaObject.init): Output {
                 });
             }
 
-            const valuesID = new ObjectId().toString();
+            const valuesID = new ObjectId();
 
             merge(returnable.values, {
-                [valuesID]: {
-                    parent: parentsId[parentsId.length - 1],
-                    parents: parentsId,
+                [valuesID.toString()]: {
+                    parent: {
+                        identifier: parents[parents.length - 1].identifier,
+                        get: () => parents[parents.length - 1]
+                    },
                     identifier: valuesID,
-                    values: temporaryReturnable
-                }
+                    values: temporaryReturnable,
+                    nested: nestedValues,
+                } as processedObject
             });
         }
     }
 
     walk(object);
 
+    // Clear all the objects
+    for(let i = 0; i < clearObjectArr.length; i++) {
+        
+        // This is done for memory reasons,
+        // as we don't want to keep 375634567 
+        // redundant objects in memory
+        clearObjectArr[i]();
+    }
+
     return {
         processed: returnable,
         hookBank
     }
 }
+
+
+const a = parse(new schemaObject.init({
+    collectionName: 'config',
+    databaseName: 'test',
+    name: 'config',
+    collectionize: true,
+}, {
+    id: new schemaValue.init({
+        type: 'id',
+        unique: true,
+
+        mask: {
+            schema: {  '_id': 1, }
+        },
+    }),
+
+    abv: new schemaNested.init({
+        collectionize: true,
+    }, {
+        idNested: new schemaValue.init({
+            type: 'id',
+            unique: true, 
+        }),
+
+        valueNested: new schemaValue.init({
+            type: 'string',
+            unique: true,
+        }),
+    }),
+
+    precedence: new schemaValue.init({
+        type: 'id',
+        array: true,
+    }),
+}));
+
+console.log(a.processed.nested);

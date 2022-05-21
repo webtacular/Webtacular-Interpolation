@@ -10,13 +10,13 @@ export interface groupHooksInterface {
     hook: HookFunction.hook,
     type: HookFunction.accessControlHooks,
     opts: HookFunction.HookOptions,
-    identifier: string,
+    identifier: ObjectId,
     preMask?: {
         allow: projectionInterface;
         block: projectionInterface;
     }
     execution: HookFunction.hookExecution;
-    keys: Array<string>
+    keys: Array<ObjectId>
 }
 
 export interface groupHooks {
@@ -25,10 +25,10 @@ export interface groupHooks {
 
 export function groupHooks(hookBank: groupHooks, hooks: HookFunction.init, value: schemaValue.init): {
     hookBank: groupHooks,
-    hookIdentifiers: Array<string>
+    hookIdentifiers: Array<ObjectId>
 } {
     let newHookBank: groupHooks = hookBank,
-        hookIdentifiers: Array<string> = [];
+        hookIdentifiers: Array<ObjectId> = [];
 
     for(let i = 0; i < hooks.hooks.length; i++) {
         const hook = hooks.hooks[i];
@@ -58,10 +58,10 @@ export function groupHooks(hookBank: groupHooks, hooks: HookFunction.init, value
 
         // If we dont have a match, add the hook
         if(index === undefined) {
-            const hookIdentifier: string = new ObjectId().toString();
+            const hookIdentifier = new ObjectId();
             
             // Set the hook
-            Object.assign(newHookBank, { [hookIdentifier]: {
+            Object.assign(newHookBank, { [hookIdentifier.toString()]: {
                 identifier: hookIdentifier,
                 hook: hook.hook,
                 type: hook.type,
@@ -94,7 +94,7 @@ export function groupHooks(hookBank: groupHooks, hooks: HookFunction.init, value
                 );
             }
 
-            hookIdentifiers.push(index);
+            hookIdentifiers.push(new ObjectId(index));
         }
     }
 

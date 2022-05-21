@@ -6,7 +6,7 @@
 //
 //
 
-import schemaObject from '../../../parser/types/object';
+import schemaObject from '../../../parser/types/objects/object';
 
 
 import { mongoResponseObject } from './mongoDB';
