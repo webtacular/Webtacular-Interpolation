@@ -1,7 +1,7 @@
 
 import { IReference } from '../../index.interfaces';
 
-import collectionize from '../../src/collections';
+import collectionize from '../collections';
 import baseObject from './base';
 import schemaObject from './object';
 

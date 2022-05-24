@@ -1,5 +1,5 @@
-import schemaNested from "../types/objects/nested";
-import schemaObject from "../types/objects/object";
+import schemaNested from "./objects/nested";
+import schemaObject from "./objects/object";
 
 function collectionize(object: schemaObject.init | schemaNested.init): void {
     // Set the collectionize fields

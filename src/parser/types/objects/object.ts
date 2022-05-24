@@ -1,6 +1,6 @@
 import { types } from '../../../types';
 
-import collectionize from '../../src/collections';
+import collectionize from '../collections';
 import baseObject from './base';
 
 namespace schemaObject {
