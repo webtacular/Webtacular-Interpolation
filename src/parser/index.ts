@@ -61,6 +61,9 @@ export function parse(object: schemaObject.init): IOutput {
 
                     // Get the nested object
                     const value = schema[objKeys[i]] as schemaNested.init;
+
+                    // set the value key
+                    value.key = objKeys[i];
                     
                     // Set the parents
                     value.setParents(parents);
@@ -146,7 +149,7 @@ export function parse(object: schemaObject.init): IOutput {
 }
 
 
-const a = parse(new schemaObject.init({
+const schema = parse(new schemaObject.init({
     collectionName: 'config',
     databaseName: 'test',
     name: 'config',
@@ -159,32 +162,26 @@ const a = parse(new schemaObject.init({
         mask: [ '_id' ]
     }),
 
-    abv: new schemaNested.init({
-        collectionize: true,
-    }, {
-        idNested: new schemaValue.init({
-            type: 'id',
-            unique: true, 
-        }),
-
-        valueNested: new schemaNested.init({}, {
-            veryNested: new schemaValue.init({
-                type: 'string',
-                unique: true,
-                mask: [ 'value' ]
-            }),
-        }),
+    userName: new schemaValue.init({
+        type: 'string',
+        unique: true,
     }),
 
-    precedence: new schemaValue.init({
-        type: 'id',
+    loginHistory: new schemaNested.init({
         array: true,
-        accessControl: (hook) => {
-            hook('view', (req) => {
-                return true;
-            });
-        }
+    }, {
+        ip: new schemaValue.init({
+            type: 'string',
+            description: 'The ip address of the user',
+            mask: [ 'ip_latest' ]
+        }),
+
+        loginDate: new schemaValue.init({
+            type: 'string',
+            description: 'The date of the login',
+            mask: [ 'login_date' ]
+        }),
     }),
 }));
 
-console.log(JSON.stringify(a.processed.nested, null, 2));
+console.log(JSON.stringify(schema, null, 2));
