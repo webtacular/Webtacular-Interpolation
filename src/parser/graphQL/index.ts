@@ -4,6 +4,7 @@ import schemaNested from "../types/objects/nested";
 import schemaObject from "../types/objects/object";
 import schemaValue from "../types/value";
 import { merge } from 'lodash';
+import { formatNameArray } from '../../general';
 
 const a = parse(new schemaObject.init({
     collectionName: 'config',
@@ -39,22 +40,6 @@ const a = parse(new schemaObject.init({
         array: true,
     }),
 }));
-
-function formatNameArray(nameArray: Array<string>): string {
-    let returnable: string = '';
-
-    for (let i = 0; i < nameArray.length; i++) {
-        let temp: string = nameArray[i].toLowerCase();
-        
-        // return if its the first word
-        if(i === 0) returnable += temp;
-        
-        // capitalize first letter
-        if(i > 0) returnable += temp.charAt(0).toUpperCase() + temp.slice(1);
-    }
-
-    return returnable;
-}
 
 function graphQL(input: Output) {
     let object: {

@@ -10,6 +10,8 @@ export namespace types {
 
     // export type mongoDBversion = 3.0 | 3.2 | 3.4 | 3.6 | 4.0 | 4.2 | 4.4 |
 
+    export type casing = 'camel' | 'pascal' | 'snake' | 'kebab'
+
     export type mongoDBconnection = {
         host: string;
         port: number;

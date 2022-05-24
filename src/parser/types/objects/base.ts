@@ -58,7 +58,7 @@ namespace baseObject {
 
         maskArray: string[] = [];
 
-        mask: { [key: string]: number | {} } = {};
+        mask: Array<string> = [];
 
         constructor(options: Constructor) {
             // [1] You can't have both an array and collectionize
