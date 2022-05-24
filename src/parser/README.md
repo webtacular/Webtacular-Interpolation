@@ -1,7 +1,7 @@
 The goal of this section is to generate a parser that can parse the schema into a tree of objects that can then be
 processed by the Graphql and rest transpilers.
 
-## Beautifly understandable boilerplate, straightforward and easy to use
+## Beautifly simple and understandable boilerplate, really straightforward and easy to use
 
 **Still in progress**: This here demonstrates a schema that interfaces with a MongoDB database, Support for SQL and other databases is planned.
 
