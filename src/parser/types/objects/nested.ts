@@ -2,6 +2,7 @@ import { Reference } from '../..';
 
 import collectionize from '../../src/collections';
 import baseObject from './base';
+import schemaObject from './object';
 
 namespace schemaNested {
     export interface Constructor extends baseObject.Constructor {
@@ -43,6 +44,27 @@ namespace schemaNested {
                 // collectionize
                 collectionize(this);
             }
+        }
+
+        setParents(parents: Array<schemaObject.init | schemaNested.init>) {
+            // Set the parents
+            for(let j: number = 0; j < parents.length; j++) {
+                // Set the parent
+                this.parents.push({
+                    identifier: parents[j].identifier,
+                    get: () => parents[j]
+                });
+
+                // If we are at the last parent 
+                // Set the parent reference
+                if(j === parents.length - 1) this.parent = {
+                    identifier: parents[j].identifier,
+                    get: () => parents[j]
+                }
+            }
+
+            // set the mask
+            this.mask = [...this.parent.get().mask, this.key];
         }
     }
 }

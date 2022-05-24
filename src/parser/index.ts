@@ -10,7 +10,7 @@ import baseObject from "./types/objects/base";
 
 export interface Reference {
     identifier: ObjectId;
-    get: () => schemaNested.init | processedObject | schemaObject.init;
+    get: () => schemaNested.init | schemaObject.init;
 }
 
 export interface valueReference {
@@ -104,43 +104,19 @@ export function parse(object: schemaObject.init): Output {
                     const value = schema[objKeys[i]] as schemaNested.init;
                     
                     // Set the parents
-                    for(let j: number = 0; j < parents.length; j++) {
-                        // Set the parent
-                        value.parents.push({
-                            identifier: parents[j].identifier,
-                            get: () => parents[j]
-                        });
-
-                        // If we are at the last parent 
-                        // Set the parent reference
-                        if(j === parents.length - 1) value.parent = {
-                            identifier: parents[j].identifier,
-                            get: () => parents[j]
-                        }
-                    }
+                    value.setParents(parents);
 
                     // Set the key name
                     value.collectionizeObject(objKeys[i]);
 
                     // Add self to the nested Values object
-                    nestedValues[value.key] = {
-                        identifier: value.identifier,
-                        get: () => value
-                    }
+                    nestedValues[value.key] = { identifier: value.identifier, get: () => value }
 
                     // Merge the returnable
-                    merge(returnable.nested, {
-                        [value.identifier.toString()]: value
-                    });
+                    merge(returnable.nested, { [value.identifier.toString()]: value });
 
                     // Push the clear function to the array
                     clearObjectArr.push(() => value.clearObject());
-
-                    // Get self parent
-                    const parent = parents[parents.length - 1];
-
-                    // set the mask
-                    value.mask = [...parent.mask, value.key];
 
                     // Recurse
                     walk(
@@ -159,62 +135,17 @@ export function parse(object: schemaObject.init): Output {
                 const key = objKeys[i],
                     value = schema[key] as schemaValue.init;
 
+                // Set the value key
                 value.key = key;
 
+                // Process the value
                 value.additonalValues();
+                value.groupHooks(hookBank);
+                value.setParent({
+                    identifier: currentParent,
+                    get: () => parents[parents.length - 1]
+                });
                 value.generateMask(parents[parents.length - 1].mask);
-
-                console.log(value.mask);
-                    
-                // -----------------------------[ Unique ]---------------------------- //
-                // Check if we have a unique value
-                if(value.options?.unique === true) {
-                    value.options.unique = true;
-
-                    //Push the value to the uniqueValues array
-                    parents[parents.length - 1].uniqueValues.push({
-                        identifier: value.identifier,
-                        get: () => value
-                    });
-                } 
-            
-
-                // -----------------------------[ Hooks ]----------------------------- //
-                // As a form of optimization, we preprocess the hooks and group them.
-                // This allows us to run the hooks in a single function for multiple values. 
-                // This is a lot faster than running the hooks individually, and
-                // processing the hooks during the query.
-
-                if(value.options.accessControl) {
-                    // Initialize the access control function of this value
-                    const hookObject = 
-                        new HookFunction.init(value.options.accessControl);
-
-                    // Group the hooks together
-                    const grouped = 
-                        groupHooks(hookBank, hookObject, value);
-
-                    // set the hook bank
-                    hookBank = grouped.hookBank;
-
-                    // Generate the hook references
-                    let hookReferences: Array<hookReference> = [];
-
-                    // Loop through the hooks
-                    for(let i: number = 0; i < grouped.hookIdentifiers.length; i++) {
-
-                        // Add the hook reference to the array
-                        hookReferences.push({
-                            identifier: grouped.hookIdentifiers[i],
-                            get: () => hookBank[grouped.hookIdentifiers[i].toString()]
-                        });
-                    }
-
-                    // Set the hook references
-                    value.hooks = hookReferences;
-                }
-
-
 
                 // --------------------------[ Returnable ]-------------------------- //
                 merge(temporaryReturnable, {
@@ -292,7 +223,6 @@ const a = parse(new schemaObject.init({
     precedence: new schemaValue.init({
         type: 'id',
         array: true,
-        unique: true,
         accessControl: (hook) => {
             hook('view', (req) => {
                 return true;
@@ -301,4 +231,4 @@ const a = parse(new schemaObject.init({
     }),
 }));
 
-//console.log(JSON.stringify(a.processed.values, null, 2));
+console.log(JSON.stringify(a.processed.nested, null, 2));

@@ -1,6 +1,7 @@
 import { merge } from 'lodash';
 import { ObjectId } from 'mongodb';
-import { hookReference } from '..';
+import { hookBankInterface, hookReference, Reference } from '..';
+import { groupHooks } from '../../accessControl/groupHooks';
 import HookFunction from '../../accessControl/hook';
 import { arrayToObject, formatValue } from '../../general';
 import { FilterObject } from '../../graphQL/schema/types';
@@ -79,6 +80,8 @@ namespace schemaValue {
 
         key: string = '';
 
+        parent: Reference; 
+
         constructor(options: Constructor) {
             this.additionalValues = [];
             
@@ -128,7 +131,7 @@ namespace schemaValue {
             this.mask.schema.mask = arrayToObject(this.mask.schema.maskArray);
 
             // set the mask key
-            this.mask.schema.key = formatValue(this.key);
+            this.mask.schema.key = this.key;
 
 
 
@@ -141,6 +144,9 @@ namespace schemaValue {
                 // If they haven't provided a custom mask
                 merge(this.mask.database, this.mask.schema);
 
+                // set the mask key for the schema mask
+                this.mask.schema.key = formatValue(this.key);
+
                 // stop here
                 return;
             }
@@ -151,8 +157,8 @@ namespace schemaValue {
             // set the mask object
             this.mask.database.mask = arrayToObject(this.mask.database.maskArray);
 
-            // set the mask key
-            this.mask.database.key = formatValue(this.options.mask[this.options.mask.length - 1]);
+            // set the mask key (We dont format this value as it is used in the database)
+            this.mask.database.key = this.options.mask[this.options.mask.length - 1]
             
         }
 
@@ -162,18 +168,62 @@ namespace schemaValue {
             // We can add these values to the value object
 
             // Check if we have a unique value
-            if(this.options?.unique === true)
-                this.additionalValues.push({
-                    key: formatValue(['is', this.key , 'unique']),
-                    value: true
+            this.additionalValues.push({
+                key: formatValue(['is', this.key , 'unique']),
+                value: this.options?.unique ?? false,
             });
         
 
             // Check if we have a description
-            if(this.options?.description)
-                this.additionalValues.push({
-                    key: formatValue([this.key, 'description']),
-                    value: this.options.description
+            this.additionalValues.push({
+                key: formatValue([this.key, 'description']),
+                value: this.options.description || ''
+            });
+        }
+
+        groupHooks(hookBank: hookBankInterface): void {
+            // As a form of optimization, we preprocess the hooks and group them.
+            // This allows us to run the hooks in a single function for multiple values. 
+            // This is a lot faster than running the hooks individually, and
+            // processing the hooks during the query.
+
+            if(!this.options?.accessControl) return;
+
+            // Initialize the access control function of this value
+            const hookObject = 
+                new HookFunction.init(this.options.accessControl);
+
+            // Group the hooks together
+            const grouped = groupHooks(hookBank, hookObject, this);
+
+            // set the hook bank
+            hookBank = grouped.hookBank;
+
+            // Generate the hook references
+            let hookReferences: Array<hookReference> = [];
+
+            // Loop through the hooks
+            for(let i: number = 0; i < grouped.hookIdentifiers.length; i++) {
+
+                // Add the hook reference to the array
+                hookReferences.push({
+                    identifier: grouped.hookIdentifiers[i],
+                    get: () => hookBank[grouped.hookIdentifiers[i].toString()]
+                });
+            }
+
+            // Set the hook references
+            this.hooks = hookReferences;
+        }
+
+        setParent(parent: Reference): void {
+            // Set the parent of this value     
+            this.parent = parent;
+
+            // Check if we have a unique value,Push the value to the uniqueValues array
+            if(this.options?.unique === true) this.parent.get().uniqueValues.push({
+                identifier: this.identifier,
+                get: () => this
             });
         }
     }
