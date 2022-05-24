@@ -48,10 +48,10 @@ There can be muliple root objects, meaning that you can lace multiple databases/
 #### Value object
 
 We than create a **new schemaValue.init** function to create a value object, which is a leaf of the tree,
-it contains information about the value and its type, if a value has *unappealing* name, eg, random underscores,
+it contains information about the value and its type, if a value has an *unappealing* name, eg, random underscores,
 you can define a custom mask, which will be provided to the user, making it easier to read, eg *_id* => *id*, the original is still kept and used when fetching the value, meaning that nothing at the database level needs to be changed.
 
-We can also identify a value as a list, meaning that it is a list of values, eg, a list of names, or a list of IP addresses, **Important note**: the list is not a list of objects, it is a list of values, so you need to create a new value object for each value in the list.
+We can also identify a value as a list, meaning that it is a list of values, eg, a list of names, or a list of IP addresses, **Important note**: This is not a list of objects, it is a list of values, you need to create a new nested object for that.
 
 We can aslo define this value as being unique, allowing the root object to create a way to fetch a singluar value from the database, instead of a list of values.
 
