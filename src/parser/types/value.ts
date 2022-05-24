@@ -91,8 +91,6 @@ namespace schemaValue {
                 unique: false,
                 description: '',
                 array: false,
-                collectionName: '',
-                databaseName: '',
                 type: 'string',
             }, options);
 
