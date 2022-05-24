@@ -4,6 +4,7 @@ import HookFunction from '../../../accessControl/hook';
 
 import { ObjectId } from 'mongodb';
 import { types } from '../../../types';
+import { valueReference } from '../..';
 
 namespace baseObject {
     export interface ValueInterface {
@@ -53,7 +54,7 @@ namespace baseObject {
 
         identifier = new ObjectId();
 
-        uniqueValues: Array<ObjectId> = []; 
+        uniqueValues: Array<valueReference> = []; 
 
         maskArray: string[] = [];
 

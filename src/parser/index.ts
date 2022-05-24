@@ -14,6 +14,16 @@ export interface Reference {
     get: () => schemaNested.init | processedObject | schemaObject.init;
 }
 
+export interface valueReference {
+    identifier: ObjectId;
+    get: () => schemaValue.init;
+}
+
+export interface hookReference {
+    identifier: ObjectId;
+    get: () => groupHooksInterface;
+}
+
 export interface NestedValuesInterface {
     [key: string]: Reference
 }
@@ -48,6 +58,7 @@ export function parse(object: schemaObject.init): Output {
     const walk = (
         schema: schemaObject.init | baseObject.ValueInterface,
         parents: Array<schemaObject.init | schemaNested.init> = [],
+        currentParent: ObjectId = new ObjectId(),
         parentsId: Array<string> = [],
         parentsKeys: Array<string> = []): void => 
     {
@@ -67,6 +78,7 @@ export function parse(object: schemaObject.init): Output {
             walk(
                 schema.obj, 
                 [...parents, schema], 
+                schema.identifier,
                 [...parentsId, schema.identifier.toString()],
                 [...parentsKeys, schema.options.name]
             );
@@ -101,12 +113,11 @@ export function parse(object: schemaObject.init): Output {
                         });
 
                         // If we are at the last parent 
-                        if(j === parents.length - 1)
-                            // Set the parent key
-                            value.parent = {
-                                identifier: parents[j].identifier,
-                                get: () => parents[j]
-                            }
+                        // Set the parent reference
+                        if(j === parents.length - 1) value.parent = {
+                            identifier: parents[j].identifier,
+                            get: () => parents[j]
+                        }
                     }
 
                     // Set the key name
@@ -129,7 +140,8 @@ export function parse(object: schemaObject.init): Output {
                     // Recurse
                     walk(
                         value.obj,
-                        parents,
+                        [...parents, value],
+                        value.identifier,
                         [...parentsId, value.identifier.toString()],
                         [...parentsKeys, objKeys[i]]
                     );
@@ -147,12 +159,14 @@ export function parse(object: schemaObject.init): Output {
                 // -----------------------------[ Unique ]---------------------------- //
                 // Check if we have a unique value
                 if(value.options?.unique === true) {
-                    value.unique = true;
+                    value.options.unique = true;
 
-                    // Push the value to the uniqueValues array
-                    parents[parents.length - 1]
-                        .uniqueValues.push(value.identifier);
-                }
+                    //Push the value to the uniqueValues array
+                    parents[parents.length - 1].uniqueValues.push({
+                        identifier: value.identifier,
+                        get: () => value
+                    });
+                } 
 
 
 
@@ -207,7 +221,8 @@ export function parse(object: schemaObject.init): Output {
                 // If the user did not specify a mask, we can use the default mask
                 else value.mask.database = value.mask.schema;
 
-
+                // Set the values key
+                value.key = value.mask.schema.key;
 
                 // -----------------------[ Additional values ]----------------------- //
                 // Values can have additional values that are not in the database
@@ -215,11 +230,12 @@ export function parse(object: schemaObject.init): Output {
                 // We can add these values to the value object
 
                 // Check if we have a unique value
-                if(value.options?.unique === true) 
+                if(value.options?.unique === true)
                     value.additionalValues.push({
                         key: `is${value.mask.schema.key}Unique`,
                         value: true
                 });
+            
 
                 // Check if we have a description
                 if(value.options?.description)
@@ -245,11 +261,24 @@ export function parse(object: schemaObject.init): Output {
                     const grouped = 
                         groupHooks(hookBank, hookObject, value);
 
-                    // Assign the value hook identifiers
-                    value.hookIdentifers = grouped.hookIdentifiers;
-
                     // set the hook bank
                     hookBank = grouped.hookBank;
+
+                    // Generate the hook references
+                    let hookReferences: Array<hookReference> = [];
+
+                    // Loop through the hooks
+                    for(let i: number = 0; i < grouped.hookIdentifiers.length; i++) {
+
+                        // Add the hook reference to the array
+                        hookReferences.push({
+                            identifier: grouped.hookIdentifiers[i],
+                            get: () => hookBank[grouped.hookIdentifiers[i].toString()]
+                        });
+                    }
+
+                    // Set the hook references
+                    value.hooks = hookReferences;
                 }
 
 
@@ -258,10 +287,13 @@ export function parse(object: schemaObject.init): Output {
                 merge(temporaryReturnable, {
                     [key]: value
                 });
+
             }
 
+            // Generate the unique id for this value collection
             const valuesID = new ObjectId();
 
+            // merge the returnable with the returnable object
             merge(returnable.values, {
                 [valuesID.toString()]: {
                     parent: {
@@ -319,14 +351,19 @@ const a = parse(new schemaObject.init({
 
         valueNested: new schemaValue.init({
             type: 'string',
-            unique: true,
         }),
     }),
 
     precedence: new schemaValue.init({
         type: 'id',
         array: true,
+        unique: true,
+        accessControl: (hook) => {
+            hook('view', (req) => {
+                return true;
+            });
+        }
     }),
 }));
 
-console.log(a.processed.nested);
+console.log(JSON.stringify(a.processed.values, null, 2), a.hookBank);

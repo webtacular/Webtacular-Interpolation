@@ -1,4 +1,6 @@
+import { merge } from 'lodash';
 import { ObjectId } from 'mongodb';
+import { hookReference } from '..';
 import HookFunction from '../../accessControl/hook';
 import { FilterObject } from '../../graphQL/schema/types';
 
@@ -8,9 +10,6 @@ namespace schemaValue {
     export type TsType = string | number | Float64Array | boolean | string[] | number[] | Float64Array[] | boolean[];
 
     export interface Constructor {
-        // The name of the value
-        key?: string;
-
         // Is this value unique?
         unique?: boolean;
 
@@ -73,23 +72,24 @@ namespace schemaValue {
 
         identifier = new ObjectId();
 
-        hookIdentifers: Array<ObjectId>;
-
-        unique: boolean;
+        hooks: Array<hookReference> = [];
         
-        filters: { [x: string]: FilterObject; }
+        filters: { [x: string]: FilterObject; } = {};
+
+        key: string = '';
 
         constructor(options: Constructor) {
             this.additionalValues = [];
             
-
-            this.hookIdentifers = [];
-
-            this.options = options;
-
-            this.unique = false;
-
-            this.filters = {};
+            this.options = merge({
+                unique: false,
+                description: '',
+                array: false,
+                mask: {},
+                collectionName: '',
+                databaseName: '',
+                type: 'string',
+            }, options);
 
             this.mask = {
                 schema: {

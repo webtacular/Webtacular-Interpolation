@@ -16,7 +16,7 @@ export interface groupHooksInterface {
         block: projectionInterface;
     }
     execution: HookFunction.hookExecution;
-    keys: Array<ObjectId>
+    users: Array<ObjectId>
 }
 
 export interface groupHooks {
@@ -66,7 +66,7 @@ export function groupHooks(hookBank: groupHooks, hooks: HookFunction.init, value
                 hook: hook.hook,
                 type: hook.type,
                 opts: hook.hook.opts,
-                keys: [value.identifier],
+                users: [value.identifier],
                 preMask: {
                     allow: arrayToObject(value.mask.database.maskArray, 1),
                     block: arrayToObject(value.mask.database.maskArray, 0),
@@ -80,9 +80,9 @@ export function groupHooks(hookBank: groupHooks, hooks: HookFunction.init, value
 
         // If we have a match, add the key
         else {
-            if(newHookBank[index].keys.includes(value.identifier)) continue;
+            if(newHookBank[index].users.includes(value.identifier)) continue;
 
-            newHookBank[index].keys.push(value.identifier);
+            newHookBank[index].users.push(value.identifier);
 
             if(newHookBank[index].execution === 'preRequest') {
                 newHookBank[index].preMask.allow = 
