@@ -1,4 +1,5 @@
 import { types } from '../../../types';
+
 import collectionize from '../../src/collections';
 import baseObject from './base';
 

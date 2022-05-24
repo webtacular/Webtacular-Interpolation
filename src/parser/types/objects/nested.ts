@@ -1,4 +1,5 @@
-import { Reference } from '../..';
+
+import { IReference } from '../../index.interfaces';
 
 import collectionize from '../../src/collections';
 import baseObject from './base';
@@ -10,8 +11,8 @@ namespace schemaNested {
     }
 
     export class init extends baseObject.init {
-        parent: Reference;
-        parents: Array<Reference> = [];
+        parent: IReference;
+        parents: Array<IReference> = [];
 
         constructor(options: Constructor, obj: baseObject.ValueInterface) {
             super(options);

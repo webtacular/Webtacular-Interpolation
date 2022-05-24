@@ -1,57 +1,16 @@
-import { groupHooks, groupHooksInterface } from "../accessControl/groupHooks";
 import { ObjectId } from "mongodb";
 import { merge } from "../merge";
 
 import schemaObject from "./types/objects/object";
-import HookFunction from "../accessControl/hook";
 import schemaValue from "./types/value";
 import schemaNested from "./types/objects/nested";
 import baseObject from "./types/objects/base";
 
-export interface Reference {
-    identifier: ObjectId;
-    get: () => schemaNested.init | schemaObject.init;
-}
+import { IHookBank, INestedValues, IOutput, IProcessedObject, IProcessedValue } from "./index.interfaces";
 
-export interface valueReference {
-    identifier: ObjectId;
-    get: () => schemaValue.init;
-}
-
-export interface hookReference {
-    identifier: ObjectId;
-    get: () => groupHooksInterface;
-}
-
-export interface NestedValuesInterface {
-    [key: string]: Reference
-}
-
-export interface processedObject {
-    identifier: ObjectId;
-    parent: Reference;
-    nested: NestedValuesInterface;
-    values: Array<schemaValue.init>;
-}
-
-export interface hookBankInterface {
-    [x: string]: groupHooksInterface;
-}
-
-export interface ProcessedObjectInterface {
-    nested: { [x: string]: schemaNested.init };
-    values: { [x: string]: processedObject };
-    object: { [x: string]: schemaObject.init };
-}
-
-export interface Output {
-    processed: ProcessedObjectInterface;
-    hookBank: hookBankInterface;
-}
-
-export function parse(object: schemaObject.init): Output {
-    let returnable: ProcessedObjectInterface = { nested: {}, values: {}, object: {} };
-    let hookBank: hookBankInterface = {};
+export function parse(object: schemaObject.init): IOutput {
+    let returnable: IProcessedObject = { nested: {}, values: {}, object: {} };
+    let hookBank: IHookBank = {};
     let clearObjectArr: Array<() => void> = [];
 
     const walk = (
@@ -92,7 +51,7 @@ export function parse(object: schemaObject.init): Output {
             let temporaryReturnable: any = {};
 
             // Nested values
-            let nestedValues: NestedValuesInterface = {};
+            let nestedValues: INestedValues = {};
 
             // Loop trough the values
             for(let i: number = 0; i < objKeys.length; i++) {
@@ -167,21 +126,18 @@ export function parse(object: schemaObject.init): Output {
                     identifier: valuesID,
                     values: temporaryReturnable,
                     nested: nestedValues,
-                } as processedObject
+                } as IProcessedValue
             });
         }
     }
 
+    // Walk through the object
     walk(object);
 
-    // Clear all the objects
-    for(let i = 0; i < clearObjectArr.length; i++) {
-        
-        // This is done for memory reasons,
-        // as we don't want to keep 375634567 
-        // redundant objects in memory
-        clearObjectArr[i]();
-    }
+    // This is done for memory reasons,
+    // as we don't want to keep 375634567 
+    // redundant objects in memory
+    clearObjectArr.forEach(func => func());
 
     return {
         processed: returnable,

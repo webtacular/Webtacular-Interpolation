@@ -1,12 +1,14 @@
 import { merge } from 'lodash';
 import { ObjectId } from 'mongodb';
-import { hookBankInterface, hookReference, Reference } from '..';
-import { groupHooks } from '../../accessControl/groupHooks';
-import HookFunction from '../../accessControl/hook';
-import { arrayToObject, formatValue } from '../../general';
 import { FilterObject } from '../../graphQL/schema/types';
+import { arrayToObject, formatValue } from '../../general';
+import { groupHooks } from '../../accessControl/groupHooks';
+import { IHookBank, IHookReference, IReference } from '../index.interfaces';
+
+import HookFunction from '../../accessControl/hook';
 
 namespace schemaValue { 
+    // TODO: Remove whatever this is
     export type type = 'string' | 'number' | 'float' | 'boolean' | 'id';
     export type GqlType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | '[String]' | '[Int]' | '[Float]' | '[Boolean]' | '[ID]';
     export type TsType = string | number | Float64Array | boolean | string[] | number[] | Float64Array[] | boolean[];
@@ -74,13 +76,13 @@ namespace schemaValue {
 
         identifier = new ObjectId();
 
-        hooks: Array<hookReference> = [];
+        hooks: Array<IHookReference> = [];
         
         filters: { [x: string]: FilterObject; } = {};
 
         key: string = '';
 
-        parent: Reference; 
+        parent: IReference; 
 
         constructor(options: Constructor) {
             this.additionalValues = [];
@@ -181,7 +183,7 @@ namespace schemaValue {
             });
         }
 
-        groupHooks(hookBank: hookBankInterface): void {
+        groupHooks(hookBank: IHookBank): void {
             // As a form of optimization, we preprocess the hooks and group them.
             // This allows us to run the hooks in a single function for multiple values. 
             // This is a lot faster than running the hooks individually, and
@@ -200,7 +202,7 @@ namespace schemaValue {
             hookBank = grouped.hookBank;
 
             // Generate the hook references
-            let hookReferences: Array<hookReference> = [];
+            let hookReferences: Array<IHookReference> = [];
 
             // Loop through the hooks
             for(let i: number = 0; i < grouped.hookIdentifiers.length; i++) {
@@ -216,7 +218,7 @@ namespace schemaValue {
             this.hooks = hookReferences;
         }
 
-        setParent(parent: Reference): void {
+        setParent(parent: IReference): void {
             // Set the parent of this value     
             this.parent = parent;
 
