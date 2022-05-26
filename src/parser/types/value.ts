@@ -1,6 +1,6 @@
 import { merge } from 'lodash';
 import { ObjectId } from 'mongodb';
-import { FilterObject } from '../../graphQL/schema/types';
+import { FilterObject } from '../../router/GQL/schema/types';
 import { arrayToObject, formatValue } from '../../general';
 import { groupHooks } from '../../accessControl/groupHooks';
 import { IHookBank, IHookReference, IReference } from '../index.interfaces';

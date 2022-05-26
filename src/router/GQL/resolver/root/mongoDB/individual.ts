@@ -9,7 +9,7 @@ import { Context } from 'apollo-server-core';
          
 import { requestDetails } from '../../main';       
 
-import schemaObject from '../../../../parser/types/objects/object';  
+import schemaObject from '../../../../../parser/types/objects/object';  
 import mapResponse from '../../database/mapResponse';    
 import mongoService from '../../database/mongoDB';     
 import intermediate from './shared';

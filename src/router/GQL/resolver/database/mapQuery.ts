@@ -10,12 +10,12 @@
 
 import { ObjectId } from 'mongodb';
 import { mongoResponseObject } from './mongoDB';
-import { arrayToObject } from '../../../general';
+import { arrayToObject } from '../../../../general';
 import { projectionInterface } from './parseQuery';
 
-import schemaObject from '../../../parser/types/objects/object';
-import schemaValue from '../../../parser/types/value';
-import { merge } from '../../../merge';
+import schemaObject from '../../../../parser/types/objects/object';
+import schemaValue from '../../../../parser/types/value';
+import { merge } from '../../../../merge';
 
 export default function (queryArguments: any, input: schemaObject.init): mongoResponseObject {
     // Start building the query

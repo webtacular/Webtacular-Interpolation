@@ -2,17 +2,17 @@
 import { requestDetails } from '../../main';       
 import { projectionInterface } from '../../database/parseQuery';
 
-import schemaValue from '../../../../parser/types/value';   
-import schemaObject from '../../../../parser/types/objects/object';  
-import HookFunction from '../../../../accessControl/hook';
+import schemaValue from '../../../../../parser/types/value';   
+import schemaObject from '../../../../../parser/types/objects/object';  
+import HookFunction from '../../../../../accessControl/hook';
 
-import preHookProjectionArray from '../../../../accessControl/processHook';
+import preHookProjectionArray from '../../../../../accessControl/processHook';
 import mongoService, { mongoResponseObject } from '../../database/mongoDB'   
 import { Collection } from 'mongodb';
 import { Context } from 'apollo-server-core';
-import { groupHooksInterface } from '../../../../accessControl/groupHooks';
-import { internalConfiguration } from '../../../../general';
-import { merge } from '../../../../merge';
+import { groupHooksInterface } from '../../../../../accessControl/groupHooks';
+import { internalConfiguration } from '../../../../../general';
+import { merge } from '../../../../../merge';
 
 export type sharedExport = {
     collection: Collection<Document>;

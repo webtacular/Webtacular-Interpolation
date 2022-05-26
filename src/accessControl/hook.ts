@@ -1,8 +1,8 @@
 import schemaValue from '../parser/types/value';
-import { projectionInterface } from '../graphQL/resolver/database/parseQuery';
+import { projectionInterface } from '../router/GQL/resolver/database/parseQuery';
 import { internalConfiguration } from '../general';
 import { merge } from '../merge';
-import { FilterObject } from '../graphQL/schema/types';
+import { FilterObject } from '../router/GQL/schema/types';
 
 namespace HookFunction {
 

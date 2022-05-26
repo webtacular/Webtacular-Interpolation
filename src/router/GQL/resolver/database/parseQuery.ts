@@ -6,8 +6,8 @@
 //
 //
 
-import { arrayToObject } from '../../../general';
-import { merge } from '../../../merge';
+import { arrayToObject } from '../../../../general';
+import { merge } from '../../../../merge';
 import parseArgs from './parseArgs';
 
 // --- These two interfaces need to strongly typed --- //

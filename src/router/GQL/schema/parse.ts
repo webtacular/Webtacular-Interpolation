@@ -1,12 +1,12 @@
-import { arrayToObject } from '../../general';
+import { arrayToObject } from '../../../general';
 
-import schemaObject from '../../parser/types/objects/object';
-import schemaValue from '../../parser/types/value';
+import schemaObject from '../../../parser/types/objects/object';
+import schemaValue from '../../../parser/types/value';
 
 import { FilterObject, QueryFilterOutput, TypeMap } from './types';
-import HookFunction from '../../accessControl/hook';
-import { groupHooks, groupHooksInterface } from '../../accessControl/groupHooks';
-import { merge } from '../../merge';
+import HookFunction from '../../../accessControl/hook';
+import { groupHooks, groupHooksInterface } from '../../../accessControl/groupHooks';
+import { merge } from '../../../merge';
 
 export interface Output {
     unique: Array<schemaValue.init>;

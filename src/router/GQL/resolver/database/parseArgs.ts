@@ -1,5 +1,5 @@
-import { arrayToObject } from '../../../general';
-import { merge } from '../../../merge';
+import { arrayToObject } from '../../../../general';
+import { merge } from '../../../../merge';
 import { mongoResponseObject } from './mongoDB';
 
 export default function (contex:any): mongoResponseObject {

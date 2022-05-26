@@ -3,8 +3,8 @@ import { TypeMap } from '../types';
 import { InputClass } from './src/object2gql';
 
 import object2gql from './src/object2gql';
-import schemaObject from '../../../parser/types/objects/object';
-import { internalConfiguration } from '../../../general';
+import schemaObject from '../../../../parser/types/objects/object';
+import { internalConfiguration } from '../../../../general';
 
 export default (input: Output): {
     schema: string;

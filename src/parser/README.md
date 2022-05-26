@@ -1,13 +1,10 @@
-The goal of this section is to generate a parser that can parse the schema into a tree of objects that can then be
-processed by the Graphql and rest transpilers.
-
-## Beautifly simple and understandable boilerplate, really straightforward and easy to use
+# Beautifly simple and understandable boilerplate, really straightforward and easy to use
 
 **Still in progress**: This here demonstrates a schema that interfaces with a MongoDB database, Support for SQL and other databases is planned.
 
 At its purest, all you need to do is to create a layout of your database, providing it just the name and the expected type of each value.
 
-### Json database
+## Json database
 
 This here is an example of the layout of the data base that we are trying to interface with.
 
@@ -38,14 +35,14 @@ As you can see, login history is a list of objects, each one containing the foll
 
 Heres the Json database processed into a schema.
 
-#### Root object
+### Root object
 
 The initial **new schemaObject.init** function is called to create a root object,
 which is the root of the tree, it contains information about the database and the collection it represents.
 
 There can be muliple root objects, meaning that you can lace multiple databases/types of databases together.
 
-#### Value object
+### Value object
 
 We than create a **new schemaValue.init** function to create a value object, which is a leaf of the tree,
 it contains information about the value and its type, if a value has an *unappealing* name, eg, random underscores,
@@ -55,7 +52,7 @@ We can also identify a value as a list, meaning that it is a list of values, eg,
 
 We can aslo define this value as being unique, allowing the root object to create a way to fetch a singluar value from the database, instead of a list of values.
 
-#### Nested object
+### Nested object
 
 Now we want to get a list of objects (login history), so we create a **new schemaNested.init** function to create a nested object, when we call it, the parser assumes that the value is a direct child of the leafs parent, meaning that when nesting, youll need to make sure that the leafs parent name matches that of the database. (This project has already blow the scope out of the water, allowing the masking of nested objects is in consideration).
 

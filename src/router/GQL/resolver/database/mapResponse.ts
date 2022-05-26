@@ -6,12 +6,12 @@
 //
 //
 
-import schemaObject from '../../../parser/types/objects/object';
+import schemaObject from '../../../../parser/types/objects/object';
 
 
 import { mongoResponseObject } from './mongoDB';
-import { arrayToObject } from '../../../general';
-import { merge } from '../../../merge';
+import { arrayToObject } from '../../../../general';
+import { merge } from '../../../../merge';
 
 export default function (input: schemaObject.init, data: mongoResponseObject): mongoResponseObject {
     // Walk through the data object, get the according value from the schema
