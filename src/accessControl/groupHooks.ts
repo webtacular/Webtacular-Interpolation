@@ -1,6 +1,6 @@
 import HookFunction from "./hook";
 import _ from "lodash";
-import schemaValue from "../parser/types/value";
+import schemaValue from "../lexer/types/value";
 import { projectionInterface } from "../router/GQL/resolver/database/parseQuery";
 import { arrayToObject } from "../general";
 import { ObjectId } from "mongodb";

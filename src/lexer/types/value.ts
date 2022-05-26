@@ -1,11 +1,11 @@
 import { merge } from 'lodash';
 import { ObjectId } from 'mongodb';
-import { FilterObject } from '../../router/GQL/schema/types';
 import { arrayToObject, formatValue } from '../../general';
 import { groupHooks } from '../../accessControl/groupHooks';
 import { IHookBank, IHookReference, IReference } from '../index.interfaces';
 
 import HookFunction from '../../accessControl/hook';
+import { FilterObject } from '../../router/GQL/schema-bk/types';
 
 namespace schemaValue { 
     // TODO: Remove whatever this is

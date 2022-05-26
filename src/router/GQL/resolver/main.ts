@@ -1,11 +1,11 @@
-import schemaObject from '../../../parser/types/objects/object';
+import schemaObject from '../../../lexer/types/objects/object';
 
 import parseQuery, { ArgumentsInterface, projectionInterface } from './database/parseQuery';
 
 import { buildSchema } from 'graphql';
 import { FilterObject } from '../schema/types';
 
-import schemaValue from '../../../parser/types/value';
+import schemaValue from '../../../lexer/types/value';
 
 import individualResolve from './root/mongoDB/individual';
 import collectionResolve from './root/mongoDB/collection';
