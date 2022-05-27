@@ -1,7 +1,6 @@
 
 import { IReference } from '../../index.interfaces';
 
-import collectionize from '../collections';
 import baseObject from './base';
 import schemaObject from './object';
 
@@ -30,21 +29,6 @@ namespace schemaNested {
 
         clearObject() {
             this.obj = {};
-        }
-
-        collectionizeObject(key: string) {
-            // set the key
-            this.key = key;
-
-            // Check if the object is collectionize
-            if(this.options.collectionize === true) {
-
-                // Set the collectionize flag
-                this.collectionize = true;
-                
-                // collectionize
-                collectionize(this);
-            }
         }
 
         setParents(parents: Array<schemaObject.init | schemaNested.init>) {

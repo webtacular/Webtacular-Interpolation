@@ -1,7 +1,7 @@
-import schemaNested from "./objects/nested";
-import schemaObject from "./objects/object";
+import baseObject from "./objects/base";
 
-function collectionize(object: schemaObject.init | schemaNested.init): void {
+function collectionize(object: baseObject.init): void {
+
     // Set the collectionize fields
     object.collectionize = true;
 
@@ -10,7 +10,7 @@ function collectionize(object: schemaObject.init | schemaNested.init): void {
 
     // Check if the user has provided a collection name
     const collectionName = collectionizeFields?.collectionName ?? object.key + 'Collection',
-        individualName = collectionizeFields?.individualName ?? object.key;
+        individualName = collectionizeFields?.individualName ?? object.key + 'Individual';
 
     // Check if both match 
     if(collectionName === individualName) // Crash

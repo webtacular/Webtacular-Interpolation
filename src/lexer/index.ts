@@ -7,11 +7,14 @@ import schemaNested from "./types/objects/nested";
 import baseObject from "./types/objects/base";
 
 import { IHookBank, INestedValues, IOutput, IProcessedObject, IProcessedValue } from "./index.interfaces";
+import generateFilters from "./filters";
 
 export function parse(object: schemaObject.init): IOutput {
     let returnable: IProcessedObject = { nested: {}, values: {}, object: {} };
     let hookBank: IHookBank = {};
+
     let clearObjectArr: Array<() => void> = [];
+    let verifyObjectArr: Array<() => void> = [];
 
     const walk = (
         schema: schemaObject.init | baseObject.ValueInterface,
@@ -27,6 +30,12 @@ export function parse(object: schemaObject.init): IOutput {
         if(schema instanceof schemaObject.init) {
             // Push the clear function to the array
             clearObjectArr.push(() => schema.clearObject());
+
+            // Push the verify function to the array
+            verifyObjectArr.push(() => schema.verifyObject());
+            
+            // colectionize the object
+            schema.collectionizeObject();
 
             merge(returnable.object, {
                 [schema.identifier.toString()]: schema
@@ -80,6 +89,9 @@ export function parse(object: schemaObject.init): IOutput {
                     // Push the clear function to the array
                     clearObjectArr.push(() => value.clearObject());
 
+                    // Push the verify function to the array
+                    verifyObjectArr.push(() => value.verifyObject());
+
                     // Recurse
                     walk(
                         value.obj,
@@ -92,6 +104,7 @@ export function parse(object: schemaObject.init): IOutput {
                     // Stop the loop from progressing
                     continue;
                 }
+
 
                 // -----------------------------[ General ]---------------------------- //
                 const key = objKeys[i],
@@ -108,6 +121,14 @@ export function parse(object: schemaObject.init): IOutput {
                     get: () => parents[parents.length - 1]
                 });
                 value.generateMask(parents[parents.length - 1].mask);
+
+
+                // ----------------------------[ Filter ]---------------------------- //
+                const filters = generateFilters(value.key, value.type);
+
+                value.filters = filters;
+                parents[parents.length - 1].filters.push(...filters);
+
 
                 // --------------------------[ Returnable ]-------------------------- //
                 merge(temporaryReturnable, {
@@ -142,46 +163,11 @@ export function parse(object: schemaObject.init): IOutput {
     // redundant objects in memory
     clearObjectArr.forEach(func => func());
 
+    // Verify the objects
+    verifyObjectArr.forEach(func => func());
+
     return {
         processed: returnable,
         hookBank
     }
 }
-
-
-const schema = parse(new schemaObject.init({
-    collectionName: 'config',
-    databaseName: 'test',
-    name: 'config',
-    collectionize: true,
-}, {
-    id: new schemaValue.init({
-        type: 'id',
-        unique: true,
-
-        mask: [ '_id' ]
-    }),
-
-    userName: new schemaValue.init({
-        type: 'string',
-        unique: true,
-    }),
-
-    loginHistory: new schemaNested.init({
-        array: true,
-    }, {
-        ip: new schemaValue.init({
-            type: 'string',
-            description: 'The ip address of the user',
-            mask: [ 'ip_latest' ]
-        }),
-
-        loginDate: new schemaValue.init({
-            type: 'string',
-            description: 'The date of the login',
-            mask: [ 'login_date' ]
-        }),
-    }),
-}));
-
-console.log(JSON.stringify(schema, null, 2));

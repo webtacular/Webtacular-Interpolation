@@ -1,9 +1,14 @@
 import { parse } from "../../../lexer";
+import { merge } from "../../../merge";
 import { IOutput } from "../../../lexer/index.interfaces";
+
+import leaf from "./leaf";
+import root from "./root";
 
 import schemaValue from "../../../lexer/types/value";
 import schemaNested from "../../../lexer/types/objects/nested";
 import schemaObject from "../../../lexer/types/objects/object";
+
 
 const schema = parse(new schemaObject.init({
     collectionName: 'config',
@@ -24,7 +29,8 @@ const schema = parse(new schemaObject.init({
     }),
 
     loginHistory: new schemaNested.init({
-        array: true,
+        collectionize: true,
+        array: false,
     }, {
         ip: new schemaValue.init({
             type: 'string',
@@ -34,14 +40,70 @@ const schema = parse(new schemaObject.init({
 
         loginDate: new schemaValue.init({
             type: 'string',
+            unique: true,
             description: 'The date of the login',
             mask: [ 'login_date' ]
         }),
     }),
 }));
 
-function parser(input: IOutput): void {
+export type IStringObject = { [x:string]: string };
 
+class baseType {
+    gql: IStringObject
+
+    constructor(gql: IStringObject) { 
+        this.gql = gql; 
+    }
 }
+
+export class type extends baseType {
+    constructor(gql: IStringObject) {
+        super(gql);
+    }
+}
+
+export class input extends baseType {
+    key: string
+    constructor(gql: IStringObject, key: string) {
+        super(gql);
+        this.key = key;
+    }
+}
+
+export interface IGql {
+    [key: string]: input | type | IStringObject;
+}
+
+const loop = (obj: { [x:string]: schemaObject.init }): Array<string> => {
+    const keys = Object.keys(obj);
+
+    let returnable: string[] = [];
+
+    for(let i: number = 0; i < keys.length; i++) {
+        const key = keys[i],
+            value = obj[key];
+
+        returnable.push(value.root);
+    }
+
+    return returnable;
+}
+
+function parser(input: IOutput): void {
+    // Variable to store the output in
+    let gql: IGql = {};
+
+    // Merge the leafs and the root
+    merge(gql, root(input.processed.object));
+    merge(gql, root(input.processed.nested));
+    merge(gql, leaf(input.processed.values));
+
+    const queryNames: string[] = loop(input.processed.object);
+
+    console.log(gql);
+}
+
+export default parser;
 
 parser(schema);

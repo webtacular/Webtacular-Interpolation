@@ -6,6 +6,7 @@ import { IHookBank, IHookReference, IReference } from '../index.interfaces';
 
 import HookFunction from '../../accessControl/hook';
 import { FilterObject } from '../../router/GQL/schema-bk/types';
+import { IValFilter } from '../filters';
 
 namespace schemaValue { 
     // TODO: Remove whatever this is
@@ -78,9 +79,11 @@ namespace schemaValue {
 
         hooks: Array<IHookReference> = [];
         
-        filters: { [x: string]: FilterObject; } = {};
+        filters: Array<IValFilter> = [];
 
         key: string = '';
+
+        type: GqlType;
 
         parent: IReference; 
 
@@ -106,6 +109,37 @@ namespace schemaValue {
                     key: '',
                 }  
             }
+
+            this.#setType();
+        }
+
+        #setType(): void {
+            // "string" | "number" | "boolean" | "float" | "id"
+            switch(this.options.type) {
+                case 'string':
+                    this.type = 'String';
+                    break;
+
+                case 'number':
+                    this.type = 'Int';
+                    break;
+
+                case 'float':
+                    this.type = 'Float';
+                    break;
+
+                case 'boolean':
+                    this.type = 'Boolean';
+                    break;
+
+                case 'id':
+                    this.type = 'ID';
+                    break;
+            }
+
+            // Check if this value is an array
+            if(this.options.array)
+                this.type = `[${this.type}]`;
         }
 
         generateMask(parents: Array<string> = []): void {

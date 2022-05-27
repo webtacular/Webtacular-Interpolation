@@ -1,6 +1,5 @@
 import { types } from '../../../types';
 
-import collectionize from '../collections';
 import baseObject from './base';
 
 namespace schemaObject {
@@ -22,16 +21,6 @@ namespace schemaObject {
             this.options = options;
             this.obj = obj;
             this.uniqueValues = [];
-
-            // Check if the object is collectionize
-            if(this.options.collectionize === true) {
-
-                // Set the collectionize flag
-                this.collectionize = true;
-                
-                // collectionize
-                collectionize(this);
-            }
 
             // Set the key
             this.key = options.name || options.collectionName;

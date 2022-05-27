@@ -28,7 +28,7 @@ export interface IProcessedValue {
     identifier: ObjectId;
     parent: IReference;
     nested: INestedValues;
-    values: Array<schemaValue.init>;
+    values: { [key: string]: schemaValue.init };
 }
 
 export interface IHookBank{

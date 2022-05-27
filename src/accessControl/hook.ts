@@ -1,8 +1,8 @@
 import schemaValue from '../lexer/types/value';
-import { projectionInterface } from '../router/GQL/resolver/database/parseQuery';
-import { internalConfiguration } from '../general';
+
 import { merge } from '../merge';
-import { FilterObject } from '../router/GQL/schema/types';
+import { internalConfiguration } from '../general';
+import { projectionInterface } from '../router/GQL/resolver/database/parseQuery';
 
 namespace HookFunction {
 
