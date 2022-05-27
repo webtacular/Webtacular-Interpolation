@@ -48,7 +48,7 @@ function root(roots: { [x: string]: schemaObject.init | schemaNested.init}): IGq
                 // Individual root
                 merge(temporaryReturnable, {
                     [value.root]: {
-                        [value.collectionizeFields.schema.individualName]: new input(uniqueObject, `[${value.key}]`),
+                        [value.collectionizeFields.schema.individualName]: new input(uniqueObject, `[${value.key}]`, 'filter', `${value.key}Filter`),
                         [value.collectionizeFields.schema.collectionName]: value.collectionizeFields.types.collectionName
                     }
                 });
@@ -65,7 +65,7 @@ function root(roots: { [x: string]: schemaObject.init | schemaNested.init}): IGq
                 // Collection root
                 merge(temporaryReturnable, {
                     [value.collectionizeFields.types.collectionName]: {
-                        items: new input(filterObject, `[${value.key}]`),
+                        items: new input(filterObject, `[${value.key}]`, 'filter', `${value.key}Filter`),
                         total: 'Number',
                         size: 'Number',
                         page: 'Number',

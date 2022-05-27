@@ -8,6 +8,7 @@ import root from "./root";
 import schemaValue from "../../../lexer/types/value";
 import schemaNested from "../../../lexer/types/objects/nested";
 import schemaObject from "../../../lexer/types/objects/object";
+import translate from "./translate";
 
 
 const schema = parse(new schemaObject.init({
@@ -47,32 +48,25 @@ const schema = parse(new schemaObject.init({
     }),
 }));
 
-export type IStringObject = { [x:string]: string };
+export type IStringObject = { [x: string]: string | input };
 
-class baseType {
+
+export class input {
     gql: IStringObject
-
-    constructor(gql: IStringObject) { 
-        this.gql = gql; 
-    }
-}
-
-export class type extends baseType {
-    constructor(gql: IStringObject) {
-        super(gql);
-    }
-}
-
-export class input extends baseType {
     key: string
-    constructor(gql: IStringObject, key: string) {
-        super(gql);
+    name: string
+    schemaName: string
+
+    constructor(gql: IStringObject, key: string, schemaName: string, name: string) {
         this.key = key;
+        this.gql = gql;
+        this.schemaName = schemaName;
+        this.name = name;
     }
 }
 
 export interface IGql {
-    [key: string]: input | type | IStringObject;
+    [x: string]: IStringObject;
 }
 
 const loop = (obj: { [x:string]: schemaObject.init }): Array<string> => {
@@ -101,7 +95,7 @@ function parser(input: IOutput): void {
 
     const queryNames: string[] = loop(input.processed.object);
 
-    console.log(gql);
+    translate(gql, queryNames);
 }
 
 export default parser;

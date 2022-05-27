@@ -5,7 +5,6 @@ import { groupHooks } from '../../accessControl/groupHooks';
 import { IHookBank, IHookReference, IReference } from '../index.interfaces';
 
 import HookFunction from '../../accessControl/hook';
-import { FilterObject } from '../../router/GQL/schema-bk/types';
 import { IValFilter } from '../filters';
 
 namespace schemaValue { 
