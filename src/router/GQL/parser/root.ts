@@ -1,3 +1,4 @@
+import { formatValue } from "../../../general";
 import schemaNested from "../../../lexer/types/objects/nested";
 import schemaObject from "../../../lexer/types/objects/object";
 
@@ -48,7 +49,7 @@ function root(roots: { [x: string]: schemaObject.init | schemaNested.init}): IGq
                 // Individual root
                 merge(temporaryReturnable, {
                     [value.root]: {
-                        [value.collectionizeFields.schema.individualName]: new input(uniqueObject, `[${value.key}]`, 'filter', `${value.key}Filter`),
+                        [value.collectionizeFields.schema.individualName]: new input(uniqueObject, `[${value.key}]`, 'filter', formatValue([value.key, value.collectionizeFields.schema.individualName, 'filter'])),
                         [value.collectionizeFields.schema.collectionName]: value.collectionizeFields.types.collectionName
                     }
                 });
@@ -65,12 +66,12 @@ function root(roots: { [x: string]: schemaObject.init | schemaNested.init}): IGq
                 // Collection root
                 merge(temporaryReturnable, {
                     [value.collectionizeFields.types.collectionName]: {
-                        items: new input(filterObject, `[${value.key}]`, 'filter', `${value.key}Filter`),
-                        total: 'Number',
-                        size: 'Number',
-                        page: 'Number',
-                        pages: 'Number',
-                        max: 'Number'
+                        items: new input(filterObject, `[${value.key}]`, 'filter', formatValue([value.key, value.collectionizeFields.schema.collectionName, 'filter'])),
+                        total: 'Int',
+                        size: 'Int',
+                        page: 'Int',
+                        pages: 'Int',
+                        max: 'Int'
                     }
                 });
                 

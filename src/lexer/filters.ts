@@ -68,16 +68,16 @@ function generateFilters(key: string, type: schemaValue.GqlType): Array<IValFilt
             return fill(stringFilters);
 
         case 'Int':
-            return fill([]);
+            return [];
 
         case 'Float':
-            return fill([]);
+            return [];
 
         case 'ID':
-            return fill([]);
+            return [];
 
         case 'Boolean':
-            return fill([]);
+            return [];
     }
 }
 

@@ -9,7 +9,7 @@ import baseObject from "./types/objects/base";
 import { IHookBank, INestedValues, IOutput, IProcessedObject, IProcessedValue } from "./index.interfaces";
 import generateFilters from "./filters";
 
-export function parse(object: schemaObject.init): IOutput {
+function parse(object: schemaObject.init): IOutput {
     let returnable: IProcessedObject = { nested: {}, values: {}, object: {} };
     let hookBank: IHookBank = {};
 
@@ -171,3 +171,5 @@ export function parse(object: schemaObject.init): IOutput {
         hookBank
     }
 }
+
+export default parse;

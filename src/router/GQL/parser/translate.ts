@@ -3,7 +3,8 @@ import { IGql, input } from "./parse";
 // This finall function will be used to translate the object into valid GQL
 function translate(gql: IGql, queryMask: Array<string>): string {
 
-    let returnable: string = '';
+    let returnable: string = '',
+        queryString: string = 'type Query {';
 
     const rawKeys: Array<string> = Object.keys(gql);
 
@@ -12,6 +13,10 @@ function translate(gql: IGql, queryMask: Array<string>): string {
         const key = rawKeys[i],
             parent = gql[key],
             parentKeys: Array<string> = Object.keys(parent);
+
+        // Check if the value is in queryMask
+        if (queryMask.includes(key))
+            queryString += `${key}: ${key},`;
 
         let parentReturnable: string =  `type ${key} { `;
 
@@ -49,7 +54,7 @@ function translate(gql: IGql, queryMask: Array<string>): string {
         returnable += `${parentReturnable} \n`;
     }
 
-    return returnable;
+    return returnable + `\n ${queryString} }`;
 }
 
 export default translate;

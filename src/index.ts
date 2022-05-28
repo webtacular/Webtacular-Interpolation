@@ -1,11 +1,12 @@
-import parse from './router/GQL/schema/parse';
 import schemaObject from './lexer/types/objects/object';
-import transpiler from './router/GQL/schema/transpiler';
 import mongoService from './router/GQL/resolver/database/mongoDB';
 import resolve from './router/GQL/resolver/main';
 
 import hotQL from 'fastify-hotql';
 import fastify, { FastifyInstance } from 'fastify';
+import lexer from './lexer';
+import translate from './router/GQL/parser/translate';
+import parser from './router/GQL/parser/parse';
 
 export namespace Construct {
     export interface Schema {
@@ -32,17 +33,16 @@ export namespace Construct {
                     value.key = key;
 
                     // Parse the schemaObject
-                    const parsed = parse(value);
+                    const parsed = lexer(value);
 
                     // Create the schema
-                    const schmea = transpiler(parsed);
+                    const schmea = parser(parsed);
 
                     // Create the resovler for the schemaObject
                     resolve(
-                        schmea.orgin, 
-                        parsed,
-                        schmea.schema, 
-                        main
+                        value, 
+                        schmea,
+                        main, 
                     );
                 }
             }
