@@ -5,8 +5,7 @@ import resolve from './router/GQL/resolver/main';
 import hotQL from 'fastify-hotql';
 import fastify, { FastifyInstance } from 'fastify';
 import lexer from './lexer';
-import translate from './router/GQL/parser/translate';
-import parser from './router/GQL/parser/parse';
+import parser from './router/GQL/parser';
 
 export namespace Construct {
     export interface Schema {

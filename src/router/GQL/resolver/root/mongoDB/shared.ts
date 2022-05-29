@@ -67,7 +67,7 @@ async function intermediate(
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const paramaters = isCollection === true ? requestDetails.projection[requestDetails.collectionName]?.items ?? {} : requestDetails.projection[requestDetails.individualName] ?? {};
+    const paramaters = isCollection === true ? requestDetails.projection[requestDetails.name]?.items ?? {} : requestDetails.projection[requestDetails.individualName] ?? {};
 
     // Map the requested resouces
     for(const paramater in paramaters){
@@ -145,7 +145,7 @@ async function intermediate(
             headers: fastifyReq.headers,
             value: undefined,
             projection: {
-                preSchema: (requestDetails.projection[requestDetails.collectionName] as any)?.items ?? {},
+                preSchema: (requestDetails.projection[requestDetails.name] as any)?.items ?? {},
                 postSchema: projection,
             }
         });
@@ -169,7 +169,7 @@ async function intermediate(
     // ------------------------------------ //
     const collection = client.getCollection(
         schemaObject.options.databaseName, 
-        schemaObject.options.collectionName
+        schemaObject.options.name
     ); 
     // ------------------------------------ //
 

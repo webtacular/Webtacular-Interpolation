@@ -32,7 +32,7 @@ namespace schemaValue {
         mask?: Array<string>;
 
         // Collection name
-        collectionName?: string;
+        name?: string;
 
         // Database name
         databaseName?: string;

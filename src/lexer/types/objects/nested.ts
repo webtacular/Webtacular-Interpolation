@@ -1,4 +1,5 @@
 
+import { merge } from '../../../merge';
 import { IReference } from '../../index.interfaces';
 
 import baseObject from './base';
@@ -12,6 +13,7 @@ namespace schemaNested {
     export class init extends baseObject.init {
         parent: IReference;
         parents: Array<IReference> = [];
+        options: Constructor;
 
         constructor(options: Constructor, obj: baseObject.ValueInterface) {
             super(options);

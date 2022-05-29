@@ -1,10 +1,10 @@
-import { IProcessedValue } from "../../../lexer/index.interfaces";
-import { merge } from "../../../merge";
-import { IGql } from "./parse";
+import { IProcessedValue } from "../../../../lexer/index.interfaces";
+import { merge } from "../../../../merge";
+import { IGraphQL } from "./types";
 
-function leaf(leafs: { [x: string]: IProcessedValue }): IGql {
+function leaf(leafs: { [x: string]: IProcessedValue }): IGraphQL {
     // Object to store the output in
-    let gql: IGql = {};
+    let gql: IGraphQL = {};
 
     // Branch keys
     const leafKeys = Object.keys(leafs);
@@ -19,7 +19,7 @@ function leaf(leafs: { [x: string]: IProcessedValue }): IGql {
         const parent = leaf.parent.get();
 
         // Temporary object to store the processed values
-        let temporaryReturnable: IGql = {};
+        let temporaryReturnable: IGraphQL = {};
 
         // Leaf values keys
         const leafValuesKeys = Object.keys(leaf.values);

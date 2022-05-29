@@ -66,7 +66,7 @@ A nested object can be instantiated in two ways:
 
 ```typescript
 parse(new schemaObject.init({
-    collectionName: 'config',
+    name: 'config',
     databaseName: 'test',
     name: 'config',
     collectionize: true,
@@ -160,7 +160,7 @@ I created the parser to be as strong as possible, it extracts as much data as po
               "unique": false,
               "description": "The ip address of the user",
               "array": false,
-              "collectionName": "",
+              "name": "",
               "databaseName": "",
               "type": "string",
               "mask": [
@@ -216,7 +216,7 @@ I created the parser to be as strong as possible, it extracts as much data as po
               "unique": false,
               "description": "The date of the login",
               "array": false,
-              "collectionName": "",
+              "name": "",
               "databaseName": "",
               "type": "string",
               "mask": [
@@ -281,7 +281,7 @@ I created the parser to be as strong as possible, it extracts as much data as po
               "unique": true,
               "description": "",
               "array": false,
-              "collectionName": "",
+              "name": "",
               "databaseName": "",
               "type": "id",
               "mask": [
@@ -331,7 +331,7 @@ I created the parser to be as strong as possible, it extracts as much data as po
               "unique": true,
               "description": "",
               "array": false,
-              "collectionName": "",
+              "name": "",
               "databaseName": "",
               "type": "string"
             },
@@ -382,7 +382,7 @@ I created the parser to be as strong as possible, it extracts as much data as po
         "maskArray": [],
         "mask": [],
         "options": {
-          "collectionName": "config",
+          "name": "config",
           "databaseName": "test",
           "name": "config",
           "collectionize": true
@@ -390,11 +390,11 @@ I created the parser to be as strong as possible, it extracts as much data as po
         "obj": {},
         "collectionizeFields": {
           "schema": {
-            "collectionName": "collection",
+            "name": "collection",
             "individualName": "individual"
           },
           "types": {
-            "collectionName": "undefinedCollection"
+            "name": "undefinedCollection"
           }
         },
         "key": "config"

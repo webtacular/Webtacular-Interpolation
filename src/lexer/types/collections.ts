@@ -9,22 +9,22 @@ function collectionize(object: baseObject.init): void {
     const collectionizeFields = object.options?.collectionizeFields;
 
     // Check if the user has provided a collection name
-    const collectionName = collectionizeFields?.collectionName ?? object.key + 'Collection',
+    const name = collectionizeFields?.name ?? object.key + 'Collection',
         individualName = collectionizeFields?.individualName ?? object.key + 'Individual';
 
     // Check if both match 
-    if(collectionName === individualName) // Crash
+    if(name === individualName) // Crash
         throw new Error(`The collection name and individual name are the same.`);
 
     // Set the collectionize fields
     object.collectionizeFields = {
         schema: {
-            collectionName: 'collection',
+            name: 'collection',
             individualName: 'individual'
         },
 
         types: {
-            collectionName,
+            name,
             individualName
         }
     };

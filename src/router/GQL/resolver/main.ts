@@ -33,7 +33,7 @@ import { ObjectId } from 'mongodb';
 import { types } from '../../../types';
 
 export interface requestDetails {
-    collectionName: string;
+    name: string;
     individualName: string;
 
     projection: projectionInterface;
@@ -72,7 +72,7 @@ export default function (
 
         //     // This object contains basic information about the schemaObject
         //     const requestDetails: requestDetails = {
-        //         collectionName: (input.key + 'Collection'),
+        //         name: (input.key + 'Collection'),
         //         individualName: input.key,
 
         //         projection: parsedQuery.projection,
@@ -92,7 +92,7 @@ export default function (
         //             [key]: individualResolve(input, requestDetails, main.client, context)});
                 
         //         // Check if the requested value is a collection
-        //         else if(key === requestDetails.collectionName) returnObject = merge(returnObject, {
+        //         else if(key === requestDetails.name) returnObject = merge(returnObject, {
         //             [key]: collectionResolve(input, requestDetails, main.client, context)});
         //     }
 
@@ -114,6 +114,8 @@ export default function (
     // --------------------[ALL OF THIS IS TEMPORARY]-------------------- //
     main.gql.addSchema(buildSchema(`
         ${schema}
-    `), resolver);
+    `), {
+        usersParent: () => {}
+    });
     // --------------------[ALL OF THIS IS TEMPORARY]-------------------- //
 }

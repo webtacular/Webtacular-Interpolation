@@ -28,6 +28,9 @@ function parse(object: schemaObject.init): IOutput {
         // Recurse through the schema if the schema
         // an instance of schemaObject.init
         if(schema instanceof schemaObject.init) {
+            // Set the key 
+            schema.setKey(schema.options.name);
+
             // Push the clear function to the array
             clearObjectArr.push(() => schema.clearObject());
 
@@ -72,7 +75,7 @@ function parse(object: schemaObject.init): IOutput {
                     const value = schema[objKeys[i]] as schemaNested.init;
 
                     // set the value key
-                    value.key = objKeys[i];
+                    value.setKey(objKeys[i]);
                     
                     // Set the parents
                     value.setParents(parents);

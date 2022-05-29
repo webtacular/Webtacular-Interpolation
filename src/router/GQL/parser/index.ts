@@ -1,37 +1,21 @@
+import { IGraphQL } from "./src/types";
 import { merge } from "../../../merge";
 import { IOutput } from "../../../lexer/index.interfaces";
 
-import leaf from "./leaf";
-import root from "./root";
+import leaf from "./src/leaf";
+import root from "./src/root";
 
 import schemaObject from "../../../lexer/types/objects/object";
-import translate from "./translate";
+import translate from "./src/translate";
 
-export type IStringObject = { [x: string]: string | input };
-
-export class input {
-    gql: IStringObject
-    key: string
-    name: string
-    schemaName: string
-
-    constructor(gql: IStringObject, key: string, schemaName: string, name: string) {
-        this.key = key;
-        this.gql = gql;
-        this.schemaName = schemaName;
-        this.name = name;
-    }
-}
-
-export interface IGql {
-    [x: string]: IStringObject;
-}
-
+// This function just extracts the keys of the root Query
 const loop = (obj: { [x:string]: schemaObject.init }): Array<string> => {
     const keys = Object.keys(obj);
 
+    // Temporary array to store the query names
     let returnable: string[] = [];
 
+    // Loop trough the keys
     for(let i: number = 0; i < keys.length; i++) {
         const key = keys[i],
             value = obj[key];
@@ -44,16 +28,14 @@ const loop = (obj: { [x:string]: schemaObject.init }): Array<string> => {
 
 function parser(input: IOutput): string {
     // Variable to store the output in
-    let gql: IGql = {};
+    let gql: IGraphQL = {};
 
     // Merge the leafs and the root
     merge(gql, root(input.processed.object));
     merge(gql, root(input.processed.nested));
     merge(gql, leaf(input.processed.values));
 
-    const queryNames: string[] = loop(input.processed.object);
-
-    return translate(gql, queryNames);
+    return translate(gql, loop(input.processed.object));
 }
 
 export default parser;

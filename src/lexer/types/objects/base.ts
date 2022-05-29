@@ -13,13 +13,11 @@ namespace baseObject {
     }
     
     export interface Constructor {
-        name?: string;
-
         array?: boolean;
 
         collectionize?: boolean;
         collectionizeFields?: {
-            collectionName?: string;
+            name?: string;
             individualName?: string;
         }
 
@@ -42,11 +40,11 @@ namespace baseObject {
 
         collectionizeFields: {
             schema: {
-                collectionName: string;
+                name: string;
                 individualName: string;
             },
             types: {
-                collectionName: string;
+                name: string;
                 individualName: string;
             },
         }
@@ -72,8 +70,6 @@ namespace baseObject {
             if(options.array === true && options.collectionize === true)
                 throw new Error('You can\'t have both an array and collectionize');
 
-            this.root = `${options.name}Parent`;
-
             // Check if collectionize is set
             if(options.collectionize === true)
                 this.collectionize = true;
@@ -83,14 +79,16 @@ namespace baseObject {
                 this.array = true;
         }
 
-        collectionizeObject(key?: string) {
-            if(key) {
-                // set the key
-                this.key = key;
+        setKey(key: string) {
+            // set the key
+            this.key = key;
 
-                // set the root 
-                this.root = `${key}Parent`;
-            }
+            // set the root 
+            this.root = `${key}Parent`;
+        }
+
+        collectionizeObject(key?: string) {
+            if(key) this.setKey(key);
 
             // Check if the object is collectionize
             if(this.options.collectionize === true) {

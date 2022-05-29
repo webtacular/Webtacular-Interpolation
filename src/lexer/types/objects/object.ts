@@ -1,3 +1,4 @@
+import { merge } from '../../../merge';
 import { types } from '../../../types';
 
 import baseObject from './base';
@@ -5,7 +6,7 @@ import baseObject from './base';
 namespace schemaObject {
 
     export interface Constructor extends baseObject.Constructor {
-        collectionName: string;
+        name: string;
         databaseName: string;
         database?: {
             type: types.database;
@@ -14,16 +15,19 @@ namespace schemaObject {
     }
 
     export class init extends baseObject.init {
+        options: Constructor;
 
         constructor(options: Constructor, obj: baseObject.ValueInterface) {
             super(options);
 
             this.options = options;
+
             this.obj = obj;
+            
             this.uniqueValues = [];
 
             // Set the key
-            this.key = options.name || options.collectionName;
+            this.key = options.name || options.name;
         }
 
         clearObject() {
