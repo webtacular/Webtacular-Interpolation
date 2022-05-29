@@ -1,6 +1,6 @@
 import { merge } from 'lodash';
 import { ObjectId } from 'mongodb';
-import { arrayToObject, formatValue } from '../../general';
+import { arrayToObject, convertType, formatValue } from '../../general';
 import { groupHooks } from '../../accessControl/groupHooks';
 import { IHookBank, IHookReference, IReference } from '../index.interfaces';
 
@@ -40,6 +40,8 @@ namespace schemaValue {
         // The type of the value
         type: type;
 
+        additionalValues?: boolean;
+
         accessControl?: HookFunction.accessControlFunc;
     } 
 
@@ -71,6 +73,7 @@ namespace schemaValue {
 
         additionalValues: Array<{
             key: string;
+            type: string;
             value: any;
         }> = [];
 
@@ -94,6 +97,7 @@ namespace schemaValue {
                 description: '',
                 array: false,
                 type: 'string',
+                additionalValues: true,
             }, options);
 
             this.mask = {
@@ -114,31 +118,7 @@ namespace schemaValue {
 
         #setType(): void {
             // "string" | "number" | "boolean" | "float" | "id"
-            switch(this.options.type) {
-                case 'string':
-                    this.type = 'String';
-                    break;
-
-                case 'number':
-                    this.type = 'Int';
-                    break;
-
-                case 'float':
-                    this.type = 'Float';
-                    break;
-
-                case 'boolean':
-                    this.type = 'Boolean';
-                    break;
-
-                case 'id':
-                    this.type = 'ID';
-                    break;
-            }
-
-            // Check if this value is an array
-            if(this.options.array)
-                this.type = `[${this.type}]`;
+            this.type = convertType(this.options.type, this.options.array);
         }
 
         generateMask(parents: Array<string> = []): void {
@@ -200,17 +180,21 @@ namespace schemaValue {
             // Such as if the value is unique, or its description
             // We can add these values to the value object
 
+            if(this.options.additionalValues === false) return;
+
             // Check if we have a unique value
             this.additionalValues.push({
                 key: formatValue(['is', this.key , 'unique']),
                 value: this.options?.unique ?? false,
+                type: 'Boolean',
             });
         
 
             // Check if we have a description
             this.additionalValues.push({
                 key: formatValue([this.key, 'description']),
-                value: this.options.description || ''
+                value: this.options.description || '',
+                type: 'String',
             });
         }
 

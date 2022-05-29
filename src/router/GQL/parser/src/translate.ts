@@ -72,7 +72,7 @@ function translate(gql: IGraphQL, queryMask: Array<string>): string {
                 returnable += inputParser(childValue);
 
                 // Add the input to the parent returnable
-                parentReturnable += `${childKey}(${childValue.values.name}: ${childValue.values.type}): ${childValue.values.return},`;
+                parentReturnable += `${childKey}(${childValue.values.name}: ${childValue.values.type}${(childValue.options.required ? '' : '!')}): ${childValue.values.return},`;
             }
             else {
                 // Cap the sting off with a '}' if its the last item in the object

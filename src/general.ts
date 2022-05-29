@@ -1,4 +1,5 @@
 import HookFunction from './accessControl/hook';
+import schemaValue from './lexer/types/value';
 import { types } from "./types";
 
 // this function turns a array into a object
@@ -46,6 +47,20 @@ export function formatValue(value: Array<string | number> | string, casing: type
         case 'kebab':
             return arr.map((val: string) => val.toLowerCase()).join('-');
     }
+}
+
+export function convertType(type: schemaValue.type, array: boolean = false): schemaValue.GqlType {
+    let newType: schemaValue.GqlType;
+
+    switch(type) {
+        case 'string': newType = 'String'; break;
+        case 'number': newType = 'Int'; break;
+        case 'float': newType = 'Float'; break;
+        case 'boolean': newType = 'Boolean'; break;
+        case 'id': newType = 'ID'; break;
+    }
+
+    return array ? (`[${newType}]` as schemaValue.GqlType) : newType;
 }
 
 export const internalConfiguration: internalConfiguration = {

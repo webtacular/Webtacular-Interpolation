@@ -33,7 +33,15 @@ function leaf(leafs: { [x: string]: IProcessedValue }): IGraphQL {
             merge(temporaryReturnable, {
                 [leafValue.key]: leafValue.type
             });
+
+            // Account for any additional values
+            leafValue.additionalValues.forEach((additionalValue) => {
+                merge(temporaryReturnable, {
+                    [additionalValue.key]: additionalValue.type
+                });
+            });
         }
+
 
         // Nested value keys
         const nestedValuesKeys = Object.keys(leaf.nested);
@@ -62,6 +70,7 @@ function leaf(leafs: { [x: string]: IProcessedValue }): IGraphQL {
                 [nestedKey]: temporaryKey
             });
         }
+
 
         // merge the final returnable
         merge(gql, {
