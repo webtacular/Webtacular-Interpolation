@@ -6,6 +6,8 @@ import { IHookBank, IHookReference, IReference } from '../index.interfaces';
 
 import HookFunction from '../../accessControl/hook';
 import { IValFilter } from '../filters';
+import schemaObject from './objects/object';
+import schemaNested from './objects/nested';
 
 namespace schemaValue { 
     // TODO: Remove whatever this is
@@ -172,7 +174,12 @@ namespace schemaValue {
 
             // set the mask key (We dont format this value as it is used in the database)
             this.mask.database.key = this.options.mask[this.options.mask.length - 1]
-            
+
+        }
+
+        map(parent: schemaObject.init | schemaNested.init): void {
+            parent.schemaValueMap.set(this.mask.schema.maskArray, () => this);
+            parent.databaseValueMap.set(this.mask.database.maskArray, () => this);
         }
 
         additonalValues(): void {

@@ -39,7 +39,7 @@ export namespace Construct {
 
                     // Create the resovler for the schemaObject
                     resolve(
-                        value, 
+                        parsed, 
                         schmea,
                         main, 
                     );

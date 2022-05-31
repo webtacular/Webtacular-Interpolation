@@ -19,12 +19,12 @@ function collectionize(object: baseObject.init): void {
     // Set the collectionize fields
     object.collectionizeFields = {
         schema: {
-            name: 'collection',
+            collectionName: 'collection',
             individualName: 'individual'
         },
 
         types: {
-            name,
+            collectionName: name,
             individualName
         }
     };

@@ -124,6 +124,7 @@ function parse(object: schemaObject.init): IOutput {
                     get: () => parents[parents.length - 1]
                 });
                 value.generateMask(parents[parents.length - 1].mask);
+                value.map(parents[parents.length - 1]);
 
 
                 // ----------------------------[ Filter ]---------------------------- //
@@ -138,10 +139,11 @@ function parse(object: schemaObject.init): IOutput {
                     [key]: value
                 });
 
+                
             }
 
             // Generate the unique id for this value collection
-            const valuesID = new ObjectId();
+            const valuesID = parents[parents.length - 1].identifier;
 
             // merge the returnable with the returnable object
             merge(returnable.values, {
@@ -155,6 +157,8 @@ function parse(object: schemaObject.init): IOutput {
                     nested: nestedValues,
                 } as IProcessedValue
             });
+
+            parents[parents.length - 1].childGetter = () => returnable.values[valuesID.toString()];
         }
     }
 

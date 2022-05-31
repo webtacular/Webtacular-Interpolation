@@ -17,15 +17,15 @@ import intermediate from './shared';
 import filter from '../../filter/resolve';
 
 async function resolve(
-    schemaObject: schemaObject.init,
     requestDetails: requestDetails,
+    schemaObject: schemaObject.init,
     client: mongoService,
     context: Context
 ) {
 
     // Process the request
     const processedData =
-        await intermediate(schemaObject, requestDetails, client, context, true);
+        await intermediate(requestDetails, schemaObject, client, context, true);
 
     // Process the filters
     const filters = filter(processedData.values, requestDetails.arguments, 'mongo');

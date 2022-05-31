@@ -7,55 +7,46 @@
 //
 //
 
-
-import { ObjectId } from 'mongodb';
 import { mongoResponseObject } from './mongoDB';
-import { arrayToObject } from '../../../../general';
 import { projectionInterface } from './parseQuery';
 
 import schemaObject from '../../../../lexer/types/objects/object';
 import schemaValue from '../../../../lexer/types/value';
+
 import { merge } from '../../../../merge';
 
-export default function (queryArguments: any, input: schemaObject.init): mongoResponseObject {
+function mapQuery(query: any, root: schemaObject.init): mongoResponseObject {
     // Start building the query
-    let query: projectionInterface = {};
+    let processedQuery: projectionInterface = {};
 
-    // Map the requested resouces
-    for(const paramater in queryArguments) {
-        
-        // Get the value
-        let schemaParamater = input.obj[paramater] as schemaValue.init,
-            // Input value from the user
-            inputValue = queryArguments[paramater];
+    // walk through the query, creating a path for each value
+    // eg, { name: 'John', test: { a: 'b' }} will create a path for each value
+    // => ['name'], ['test', 'a']
+    function walk(query: any, path: Array<string> = []) {
+        for (let key in query) {
 
+            if (typeof query[key] === 'object')
+                walk(query[key], [...path, key]);
 
-        // Custom cases if we need to do something special, like ID,
-        // You must supply mongoDB with a ObjectId object for it to work
-        switch(schemaParamater?.options?.type) {
-            // Check if the paramater is of type 'id
-            case 'id': {
-                // Check if its a valid ObjectId
-                if(ObjectId.isValid(inputValue) === true)
-                    // If so, convert it to an ObjectId
-                    inputValue = new ObjectId(inputValue);
+            else {
+                const arrayPath = [...path, key];
 
-                break;
+                // Try and locate the path in the database map
+                const value = root.databaseValueMap.has(arrayPath);
+
+                console.log(value);
             }
-
-            default:
-                continue;
-        }  
-
-        // Construct the query
-        const object = arrayToObject(
-            schemaParamater?.maskArray ?? [] as string[], 
-            inputValue
-        );
-
-        // Merge the query
-        query = merge(query, object);
+        }
     }
 
-    return query;
+    console.log(root.schemaValueMap);
+
+    // Start walking the query
+    walk(query);
+
+    console.log(processedQuery);
+
+    return processedQuery;
 }
+
+export default mapQuery;

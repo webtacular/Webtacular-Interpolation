@@ -1,5 +1,4 @@
          
-import { requestDetails } from '../../main';       
 import { projectionInterface } from '../../database/parseQuery';
 
 import schemaValue from '../../../../../lexer/types/value';   
@@ -13,6 +12,8 @@ import { Context } from 'apollo-server-core';
 import { groupHooksInterface } from '../../../../../accessControl/groupHooks';
 import { internalConfiguration } from '../../../../../general';
 import { merge } from '../../../../../merge';
+import { requestDetails } from '../../main';
+import mapQuery from '../../database/mapQuery';
 
 export type sharedExport = {
     collection: Collection<Document>;
@@ -31,8 +32,8 @@ export type sharedExport = {
 };
 
 async function intermediate(
-    schemaObject: schemaObject.init,
     requestDetails: requestDetails,
+    schemaObject: schemaObject.init,
     client: mongoService,
     context: Context,
     isCollection = false
@@ -66,26 +67,35 @@ async function intermediate(
         },
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const paramaters = isCollection === true ? requestDetails.projection[requestDetails.name]?.items ?? {} : requestDetails.projection[requestDetails.individualName] ?? {};
+
+    const paramaters = isCollection === true ? 
+        requestDetails.projection[requestDetails.collectionName]?.items : 
+        requestDetails.projection[requestDetails.individualName];
+
+
+    const valueParent = schemaObject.childGetter();
+
+    mapQuery(paramaters, schemaObject);
 
     // Map the requested resouces
-    for(const paramater in paramaters){
+    for(const paramater in paramaters) {
         // Get the value
-        const value: schemaValue.init = schemaObject.obj[paramater] as schemaValue.init;
-        
+        const value = valueParent.values[paramater];
+
+        //console.log(value, paramater);
+
         // If the paramater is not found in the schema
         // Continue to the next paramater
         if(!value) continue;
 
         // Check if the schema provided any access control functions
         if(value.options.accessControl) {
-            // Find the hook in the bank
-            for(let i = 0; i < value.hookIdentifers.length; i++) {
-                const identifier = value.hookIdentifers[i];
+            const hookKeys = Object.keys(requestDetails.hookBank);
 
-                // get the hook
-                const hook = requestDetails.hookBank[identifier];
+            // Find the hook in the bank
+            for(let i = 0; i < hookKeys.length; i++) {
+                const hookKey = hookKeys[i],
+                    hook = requestDetails.hookBank[hookKey];
 
                 // If the hook is found
                 if(!hook) continue;
@@ -94,31 +104,33 @@ async function intermediate(
                 switch(hook.execution) {
                     case 'postRequest':
                         // check if the hook is already in the bank
-                        if(hooks.postRequest[identifier]) continue;
+                        if(hooks.postRequest[hook.identifier.toString()]) continue;
 
                         // Add the hook to the bank
-                        hooks.postRequest[identifier] = hook;
+                        hooks.postRequest[hook.identifier.toString()] = hook;
                         break;
 
                     case 'preRequest':
                         // check if the hook is already in the bank
-                        if(hooks.preRequest[identifier]) continue;
+                        if(hooks.preRequest[hook.identifier.toString()]) continue;
 
                         // Add the hook to the bank
-                        hooks.preRequest[identifier] = hook;
+                        hooks.preRequest[hook.identifier.toString()] = hook;
                         break;
                 }
             }
         }
 
         // Add the value to the values array
-        values.push(value);
+        if(value instanceof schemaValue.init) {
+            values.push(value);
 
-        // Merge the projections
-        projection = merge(projection, value.mask);
+            // Merge the projections
+            merge(projection, value.mask.database.mask);
+        }
     }
 
-    if(projection !== {})
+    if(Object.keys(projection).length !== 0)
         requestData.push({ $project: projection });
 
     // ------------------------------------------------------- //
@@ -145,7 +157,7 @@ async function intermediate(
             headers: fastifyReq.headers,
             value: undefined,
             projection: {
-                preSchema: (requestDetails.projection[requestDetails.name] as any)?.items ?? {},
+                preSchema: (requestDetails.projection[requestDetails.collectionName] as any)?.items ?? {},
                 postSchema: projection,
             }
         });
@@ -161,7 +173,8 @@ async function intermediate(
     const processedHooks = await Promise.all(hookReturns);
 
     // Merge the hooks
-    requestData = [...requestData, ...processedHooks];
+    //requestData = [...requestData, ...processedHooks];
+
     // ---------------[ PreRequestHooks ]--------------------- //
 
     // ------------------------------------ //

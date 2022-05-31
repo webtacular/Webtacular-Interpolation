@@ -15,14 +15,14 @@ import mongoService from '../../database/mongoDB';
 import intermediate from './shared';
 
 async function resolve(
-    schemaObject: schemaObject.init,
     requestDetails: requestDetails,
+    schemaObject: schemaObject.init,
     client: mongoService,
     context: Context
 ) {
     // Process the request
     const processedData =
-        await intermediate(schemaObject, requestDetails, client, context);
+        await intermediate(requestDetails, schemaObject, client, context);
 
     // Use the projection and query to get the data
     const data = 

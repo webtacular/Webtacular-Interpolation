@@ -1,11 +1,11 @@
 import { ObjectId } from 'mongodb';
-import { IValueReference } from '../../index.interfaces';
+import { IValFilter } from '../../filters';
+import { IProcessedValue, IValueReference } from '../../index.interfaces';
 
 import schemaValue from '../value';
 import schemaNested from './nested';
 import HookFunction from '../../../accessControl/hook';
 import collectionize from '../collections';
-import { IValFilter } from '../../filters';
 
 namespace baseObject {
     export interface ValueInterface {
@@ -31,8 +31,14 @@ namespace baseObject {
         accessControl?: HookFunction.accessControlFunc;
     }
 
+    export type TSchemaValueMap = Map<Array<string>, () => schemaValue.init>;
+    export type TDatabaseValueMap = TSchemaValueMap;
+
     export class init {
         options: Constructor;
+
+        schemaValueMap: TSchemaValueMap = new Map();
+        databaseValueMap: TDatabaseValueMap = new Map();
 
         obj: ValueInterface
 
@@ -40,11 +46,11 @@ namespace baseObject {
 
         collectionizeFields: {
             schema: {
-                name: string;
+                collectionName: string;
                 individualName: string;
             },
             types: {
-                name: string;
+                collectionName: string;
                 individualName: string;
             },
         }
@@ -64,6 +70,10 @@ namespace baseObject {
         mask: Array<string> = [];
 
         filters: Array<IValFilter> = [];
+
+        childGetter: () => IProcessedValue;
+
+        childIdentifier = new ObjectId();
 
         constructor(options: Constructor) {
             // [1] You can't have both an array and collectionize
@@ -109,6 +119,8 @@ namespace baseObject {
                     throw new Error('You must have unique values for a collection');
             }
         }
+
+        
     }
 }
 

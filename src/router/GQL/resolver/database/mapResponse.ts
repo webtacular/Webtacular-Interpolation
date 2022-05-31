@@ -12,43 +12,22 @@ import schemaObject from '../../../../lexer/types/objects/object';
 import { mongoResponseObject } from './mongoDB';
 import { arrayToObject } from '../../../../general';
 import { merge } from '../../../../merge';
+import { IProcessedValue } from '../../../../lexer/index.interfaces';
 
 export default function (input: schemaObject.init, data: mongoResponseObject): mongoResponseObject {
     // Walk through the data object, get the according value from the schema
     // and map it to the data object
     let obj: mongoResponseObject = {};
 
-    const walk = (data: any, schema: any, parentName: string[] = []) => {
-        for (const key in schema) {
-            const value = schema[key];
-
-            if (value instanceof schemaObject.init)
-                walk(data[key], value.obj, [...parentName, key]);
-
-            else {
-                // Find the value in the schema
-                const schemaValue = schema[key];
-
-                // Using the maskArray, find the value in the data
-                const dataValue = (schemaValue.maskArray as string[]).reduce((acc, curr) => acc[curr], data);
-
-                // If no value is found, then we can't resolve it
-                if (dataValue === undefined) continue;
-
-                // If the value is found, then we can map it to the schema
-                const reMaped = arrayToObject(
-                    [...parentName, schemaValue.key], 
-                    dataValue
-                );
-
-                // Merge the reMaped object to the obj
-                obj = merge(obj, reMaped);
-            }
+    function walk(data: any, children: IProcessedValue) {
+        for (let key in data) {
+            
+            console.log(key);
         }
     }
 
     // Walk through the data object, get the according value from the schema
-    walk(data, input.obj);
+    walk(data, input.childGetter());
 
     // Return the mapped object
     return obj;

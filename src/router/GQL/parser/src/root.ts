@@ -69,7 +69,7 @@ function root(roots: { [x: string]: schemaObject.init | schemaNested.init}): IGr
                     filterObject, 
                     {
                         name: 'filter', 
-                        type: formatValue([value.key, value.collectionizeFields.schema.name, 'filter']),
+                        type: formatValue([value.key, value.collectionizeFields.schema.collectionName, 'filter']),
                         return: `[${value.key}]`
                     },
                     {
@@ -80,7 +80,7 @@ function root(roots: { [x: string]: schemaObject.init | schemaNested.init}): IGr
             
                 // Collection root
                 merge(temporaryReturnable, {
-                    [value.collectionizeFields.types.name]: {
+                    [value.collectionizeFields.types.collectionName]: {
                         items: collectionInput,
                         total: 'Int',
                         size: 'Int',
@@ -99,7 +99,7 @@ function root(roots: { [x: string]: schemaObject.init | schemaNested.init}): IGr
                         [schema.individualName]: individualInput,
                         
                         // reference to the collection
-                        [schema.name]: value.collectionizeFields.types.name
+                        [schema.collectionName]: value.collectionizeFields.types.collectionName
                     }
                 }));
                 break;
