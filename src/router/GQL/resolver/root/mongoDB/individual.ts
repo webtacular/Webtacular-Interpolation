@@ -35,7 +35,7 @@ async function resolve(
         return undefined;
 
     // Map the requested resouces back to the schema
-    return mapResponse(schemaObject, data[0]);
+    return mapResponse(data[0], schemaObject);
 }
 
 export default resolve;

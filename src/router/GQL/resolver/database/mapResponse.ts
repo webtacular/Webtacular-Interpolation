@@ -1,34 +1,46 @@
-//
-//
-// This here file is the opposite of mapQuery.ts, it is used to map the database to the Schema.
-// As the database might contain a value '_id', but the value in the Schema is 'id', we need to map
-// '_id' to 'id'. etc.
-//
-//
+import { types } from '../../../../types';
+
+import { merge } from '../../../../merge';
+import { mongoResponseObject } from './mongoDB';
+import { projectionInterface } from './parseQuery';
 
 import schemaObject from '../../../../lexer/types/objects/object';
-
-
-import { mongoResponseObject } from './mongoDB';
+import { ObjectId } from 'mongodb';
 import { arrayToObject } from '../../../../general';
-import { merge } from '../../../../merge';
-import { IProcessedValue } from '../../../../lexer/index.interfaces';
 
-export default function (input: schemaObject.init, data: mongoResponseObject): mongoResponseObject {
-    // Walk through the data object, get the according value from the schema
-    // and map it to the data object
-    let obj: mongoResponseObject = {};
+function mapResponse(query: types.GQLinput, root: schemaObject.init): mongoResponseObject {
+    // Start building the query
+    let processedQuery: projectionInterface = {};
 
-    function walk(data: any, children: IProcessedValue) {
-        for (let key in data) {
-            
-            console.log(key);
+    // walk through the query, creating a path for each value
+    // eg, { name: 'John', test: { a: 'b' }} will create a path for each value
+    // => ['name'], ['test', 'a']
+    function walk(query: any, path: Array<string> = []) {
+        for (let key in query) {
+
+            if (typeof query[key] === 'object' && !(query[key] instanceof ObjectId))
+                walk(query[key], [...path, key]);
+
+            else {
+                // Get the path of this value
+                const arrayPath = [...path, key].join();
+
+                // Try and locate the path in the database map
+                const value = root.databaseValueMap[arrayPath];
+
+                // Merge the value into the returnable
+                if(value) {
+                    const valueArray = value().mask.schema.maskArray;
+
+                    merge(processedQuery, arrayToObject(valueArray, query[key]));
+                }
+            }
         }
+
+        return processedQuery;
     }
 
-    // Walk through the data object, get the according value from the schema
-    walk(data, input.childGetter());
-
-    // Return the mapped object
-    return obj;
+    return walk(query);
 }
+
+export default mapResponse;

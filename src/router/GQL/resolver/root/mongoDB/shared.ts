@@ -51,12 +51,8 @@ async function intermediate(
 
     // Access Control Functions
     let hooks: {
-        preRequest: {
-            [x: string]: groupHooksInterface
-        };
-        postRequest: {
-            [x: string]: groupHooksInterface
-        };
+        preRequest: { [x: string]: groupHooksInterface };
+        postRequest: { [x: string]: groupHooksInterface };
         hookOutput: HookFunction.hookPasstrhough;
     } = {
         preRequest: {},
@@ -71,7 +67,6 @@ async function intermediate(
     const paramaters = isCollection === true ? 
         requestDetails.projection[requestDetails.collectionName]?.items : 
         requestDetails.projection[requestDetails.individualName];
-
 
     const valueParent = schemaObject.childGetter();
 

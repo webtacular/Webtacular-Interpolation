@@ -1,21 +1,12 @@
-//
-//
-// This here file is used to map the Schema to the database.
-// As the schema might contain a value 'id' but the value 
-// being stored in the database is '_id', we need to map
-// the Schema so that 'id' is mapped to '_id'. etc.
-//
-//
+import { types } from '../../../../types';
 
+import { merge } from '../../../../merge';
 import { mongoResponseObject } from './mongoDB';
 import { projectionInterface } from './parseQuery';
 
 import schemaObject from '../../../../lexer/types/objects/object';
-import schemaValue from '../../../../lexer/types/value';
 
-import { merge } from '../../../../merge';
-
-function mapQuery(query: any, root: schemaObject.init): mongoResponseObject {
+function mapQuery(query: types.GQLinput, root: schemaObject.init): mongoResponseObject {
     // Start building the query
     let processedQuery: projectionInterface = {};
 
@@ -29,24 +20,21 @@ function mapQuery(query: any, root: schemaObject.init): mongoResponseObject {
                 walk(query[key], [...path, key]);
 
             else {
-                const arrayPath = [...path, key];
+                // Get the path of this value
+                const arrayPath = [...path, key].join();
 
                 // Try and locate the path in the database map
-                const value = root.databaseValueMap.has(arrayPath);
+                const value = root.schemaValueMap[arrayPath];
 
-                console.log(value);
+                // Merge the value into the returnable
+                if(value) merge(processedQuery, value().mask.database.mask);
             }
         }
+
+        return processedQuery;
     }
 
-    console.log(root.schemaValueMap);
-
-    // Start walking the query
-    walk(query);
-
-    console.log(processedQuery);
-
-    return processedQuery;
+    return walk(query);
 }
 
 export default mapQuery;

@@ -3,6 +3,8 @@ export namespace types {
     export type basicArray = string[] | number[] | boolean[];
     export type basicUnion = basic | basicArray;
 
+    export type GQLinput = { [key: string]: basicUnion | GQLinput };
+
     export type obj = { [x: string]: basicUnion | obj };
     export type anyType = basic | obj;
 

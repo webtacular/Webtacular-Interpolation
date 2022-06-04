@@ -87,7 +87,7 @@ async function resolve(
     for(let i = 0; i < data.length; i++) {
         const item = data[i];
 
-        const reMapedItem = mapResponse(schemaObject, item);
+        const reMapedItem = mapResponse(item, schemaObject);
 
         reMapedData.push(reMapedItem);
     }

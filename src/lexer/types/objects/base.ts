@@ -31,16 +31,17 @@ namespace baseObject {
         accessControl?: HookFunction.accessControlFunc;
     }
 
-    export type TSchemaValueMap = Map<Array<string>, () => schemaValue.init>;
-    export type TDatabaseValueMap = TSchemaValueMap;
+    export type TSchemaValueObject = { [key: string]: () => schemaValue.init };
+    export type TDatabaseValueObject = TSchemaValueObject;
 
     export class init {
         options: Constructor;
 
-        schemaValueMap: TSchemaValueMap = new Map();
-        databaseValueMap: TDatabaseValueMap = new Map();
+        schemaValueMap: TSchemaValueObject = {};
+        databaseValueMap: TSchemaValueObject = {};
 
         obj: ValueInterface
+
 
         collectionize: boolean = false;
 

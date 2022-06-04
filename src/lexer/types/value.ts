@@ -178,8 +178,13 @@ namespace schemaValue {
         }
 
         map(parent: schemaObject.init | schemaNested.init): void {
-            parent.schemaValueMap.set(this.mask.schema.maskArray, () => this);
-            parent.databaseValueMap.set(this.mask.database.maskArray, () => this);
+            merge(parent.schemaValueMap, {
+                [this.mask.schema.maskArray.join()]: () => this,
+            });
+
+            merge(parent.databaseValueMap, {
+                [this.mask.database.maskArray.join()]: () => this,
+            });
         }
 
         additonalValues(): void {
