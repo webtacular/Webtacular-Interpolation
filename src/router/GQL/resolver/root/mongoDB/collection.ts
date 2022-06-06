@@ -11,7 +11,7 @@ import { requestDetails } from '../../main';
 import { internalConfiguration } from '../../../../../general';        
 
 import schemaObject from '../../../../../lexer/types/objects/object';  
-import mapResponse from '../../database/mapResponse';    
+import mapResponse from '../../database/mongoDB/mapResponse';    
 import mongoService from '../../database/mongoDB';     
 import intermediate from './shared';
 import filter from '../../filter/resolve';

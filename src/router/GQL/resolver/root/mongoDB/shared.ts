@@ -13,7 +13,7 @@ import { groupHooksInterface } from '../../../../../accessControl/groupHooks';
 import { internalConfiguration } from '../../../../../general';
 import { merge } from '../../../../../merge';
 import { requestDetails } from '../../main';
-import mapQuery from '../../database/mapQuery';
+import mapQuery from '../../database/mongoDB/mapQuery';
 
 export type sharedExport = {
     collection: Collection<Document>;
