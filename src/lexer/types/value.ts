@@ -177,13 +177,14 @@ namespace schemaValue {
 
         }
 
+        // Push the mask getter to the parent
         map(parent: schemaObject.init | schemaNested.init): void {
             merge(parent.schemaValueMap, {
-                [this.mask.schema.maskArray.join()]: () => this,
+                [this.mask.schema.maskArray.join('')]: () => this,
             });
 
             merge(parent.databaseValueMap, {
-                [this.mask.database.maskArray.join()]: () => this,
+                [this.mask.database.maskArray.join('')]: () => this,
             });
         }
 

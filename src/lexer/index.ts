@@ -124,7 +124,7 @@ function parse(object: schemaObject.init): IOutput {
                     get: () => parents[parents.length - 1]
                 });
                 value.generateMask(parents[parents.length - 1].mask);
-                value.map(parents[parents.length - 1]);
+                value.map(parents[0]);
 
 
                 // ----------------------------[ Filter ]---------------------------- //

@@ -36,7 +36,7 @@ async function resolve(
     // Get the page data the the user requested
     let pageData = {
         size: args?.pageSize,
-        page: isNaN(args?.page) ? 0 : args?.page 
+        page: isNaN(args?.page) ? 0 : args?.page
     }
 
     // Make sure that the user cant request a 
@@ -52,13 +52,12 @@ async function resolve(
 
     if(pageData.page < 0)
         pageData.page = 0;
+
+
     
     // ------------------------------ //
     // Get the data from the database //
     // ------------------------------ //
-
-    // DEBUG: timer
-    const qt = process.hrtime()
 
     // Get the data from the database
     const data = await processedData.collection.aggregate([
@@ -71,14 +70,8 @@ async function resolve(
             $limit: pageData.size
         }
     ]).toArray();
-    
-    // DEBUG: timer
-    const qtDiff = process.hrtime(qt)
-    
-    // DEBUG: timer
-    if(internalConfiguration.debug === true)
-        console.log(`Query time: ${qtDiff[0] * 1000 + qtDiff[1] / 1000000}ms | Test start ${qt[0] * 1000 + qt[1] / 1000000}ms | Test end: ${(qt[0] * 1000 + qt[1] / 1000000) + (qtDiff[0] * 1000 + qtDiff[1] / 1000000)}ms`)
-    // ------------------------------ //
+
+
 
     // variable to store the data
     let reMapedData: Array<any> = [];
@@ -93,6 +86,7 @@ async function resolve(
     }
 
 
+
     // Finally, return the data
     return { 
         [internalConfiguration.defaultValueName]: reMapedData,
@@ -100,6 +94,7 @@ async function resolve(
         max: processedData.hooks.hookOutput.maxPageSize,
         page: pageData.page,
         size: pageData.size,
+        pages: Math.ceil(data.length / pageData.size),
     };
 }
 

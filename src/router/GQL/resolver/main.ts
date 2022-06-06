@@ -54,7 +54,6 @@ function resolver(root:any, args:any, context:any, info:any, rootObject: schemaO
         // These are the arguments that the user has passed in
         projectionObject = parsedQuery.projection[rootObject.root];
 
-
     switch(rootObject.collectionize) {
         case true: 
             const schema = rootObject.collectionizeFields.schema;
@@ -88,7 +87,7 @@ function resolver(root:any, args:any, context:any, info:any, rootObject: schemaO
 }
 
 
-function resolveOutput (parsed: IOutput, schema: string, main: Construct.load) {
+function resolveOutput(parsed: IOutput, schema: string, main: Construct.load) {
 
     // Variable to store the resolver in
     let resolverObject = {};
@@ -105,7 +104,6 @@ function resolveOutput (parsed: IOutput, schema: string, main: Construct.load) {
                 resolver(root, args, context, info, value, main.client, parsed)
         });
     }
-
 
     // --------------------[ALL OF THIS IS TEMPORARY]-------------------- //
     main.gql.addSchema(buildSchema(schema), resolverObject);

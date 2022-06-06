@@ -42,7 +42,6 @@ namespace baseObject {
 
         obj: ValueInterface
 
-
         collectionize: boolean = false;
 
         collectionizeFields: {

@@ -21,7 +21,7 @@ function mapQuery(query: types.GQLinput, root: schemaObject.init): mongoResponse
 
             else {
                 // Get the path of this value
-                const arrayPath = [...path, key].join();
+                const arrayPath = [...path, key].join('');
 
                 // Try and locate the path in the database map
                 const value = root.schemaValueMap[arrayPath];

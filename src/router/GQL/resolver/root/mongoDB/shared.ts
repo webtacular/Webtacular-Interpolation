@@ -38,7 +38,6 @@ async function intermediate(
     context: Context,
     isCollection = false
 ): Promise<sharedExport> {
-    const qt = process.hrtime();
 
     // Variable to store the query
     let requestData: Array<{[x: string]: projectionInterface | mongoResponseObject}> = [];
@@ -70,63 +69,58 @@ async function intermediate(
 
     const valueParent = schemaObject.childGetter();
 
-    mapQuery(paramaters, schemaObject);
-
     // Map the requested resouces
     for(const paramater in paramaters) {
         // Get the value
         const value = valueParent.values[paramater];
-
-        //console.log(value, paramater);
 
         // If the paramater is not found in the schema
         // Continue to the next paramater
         if(!value) continue;
 
         // Check if the schema provided any access control functions
-        if(value.options.accessControl) {
-            const hookKeys = Object.keys(requestDetails.hookBank);
+        if(!value.options.accessControl) continue;
 
-            // Find the hook in the bank
-            for(let i = 0; i < hookKeys.length; i++) {
-                const hookKey = hookKeys[i],
-                    hook = requestDetails.hookBank[hookKey];
+        const hookKeys = Object.keys(requestDetails.hookBank);
 
-                // If the hook is found
-                if(!hook) continue;
+        // Find the hook in the bank
+        for(let i = 0; i < hookKeys.length; i++) {
+            const hookKey = hookKeys[i],
+                hook = requestDetails.hookBank[hookKey];
 
-                // Add the hook to the bank
-                switch(hook.execution) {
-                    case 'postRequest':
-                        // check if the hook is already in the bank
-                        if(hooks.postRequest[hook.identifier.toString()]) continue;
+            // If the hook is found
+            if(!hook) continue;
 
-                        // Add the hook to the bank
-                        hooks.postRequest[hook.identifier.toString()] = hook;
-                        break;
+            // Add the hook to the bank
+            switch(hook.execution) {
+                case 'postRequest':
+                    // check if the hook is already in the bank
+                    if(hooks.postRequest[hook.identifier.toString()]) continue;
 
-                    case 'preRequest':
-                        // check if the hook is already in the bank
-                        if(hooks.preRequest[hook.identifier.toString()]) continue;
+                    // Add the hook to the bank
+                    hooks.postRequest[hook.identifier.toString()] = hook;
+                    break;
 
-                        // Add the hook to the bank
-                        hooks.preRequest[hook.identifier.toString()] = hook;
-                        break;
-                }
+                case 'preRequest':
+                    // check if the hook is already in the bank
+                    if(hooks.preRequest[hook.identifier.toString()]) continue;
+
+                    // Add the hook to the bank
+                    hooks.preRequest[hook.identifier.toString()] = hook;
+                    break;
             }
         }
-
-        // Add the value to the values array
-        if(value instanceof schemaValue.init) {
-            values.push(value);
-
-            // Merge the projections
-            merge(projection, value.mask.database.mask);
-        }
+        
     }
 
-    if(Object.keys(projection).length !== 0)
-        requestData.push({ $project: projection });
+    // Attempt to process the raw query
+    const processedQuery = mapQuery(paramaters, schemaObject);
+
+    // If the query is not empty
+    if(Object.keys(processedQuery).length !== 0)
+        // Add the query to the requestData array
+        requestData.push({ $project: processedQuery });
+    
 
     // ------------------------------------------------------- //
 
@@ -181,10 +175,6 @@ async function intermediate(
     ); 
     // ------------------------------------ //
 
-    const qtDiff = process.hrtime(qt)
-
-    if(internalConfiguration.debug === true)
-        console.log(`Processing time: ${qtDiff[0] * 1000 + qtDiff[1] / 1000000}ms | Test start: ${qt[0] * 1000 + qt[1] / 1000000}ms | Test end: ${(qt[0] * 1000 + qt[1] / 1000000) + (qtDiff[0] * 1000 + qtDiff[1] / 1000000)}ms`)
 
     // Finaly, return the data
     return {

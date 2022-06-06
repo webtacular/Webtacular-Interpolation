@@ -23,17 +23,13 @@ function mapResponse(query: types.GQLinput, root: schemaObject.init): mongoRespo
 
             else {
                 // Get the path of this value
-                const arrayPath = [...path, key].join();
+                const arrayPath = [...path, key].join('');
 
                 // Try and locate the path in the database map
                 const value = root.databaseValueMap[arrayPath];
 
                 // Merge the value into the returnable
-                if(value) {
-                    const valueArray = value().mask.schema.maskArray;
-
-                    merge(processedQuery, arrayToObject(valueArray, query[key]));
-                }
+                if(value) merge(processedQuery, arrayToObject(value().mask.schema.maskArray, query[key]));
             }
         }
 
