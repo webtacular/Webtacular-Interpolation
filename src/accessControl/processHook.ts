@@ -1,4 +1,4 @@
-import { projectionInterface } from '../router/GQL/resolver/database/parseQuery';
+import { projectionInterface } from '../router/GQL/resolver/request/parseQuery';
 import { groupHooksInterface } from './groupHooks';
 import HookFunction from './hook';
 

@@ -1,14 +1,12 @@
 import { types } from '../../../../../types';
 
 import { merge } from '../../../../../merge';
-import { mongoResponseObject } from '.';
+import { mongoResponseObject } from './main';
 import { projectionInterface } from '../parseQuery';
 
 import schemaObject from '../../../../../lexer/types/objects/object';
-import { ObjectId } from 'mongodb';
-import { arrayToObject } from '../../../../../general';
 
-function mapResponse(query: types.GQLinput, root: schemaObject.init): mongoResponseObject {
+function mapQuery(query: types.GQLinput, root: schemaObject.init): mongoResponseObject {
     // Start building the query
     let processedQuery: projectionInterface = {};
 
@@ -18,7 +16,7 @@ function mapResponse(query: types.GQLinput, root: schemaObject.init): mongoRespo
     function walk(query: any, path: Array<string> = []) {
         for (let key in query) {
 
-            if (typeof query[key] === 'object' && !(query[key] instanceof ObjectId))
+            if (typeof query[key] === 'object')
                 walk(query[key], [...path, key]);
 
             else {
@@ -26,10 +24,10 @@ function mapResponse(query: types.GQLinput, root: schemaObject.init): mongoRespo
                 const arrayPath = [...path, key].join('');
 
                 // Try and locate the path in the database map
-                const value = root.databaseValueMap[arrayPath];
+                const value = root.schemaValueMap[arrayPath];
 
                 // Merge the value into the returnable
-                if(value) merge(processedQuery, arrayToObject(value().mask.schema.maskArray, query[key]));
+                if(value) merge(processedQuery, value().mask.database.mask);
             }
         }
 
@@ -39,4 +37,4 @@ function mapResponse(query: types.GQLinput, root: schemaObject.init): mongoRespo
     return walk(query);
 }
 
-export default mapResponse;
+export default mapQuery;

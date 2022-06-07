@@ -1,16 +1,16 @@
-import mapQuery from '../../database/mongoDB/mapQuery';
+import mapQuery from '../../request/mongoDB/mapQuery';
 import schemaValue from '../../../../../lexer/types/value';   
 import schemaObject from '../../../../../lexer/types/objects/object';  
 import HookFunction from '../../../../../accessControl/hook';
 import preHookProjectionArray from '../../../../../accessControl/processHook';
-import mongoService, { mongoResponseObject } from '../../database/mongoDB'   
+import mongoService, { mongoResponseObject } from '../../request/mongoDB/main'   
 
 import { Collection } from 'mongodb';
 import { Resolver } from '../../main.d';
 import { merge } from '../../../../../merge';
 import { Context } from 'apollo-server-core';
 import { internalConfiguration } from '../../../../../general';
-import { projectionInterface } from '../../database/parseQuery';
+import { projectionInterface } from '../../request/parseQuery';
 import { groupHooksInterface } from '../../../../../accessControl/groupHooks';
 
 export type sharedExport = {

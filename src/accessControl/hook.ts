@@ -2,7 +2,7 @@ import schemaValue from '../lexer/types/value';
 
 import { merge } from '../merge';
 import { internalConfiguration } from '../general';
-import { projectionInterface } from '../router/GQL/resolver/database/parseQuery';
+import { projectionInterface } from '../router/GQL/resolver/request/parseQuery';
 
 namespace HookFunction {
 

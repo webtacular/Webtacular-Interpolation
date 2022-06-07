@@ -1,8 +1,8 @@
 import individualResolve from './root/mongoDB/individual';
 import collectionResolve from './root/mongoDB/collection';
-import parseQuery from './database/parseQuery';
+import parseQuery from './request/parseQuery';
 import schemaObject from '../../../lexer/types/objects/object';
-import mongoService from './database/mongoDB';     
+import mongoService from './request/mongoDB/main';     
 
 import { Resolver } from './main.d';
 import { merge } from '../../../merge';

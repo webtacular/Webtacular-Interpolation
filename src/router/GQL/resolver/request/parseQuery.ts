@@ -8,7 +8,7 @@
 
 import { arrayToObject } from '../../../../general';
 import { merge } from '../../../../merge';
-import parseArgs from './parseArgs';
+import parseArgs from './parseArguments';
 
 // --- These two interfaces need to strongly typed --- //
 export interface projectionInterface {

@@ -10,8 +10,8 @@ import { Resolver } from '../../main.d';
 import { internalConfiguration } from '../../../../../general';        
 
 import schemaObject from '../../../../../lexer/types/objects/object';  
-import mapResponse from '../../database/mongoDB/mapResponse';    
-import mongoService from '../../database/mongoDB';     
+import mapResponse from '../../request/mongoDB/mapResponse';    
+import mongoService from '../../request/mongoDB/main';     
 import intermediate from './shared';
 import filter from '../../filter/resolve';
 

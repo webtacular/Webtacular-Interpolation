@@ -1,6 +1,8 @@
+// Disclaimer:
+
 import { arrayToObject } from '../../../../general';
 import { merge } from '../../../../merge';
-import { mongoResponseObject } from './mongoDB';
+import { mongoResponseObject } from './mongoDB/main';
 
 export default function (contex:any): mongoResponseObject {
     let returnable: mongoResponseObject = {};

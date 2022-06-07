@@ -1,5 +1,5 @@
 import schemaObject from './lexer/types/objects/object';
-import mongoService from './router/GQL/resolver/database/mongoDB';
+import mongoService from './router/GQL/resolver/request/mongoDB/main';
 import resolve from './router/GQL/resolver/main';
 
 import hotQL from 'fastify-hotql';

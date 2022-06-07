@@ -2,7 +2,7 @@ import schemaValue from '../../../lexer/types/value';
 
 import { types } from '../../../types';
 import { ObjectId } from 'mongodb';
-import { ArgumentsInterface, projectionInterface } from './database/parseQuery';
+import { ArgumentsInterface, projectionInterface } from './request/parseQuery';
 import { groupHooks } from '../../../accessControl/groupHooks';
 
 export namespace Resolver { 

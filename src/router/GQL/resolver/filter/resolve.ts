@@ -1,7 +1,7 @@
 import { merge } from "lodash";
 import { types } from "../../../../types";
 import schemaValue from "../../../../lexer/types/value";
-import { ArgumentsInterface, projectionInterface } from "../database/parseQuery";
+import { ArgumentsInterface, projectionInterface } from "../request/parseQuery";
 
 export default function filter(values: Array<schemaValue.init>, input: ArgumentsInterface, database: types.database): Array<projectionInterface> {
     if(!input?.filter) return [];
