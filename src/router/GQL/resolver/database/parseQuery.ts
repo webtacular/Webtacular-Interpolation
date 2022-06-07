@@ -54,7 +54,7 @@ export default function(context:any): queryExport {
                 // -----------------[ Args ]----------------- //
                 args = merge(args, [...parentName].reduceRight((obj, next)  => {
                     const parsedArgs = parseArgs(current);
-                    if(parsedArgs !== {}) return ({[next]: parsedArgs});
+                    if(Object.keys(parsedArgs).length > 0) return ({[next]: parsedArgs});
                 }, {}));
                 // -----------------[ Args ]----------------- //
             }

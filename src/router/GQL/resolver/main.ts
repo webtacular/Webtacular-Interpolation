@@ -1,6 +1,4 @@
 
-import parseQuery, { ArgumentsInterface, projectionInterface } from './database/parseQuery';
-
 export type FilterType = 'function' | 'query';
 
 export interface QueryFilterObject {
@@ -26,7 +24,7 @@ export type FilterObject = QueryFilterObject;
 
 import individualResolve from './root/mongoDB/individual';
 import collectionResolve from './root/mongoDB/collection';
-
+import parseQuery, { ArgumentsInterface, projectionInterface } from './database/parseQuery';
 import schemaValue from '../../../lexer/types/value';
 import schemaObject from '../../../lexer/types/objects/object';
 import mongoService from './database/mongoDB';     
