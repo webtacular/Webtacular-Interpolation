@@ -6,8 +6,7 @@
 //
 
 import { Context } from 'apollo-server-core';
-         
-import { requestDetails } from '../../main';       
+import { Resolver } from '../../main.d';
 import { internalConfiguration } from '../../../../../general';        
 
 import schemaObject from '../../../../../lexer/types/objects/object';  
@@ -17,7 +16,7 @@ import intermediate from './shared';
 import filter from '../../filter/resolve';
 
 async function resolve(
-    requestDetails: requestDetails,
+    requestDetails: Resolver.IRequest,
     schemaObject: schemaObject.init,
     client: mongoService,
     context: Context

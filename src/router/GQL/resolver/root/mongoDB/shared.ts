@@ -1,19 +1,17 @@
-         
-import { projectionInterface } from '../../database/parseQuery';
-
+import mapQuery from '../../database/mongoDB/mapQuery';
 import schemaValue from '../../../../../lexer/types/value';   
 import schemaObject from '../../../../../lexer/types/objects/object';  
 import HookFunction from '../../../../../accessControl/hook';
-
 import preHookProjectionArray from '../../../../../accessControl/processHook';
 import mongoService, { mongoResponseObject } from '../../database/mongoDB'   
+
 import { Collection } from 'mongodb';
-import { Context } from 'apollo-server-core';
-import { groupHooksInterface } from '../../../../../accessControl/groupHooks';
-import { internalConfiguration } from '../../../../../general';
+import { Resolver } from '../../main.d';
 import { merge } from '../../../../../merge';
-import { requestDetails } from '../../main';
-import mapQuery from '../../database/mongoDB/mapQuery';
+import { Context } from 'apollo-server-core';
+import { internalConfiguration } from '../../../../../general';
+import { projectionInterface } from '../../database/parseQuery';
+import { groupHooksInterface } from '../../../../../accessControl/groupHooks';
 
 export type sharedExport = {
     collection: Collection<Document>;
@@ -32,7 +30,7 @@ export type sharedExport = {
 };
 
 async function intermediate(
-    requestDetails: requestDetails,
+    requestDetails: Resolver.IRequest,
     schemaObject: schemaObject.init,
     client: mongoService,
     context: Context,

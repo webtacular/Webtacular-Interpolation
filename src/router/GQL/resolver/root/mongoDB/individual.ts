@@ -6,8 +6,7 @@
 //
 
 import { Context } from 'apollo-server-core';
-         
-import { requestDetails } from '../../main';       
+import { Resolver } from '../../main.d';       
 
 import schemaObject from '../../../../../lexer/types/objects/object';  
 import mapResponse from '../../database/mongoDB/mapResponse';    
@@ -15,7 +14,7 @@ import mongoService from '../../database/mongoDB';
 import intermediate from './shared';
 
 async function resolve(
-    requestDetails: requestDetails,
+    requestDetails: Resolver.IRequest,
     schemaObject: schemaObject.init,
     client: mongoService,
     context: Context

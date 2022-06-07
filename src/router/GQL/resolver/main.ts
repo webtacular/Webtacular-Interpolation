@@ -1,40 +1,13 @@
-
-export type FilterType = 'function' | 'query';
-
-export interface QueryFilterObject {
-    func: (input: any, data: any, database?: types.database) => QueryFilterOutput, 
-    input: schemaValue.GqlType, 
-    actualKey?: string,
-    schemaKey?: string,
-}
-
-export interface requestDetails {
-    collectionName: string;
-    individualName: string;
-
-    projection: projectionInterface;
-    arguments: ArgumentsInterface
-
-    filter: { [x: string]: FilterObject };
-    hookBank: groupHooks;
-}
-
-export interface QueryFilterOutput { [key: string]: string | number | boolean | ObjectId | Array<string | number | boolean | ObjectId> | {} | QueryFilterOutput;}
-export type FilterObject = QueryFilterObject;
-
 import individualResolve from './root/mongoDB/individual';
 import collectionResolve from './root/mongoDB/collection';
-import parseQuery, { ArgumentsInterface, projectionInterface } from './database/parseQuery';
-import schemaValue from '../../../lexer/types/value';
+import parseQuery from './database/parseQuery';
 import schemaObject from '../../../lexer/types/objects/object';
 import mongoService from './database/mongoDB';     
 
-import { types } from '../../../types';
+import { Resolver } from './main.d';
 import { merge } from '../../../merge';
 import { IOutput } from '../../../lexer/index.interfaces';
-import { ObjectId } from 'mongodb';
 import { Construct } from '../../..';
-import { groupHooks } from '../../../accessControl/groupHooks';
 import { buildSchema } from 'graphql';
 
 
@@ -56,7 +29,7 @@ function resolver(root:any, args:any, context:any, info:any, rootObject: schemaO
         case true: 
             const schema = rootObject.collectionizeFields.schema;
 
-            const requestDetails: requestDetails = {
+            const requestDetails: Resolver.IRequest = {
                 collectionName: schema.collectionName,
                 individualName: schema.individualName,
 
