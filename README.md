@@ -1,4 +1,4 @@
-# mongo-graphql-layer
+# Webtacular-interpolation
 
 Automagicaly converts your MongoDB to a GraphQL endpoint!
 
