@@ -2,32 +2,31 @@ import mapQuery from '../../request/mongoDB/mapQuery';
 import schemaValue from '../../../../../lexer/types/value';   
 import schemaObject from '../../../../../lexer/types/objects/object';  
 import HookFunction from '../../../../../accessControl/hook';
-import preHookProjectionArray from '../../../../../accessControl/processHook';
 import mongoService, { mongoResponseObject } from '../../request/mongoDB/main'   
 
 import { Collection } from 'mongodb';
 import { Resolver } from '../../main.d';
-import { merge } from '../../../../../merge';
 import { Context } from 'apollo-server-core';
 import { internalConfiguration } from '../../../../../general';
 import { projectionInterface } from '../../request/parseQuery';
 import { groupHooksInterface } from '../../../../../accessControl/groupHooks';
+import { IHookReference } from '../../../../../lexer/index.interfaces';
+import execPreHook from '../../../../../accessControl/processHook';
 
-export type sharedExport = {
+export type IHookReturnable = {
+    preRequestHooks: { [x: string]: IHookReference }
+    postRequestHooks: { [x: string]: IHookReference }
+    hookOutput: HookFunction.hookPasstrhough;
+}
+
+export type ISharedExport = {
     collection: Collection<Document>;
     requestData: Array<{[x: string]: projectionInterface | mongoResponseObject}>;
     projection: projectionInterface;
-    hooks: {
-        preRequest: {
-            [x: string]: groupHooksInterface
-        };
-        postRequest: {
-            [x: string]: groupHooksInterface
-        };
-        hookOutput: HookFunction.hookPasstrhough;
-    };
+    hooks: IHookReturnable;
     values: Array<schemaValue.init>;
 };
+
 
 async function intermediate(
     requestDetails: Resolver.IRequest,
@@ -35,7 +34,7 @@ async function intermediate(
     client: mongoService,
     context: Context,
     isCollection = false
-): Promise<sharedExport> {
+): Promise<ISharedExport> {
 
     // Variable to store the query
     let requestData: Array<{[x: string]: projectionInterface | mongoResponseObject}> = [];
@@ -47,122 +46,90 @@ async function intermediate(
     let values: Array<schemaValue.init> = [];
 
     // Access Control Functions
-    let hooks: {
-        preRequest: { [x: string]: groupHooksInterface };
-        postRequest: { [x: string]: groupHooksInterface };
-        hookOutput: HookFunction.hookPasstrhough;
-    } = {
-        preRequest: {},
-        postRequest: {},
+    let hookObject: IHookReturnable = {
+        preRequestHooks: {},
+        postRequestHooks: {},
         hookOutput: {
+            // stores values that hooks have requested, eg changeing the max page size that 
+            // a user can request
             maxPageSize: schemaObject?.options?.page?.maxSize ?? internalConfiguration.page.maxSize,
             defPageSize: schemaObject?.options?.page?.defaultSize ?? internalConfiguration.page.defaultSize,
         },
     }
 
 
+    // ---------------[ Proccess Mask ]--------------------- //
+    // Get the gql query
     const paramaters = isCollection === true ? 
         requestDetails.projection[requestDetails.collectionName]?.items : 
         requestDetails.projection[requestDetails.individualName];
-
-    const valueParent = schemaObject.childGetter();
-
-    // Map the requested resouces
-    for(const paramater in paramaters) {
-        // Get the value
-        const value = valueParent.values[paramater];
-
-        // If the paramater is not found in the schema
-        // Continue to the next paramater
-        if(!value) continue;
-
-        // Check if the schema provided any access control functions
-        if(!value.options.accessControl) continue;
-
-        const hookKeys = Object.keys(requestDetails.hookBank);
-
-        // Find the hook in the bank
-        for(let i = 0; i < hookKeys.length; i++) {
-            const hookKey = hookKeys[i],
-                hook = requestDetails.hookBank[hookKey];
-
-            // If the hook is found
-            if(!hook) continue;
-
-            // Add the hook to the bank
-            switch(hook.execution) {
-                case 'postRequest':
-                    // check if the hook is already in the bank
-                    if(hooks.postRequest[hook.identifier.toString()]) continue;
-
-                    // Add the hook to the bank
-                    hooks.postRequest[hook.identifier.toString()] = hook;
-                    break;
-
-                case 'preRequest':
-                    // check if the hook is already in the bank
-                    if(hooks.preRequest[hook.identifier.toString()]) continue;
-
-                    // Add the hook to the bank
-                    hooks.preRequest[hook.identifier.toString()] = hook;
-                    break;
-            }
-        }
-        
-    }
 
     // Attempt to process the raw query
     const processedQuery = mapQuery(paramaters, schemaObject);
 
     // If the query is not empty
-    if(Object.keys(processedQuery).length !== 0)
+    if(Object.keys(processedQuery.mask).length !== 0)
         // Add the query to the requestData array
-        requestData.push({ $project: processedQuery });
-    
-
+        requestData.push({ $project: processedQuery.mask });
     // ------------------------------------------------------- //
 
 
-    // ---------------[ Manage Hooks ]--------------------- //
-    // Get any parameters that were passed in by 
+
+    // ---------------[ Access controll ]--------------------- //
     const fastifyReq = (context as any).rootValue.fastify.req;
 
-    let hookReturns: Array<Promise<projectionInterface>> = [];
+    if(processedQuery.hooks.length > 0) {
 
-    const preRequestHookKeys = Object.keys(hooks.preRequest);
+        let hooks: { [x: string]: IHookReference } = {};
 
+        // Eliminate duplicates
+        for(let i = 0; i < processedQuery.hooks.length; i++) {
+            const hook: IHookReference = processedQuery.hooks[i];
 
-    // Process the hooks
-    for (let i = 0; i < preRequestHookKeys.length; i++) {
-        // Get the hook
-        const hook = hooks.preRequest[preRequestHookKeys[i]];
+            // If the hook is not in the hooks object
+            if(hooks[hook.identifier.toString()] === undefined)
+                // Add the hook to the hooks object
+                hooks[hook.identifier.toString()] = hook;
+        }
 
-        // Process the hook
-        const hookOutput = preHookProjectionArray({
-            hook,
-            params: fastifyReq.params,
-            headers: fastifyReq.headers,
-            value: undefined,
-            projection: {
-                preSchema: (requestDetails.projection[requestDetails.collectionName] as any)?.items ?? {},
-                postSchema: projection,
+        // Loop through the hooks
+        for(let hookIdentifier in hooks) {
+            // Get the hook
+            const hook: groupHooksInterface = hooks[hookIdentifier].get();
+
+            // Process the hook if its a pre request hook
+            if(hook.execution !== 'preRequest') {
+                // Add the hook to the post request hooks
+                hookObject.postRequestHooks[hookIdentifier] 
+                    = hooks[hookIdentifier];
+
+                // Continue to the next hook
+                continue;
             }
-        });
 
-        // Merge the hook output
-        hooks.hookOutput = merge(hooks.hookOutput, hook.hook.passThrough);
+            // Execute the hook
+            const hookReturnable: projectionInterface = await execPreHook({
+                params: fastifyReq.params,
+                headers: fastifyReq.headers,
+                value: undefined,
+                projection: {
+                    preMap: paramaters ?? {},
+                    postMap: processedQuery.mask,
+                },
+                hook: hook,
+            });
 
-        // Add the hook output to the array
-        hookReturns.push(hookOutput);
+            // Add the hook to the requestData array
+            requestData.push({ $project: hookReturnable });
+
+            // Add the hook to the pre request hooks
+            hookObject.preRequestHooks[hookIdentifier] 
+                = hooks[hookIdentifier];
+        }
     }
+    // ------------------------------------------------------- //
 
-    // Wait for the hooks to finish
-    const processedHooks = await Promise.all(hookReturns);
 
-    // Merge the hooks
-    //requestData = [...requestData, ...processedHooks];
-
-    // ---------------[ PreRequestHooks ]--------------------- //
 
     // ------------------------------------ //
     // Get the collection from the database //
@@ -174,12 +141,13 @@ async function intermediate(
     // ------------------------------------ //
 
 
+
     // Finaly, return the data
     return {
         collection,
         requestData,
         projection,
-        hooks,
+        hooks: hookObject,
         values,
     }
 }

@@ -118,13 +118,13 @@ function parse(object: schemaObject.init): IOutput {
 
                 // Process the value
                 value.additonalValues();
-                value.groupHooks(hookBank);
                 value.setParent({
                     identifier: currentParent,
                     get: () => parents[parents.length - 1]
                 });
                 value.generateMask(parents[parents.length - 1].mask);
                 value.map(parents[0]);
+                value.groupHooks(hookBank);
 
 
                 // ----------------------------[ Filter ]---------------------------- //

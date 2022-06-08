@@ -1,14 +1,20 @@
-import { types } from '../../../../../types';
-
-import { merge } from '../../../../../merge';
-import { mongoResponseObject } from './main';
-import { projectionInterface } from '../parseQuery';
 
 import schemaObject from '../../../../../lexer/types/objects/object';
 
-function mapQuery(query: types.GQLinput, root: schemaObject.init): mongoResponseObject {
+import { merge } from '../../../../../merge';
+import { types } from '../../../../../types';
+import { IHookReference } from '../../../../../lexer/index.interfaces';
+import { projectionInterface } from '../parseQuery';
+
+export interface IMapQuerySharedExport {
+    mask: projectionInterface;
+    hooks: IHookReference[];
+}
+
+function mapQuery(query: types.GQLinput, root: schemaObject.init): IMapQuerySharedExport {
     // Start building the query
     let processedQuery: projectionInterface = {};
+    let hookRefs: IHookReference[] = [];
 
     // walk through the query, creating a path for each value
     // eg, { name: 'John', test: { a: 'b' }} will create a path for each value
@@ -24,14 +30,27 @@ function mapQuery(query: types.GQLinput, root: schemaObject.init): mongoResponse
                 const arrayPath = [...path, key].join('');
 
                 // Try and locate the path in the database map
-                const value = root.schemaValueMap[arrayPath];
+                const valueGetter = root.schemaValueMap[arrayPath];
 
                 // Merge the value into the returnable
-                if(value) merge(processedQuery, value().mask.database.mask);
+                if(valueGetter) {
+
+                    // get the value
+                    const value = valueGetter();
+
+                    // Merge the mask into the returnable
+                    merge(processedQuery, value.mask.database.mask);
+
+                    // Add the hook reference
+                    hookRefs = [...hookRefs, ...value.hooks];
+                }
             }
         }
 
-        return processedQuery;
+        return {
+            mask: processedQuery,
+            hooks: hookRefs
+        };
     }
 
     return walk(query);

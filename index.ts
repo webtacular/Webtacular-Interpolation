@@ -1,75 +1,85 @@
-import Object from './src/graphQL/schema/object';
-import Value from './src/graphQL/schema/value';
-import Reference from './src/graphQL/schema/reference';
-
 import { Construct } from './src/';
-// import SchemaFunction from './src/graphQL/resolver/src/accessControl/funcExec';
+import schemaNested from './src/lexer/types/objects/nested';
+import schemaObject from './src/lexer/types/objects/object';
+import schemaValue from './src/lexer/types/value';
 
-
-const userSchema = new Object.init({
-    collectionName: 'users',
+const userSchema = new schemaObject.init({
+    name: 'users',
     databaseName: 'test',
     collectionize: true,
 }, {
-    user_name: new Value.init({
-        type: 'string',
-    }),
-
-    email: new Value.init({
+    user_name: new schemaValue.init({
         type: 'string',
         accessControl: (hook) => {
             hook('view', (req) => {
-                req.allow();
-                
+                return false;
             });
-        }
+        }     
     }),
 
-    password: new Value.init({
+    email: new schemaValue.init({
+        type: 'string',
+        accessControl: (hook) => {
+            hook('view', (req) => {
+                return false;
+            });
+        }   
+    }),
+
+    password: new schemaValue.init({
+        type: 'string',
+        accessControl: (hook) => {
+            hook('view', (req) => {
+                return false;
+            });
+        }   
+    }),
+
+    language: new schemaValue.init({
         type: 'string',
     }),
 
-    language: new Value.init({
+    profile_picture: new schemaValue.init({
         type: 'string',
     }),
 
-    profile_picture: new Value.init({
-        type: 'string',
-    }),
-
-    id: new Value.init({
+    id: new schemaValue.init({
         type: 'id',
         unique: true,
-        mask: {
-            '_id': 1,
-        }
+
+        mask: ['_id'],
+   
+        accessControl: (hook) => {
+            hook('view', (req) => {
+                return false;
+            }, { group: false });
+        }  
     }),
 
-    rare: new Value.init({
+    rare: new schemaValue.init({
         type: 'string',
         description: 'The rare of the user',
-    }),
-});
-
-const tokenSchema = new Object.init({
-    collectionName: 'tokens',
-    databaseName: 'test',
-    collectionize: true,
-}, {
-    token: new Value.init({
-        type: 'string',
-        unique: true,
+        accessControl: (hook) => {
+            hook('view', (req) => {
+                return false;
+            }, { group: false });
+        }  
     }),
 
-    user_id: new Reference.init({}, userSchema),
+    security_info: new schemaNested.init({}, {
+        last_login: new schemaValue.init({
+            type: 'number',
+            description: 'The last login of the user',
+        }),
+    })
 });
+
 
 const schema = new Construct.load({
     // Changed the token, oops. 
-    connectionString: 'mongodb+srv://fsdatabase:@devdb.rxkbh.mongodb.net/test?authSource=admin&replicaSet=atlas-lmizic-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true'
+    connectionString:
 }, {
     user: userSchema,
-    token: tokenSchema,
 }); 
 
 schema.start();

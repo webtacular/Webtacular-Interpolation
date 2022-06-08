@@ -26,11 +26,11 @@ namespace HookFunction {
         projection: {
             // PreSchema: It will return the projection map
             // before we have parsed it and applied any masks
-            preSchema: projectionInterface
+            preMap: projectionInterface
 
             // PostSchema: It will return the projection map 
             // that is sent to the database.
-            postSchema: projectionInterface
+            postMap: projectionInterface
         }
     }
 
@@ -66,6 +66,7 @@ namespace HookFunction {
     export interface HookOptions { 
         fallback?: hookAccessControl,
         execution?: hookExecution,
+        group?: boolean,
     }
 
     // This type contains all the different types of hooks that
@@ -74,7 +75,11 @@ namespace HookFunction {
 
     // This is the hook function, it is whats given to the 
     // developer by the accessControlFunc function
-    export type hookFunc = (hook: accessControlHooks, request: (request: Func) => boolean | Promise<boolean>, opts?: HookOptions) => void;
+    export type hookFunc = (
+        hook: accessControlHooks, 
+        request: (request: Func) => boolean | Promise<boolean>, 
+        opts?: HookOptions
+    ) => void;
 
     // This is the access control function that can be accessed
     // by the schemaObject parameters or the schemaObject parameters
@@ -96,13 +101,15 @@ namespace HookFunction {
     const defaultHookOpts: HookOptions = {
         fallback: internalConfiguration.hooks.defualtAccessControl,
         execution: internalConfiguration.hooks.defaultExecution,
+        group: internalConfiguration.hooks.defualtGroupHooks
     }
 
     export class hook {
         hook: accessControlHooks;
-        request: (request: Func) => boolean | Promise<boolean>;
         opts: HookOptions;
         passThrough: hookPasstrhough = {}
+
+        request: (request: Func) => boolean | Promise<boolean>;
 
         constructor(
             request: (request: Func) => boolean | Promise<boolean>,

@@ -19,6 +19,7 @@ export interface internalConfiguration {
     hooks: {
         defualtAccessControl: HookFunction.hookAccessControl;
         defaultExecution: HookFunction.hookExecution;
+        defualtGroupHooks: boolean;
     },
     debug: boolean;
     page: {
@@ -69,6 +70,7 @@ export const internalConfiguration: internalConfiguration = {
     hooks: {
         defualtAccessControl: 'allow',
         defaultExecution: 'preRequest',
+        defualtGroupHooks: true
     },
     debug: false,
     page: {

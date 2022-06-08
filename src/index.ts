@@ -7,6 +7,8 @@ import fastify, { FastifyInstance } from 'fastify';
 import lexer from './lexer';
 import parser from './router/GQL/parser';
 
+import { IOutput } from './lexer/index.interfaces';
+
 export namespace Construct {
     export interface Schema {
         [key: string]: schemaObject.init;
@@ -23,31 +25,34 @@ export namespace Construct {
 
         console.log('Server running on port 9090');
 
-        const recurse = (obj: Schema) => {
-            for (const key in obj) {
-                const value = obj[key];
-                
-                if(value instanceof schemaObject.init) {
-                    // Set the key
-                    value.key = key;
+        // Root keys
+        const rootKeys: string[] = Object.keys(main.schema);
 
-                    // Parse the schemaObject
-                    const parsed = lexer(value);
+        // Loop trough the root objects
+        for(let i: number = 0; i < rootKeys.length; i++) {
+            const key = rootKeys[i],
+                value = main.schema[key];
 
-                    // Create the schema
-                    const schmea = parser(parsed);
+            if(value instanceof schemaObject.init) {
+                // Set the key
+                value.key = key;
 
-                    // Create the resovler for the schemaObject
-                    resolve(
-                        parsed, 
-                        schmea,
-                        main, 
-                    );
-                }
+                // Parse the schemaObject
+                const parsed: IOutput = lexer(value);
+
+                console.log(Object.keys(parsed.hookBank));
+
+                // Create the schema
+                const schmea: string = parser(parsed);
+
+                // Create the resovler for the schemaObject
+                resolve(
+                    parsed, 
+                    schmea,
+                    main, 
+                );
             }
         }
-        
-        recurse(main.schema);
     }
 
     export class load {

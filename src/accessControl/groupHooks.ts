@@ -1,7 +1,8 @@
-import HookFunction from "./hook";
 import _ from "lodash";
+import HookFunction from "./hook";
 import schemaValue from "../lexer/types/value";
-import { projectionInterface } from "../router/GQL/resolver/database/parseQuery";
+
+import { projectionInterface } from "../router/GQL/resolver/request/parseQuery";
 import { arrayToObject } from "../general";
 import { ObjectId } from "mongodb";
 import { merge } from "../merge";
@@ -40,6 +41,9 @@ export function groupHooks(hookBank: groupHooks, hooks: HookFunction.init, value
 
         for(let j = 0; j < bankKeys.length; j++) {
             const bankHook = hookBank[bankKeys[j]];
+
+            // Check if the hook is allowed to be grouped
+            if(bankHook.opts.group !== true) continue;
 
             // Compare the hook options
             if(_.isMatch(bankHook.opts, hook.hook.opts) !== true) continue;
