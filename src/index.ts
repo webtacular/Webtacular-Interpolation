@@ -40,8 +40,6 @@ export namespace Construct {
                 // Parse the schemaObject
                 const parsed: IOutput = lexer(value);
 
-                console.log(Object.keys(parsed.hookBank));
-
                 // Create the schema
                 const schmea: string = parser(parsed);
 
